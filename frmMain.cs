@@ -1921,6 +1921,7 @@ namespace EcdsaTest
                     throw new Exception("Signing message can't have a zero length.");
 
                 tbSignature.Text = "";
+                btnSignatureStoreToBin.Enabled = false;
 
                 key_index = Convert.ToByte(cbSignatureKeyIndex.Text);
 
@@ -2088,6 +2089,8 @@ namespace EcdsaTest
                 }
                 else
                     tbSignature.Text = BitConverter.ToString(sig).Replace("-", "");
+
+                btnSignatureStoreToBin.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -2205,6 +2208,8 @@ namespace EcdsaTest
                 }
                 else
                     tbSignature.Text = BitConverter.ToString(sig).Replace("-", "");
+
+                btnSignatureStoreToBin.Enabled = true;
             }
             catch (Exception ex)
             {
