@@ -12,20 +12,19 @@ namespace Org.BouncyCastle.Asn1.Utilities
         {
         }
 
-        /*        public static void Main(string[] args)
-                {
-                    FileStream fIn = File.OpenRead(args[0]);
-                    Asn1InputStream bIn = new Asn1InputStream(fIn);
+        public static void Main(string[] args)
+        {
+            FileStream fIn = File.OpenRead(args[0]);
+            Asn1InputStream bIn = new Asn1InputStream(fIn);
 
-                    Asn1Object obj;
-                    while ((obj = bIn.ReadObject()) != null)
-                    {
-                        Console.WriteLine(Asn1Dump.DumpAsString(obj));
-                    }
+			Asn1Object obj;
+			while ((obj = bIn.ReadObject()) != null)
+            {
+                Console.WriteLine(Asn1Dump.DumpAsString(obj));
+            }
 
-                    Platform.Dispose(bIn);
-                }
-        */
+            Platform.Dispose(bIn);
+        }
     }
 }
 #endif
