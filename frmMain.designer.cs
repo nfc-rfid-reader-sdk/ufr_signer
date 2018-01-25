@@ -107,6 +107,31 @@
             this.lbECKeyLength = new System.Windows.Forms.Label();
             this.lbECKeyIndex = new System.Windows.Forms.Label();
             this.btnECImportP12 = new System.Windows.Forms.Button();
+            this.tabCardObjects = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.gbOperations = new System.Windows.Forms.GroupBox();
+            this.lbCertUsageType = new System.Windows.Forms.Label();
+            this.btnShowSelectedFile = new System.Windows.Forms.Button();
+            this.btnOpenCertFile = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tbCertFile = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.gbCACertificates = new System.Windows.Forms.GroupBox();
+            this.listView2 = new System.Windows.Forms.ListView();
+            this.gbQualifiedCertificates = new System.Windows.Forms.GroupBox();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.label11 = new System.Windows.Forms.Label();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.gbPrivateKeys = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.tabSignature = new System.Windows.Forms.TabPage();
             this.gbSignatureHash = new System.Windows.Forms.GroupBox();
             this.btnHashStoreToBin = new System.Windows.Forms.Button();
@@ -155,6 +180,12 @@
             this.gbECReductionPolynomial.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.gbECCommands.SuspendLayout();
+            this.tabCardObjects.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.gbOperations.SuspendLayout();
+            this.gbCACertificates.SuspendLayout();
+            this.gbQualifiedCertificates.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.tabSignature.SuspendLayout();
             this.gbSignatureHash.SuspendLayout();
             this.gbSignature.SuspendLayout();
@@ -169,6 +200,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabRSAKeys);
             this.tabControl.Controls.Add(this.tabECKeys);
+            this.tabControl.Controls.Add(this.tabCardObjects);
             this.tabControl.Controls.Add(this.tabSignature);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
@@ -1190,6 +1222,288 @@
             this.btnECImportP12.UseVisualStyleBackColor = true;
             this.btnECImportP12.Click += new System.EventHandler(this.btnECImportP12_Click);
             // 
+            // tabCardObjects
+            // 
+            this.tabCardObjects.BackColor = System.Drawing.SystemColors.Control;
+            this.tabCardObjects.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabCardObjects.Controls.Add(this.groupBox2);
+            this.tabCardObjects.Location = new System.Drawing.Point(4, 22);
+            this.tabCardObjects.Name = "tabCardObjects";
+            this.tabCardObjects.Size = new System.Drawing.Size(1134, 574);
+            this.tabCardObjects.TabIndex = 4;
+            this.tabCardObjects.Text = "Card Objects";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.gbOperations);
+            this.groupBox2.Controls.Add(this.button1);
+            this.groupBox2.Controls.Add(this.gbCACertificates);
+            this.groupBox2.Controls.Add(this.gbQualifiedCertificates);
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.textBox6);
+            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Controls.Add(this.textBox2);
+            this.groupBox2.Controls.Add(this.label8);
+            this.groupBox2.Controls.Add(this.textBox3);
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Controls.Add(this.textBox4);
+            this.groupBox2.Controls.Add(this.groupBox3);
+            this.groupBox2.Controls.Add(this.gbPrivateKeys);
+            this.groupBox2.Controls.Add(this.label9);
+            this.groupBox2.Location = new System.Drawing.Point(8, 0);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(8);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(1116, 562);
+            this.groupBox2.TabIndex = 5;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Visible = false;
+            // 
+            // gbOperations
+            // 
+            this.gbOperations.Controls.Add(this.lbCertUsageType);
+            this.gbOperations.Controls.Add(this.btnShowSelectedFile);
+            this.gbOperations.Controls.Add(this.btnOpenCertFile);
+            this.gbOperations.Controls.Add(this.label6);
+            this.gbOperations.Controls.Add(this.tbCertFile);
+            this.gbOperations.Location = new System.Drawing.Point(465, 12);
+            this.gbOperations.Margin = new System.Windows.Forms.Padding(8);
+            this.gbOperations.Name = "gbOperations";
+            this.gbOperations.Size = new System.Drawing.Size(634, 247);
+            this.gbOperations.TabIndex = 25;
+            this.gbOperations.TabStop = false;
+            // 
+            // lbCertUsageType
+            // 
+            this.lbCertUsageType.Location = new System.Drawing.Point(98, 50);
+            this.lbCertUsageType.Name = "lbCertUsageType";
+            this.lbCertUsageType.Size = new System.Drawing.Size(369, 18);
+            this.lbCertUsageType.TabIndex = 27;
+            this.lbCertUsageType.Text = ".";
+            // 
+            // btnShowSelectedFile
+            // 
+            this.btnShowSelectedFile.Location = new System.Drawing.Point(480, 44);
+            this.btnShowSelectedFile.Name = "btnShowSelectedFile";
+            this.btnShowSelectedFile.Size = new System.Drawing.Size(138, 24);
+            this.btnShowSelectedFile.TabIndex = 26;
+            this.btnShowSelectedFile.Text = "Show selected file";
+            this.btnShowSelectedFile.UseVisualStyleBackColor = true;
+            this.btnShowSelectedFile.Click += new System.EventHandler(this.btnShowSelectedFile_Click);
+            // 
+            // btnOpenCertFile
+            // 
+            this.btnOpenCertFile.Location = new System.Drawing.Point(480, 14);
+            this.btnOpenCertFile.Name = "btnOpenCertFile";
+            this.btnOpenCertFile.Size = new System.Drawing.Size(138, 24);
+            this.btnOpenCertFile.TabIndex = 25;
+            this.btnOpenCertFile.Text = "Open certificate file";
+            this.btnOpenCertFile.UseVisualStyleBackColor = true;
+            this.btnOpenCertFile.Click += new System.EventHandler(this.btnOpenCertFile_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(13, 20);
+            this.label6.Margin = new System.Windows.Forms.Padding(3);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(68, 13);
+            this.label6.TabIndex = 13;
+            this.label6.Text = "Selected file:";
+            // 
+            // tbCertFile
+            // 
+            this.tbCertFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbCertFile.BackColor = System.Drawing.SystemColors.Window;
+            this.tbCertFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.tbCertFile.Location = new System.Drawing.Point(94, 16);
+            this.tbCertFile.Margin = new System.Windows.Forms.Padding(10);
+            this.tbCertFile.Name = "tbCertFile";
+            this.tbCertFile.ReadOnly = true;
+            this.tbCertFile.Size = new System.Drawing.Size(373, 20);
+            this.tbCertFile.TabIndex = 14;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(961, 468);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(138, 24);
+            this.button1.TabIndex = 23;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // gbCACertificates
+            // 
+            this.gbCACertificates.Controls.Add(this.listView2);
+            this.gbCACertificates.Location = new System.Drawing.Point(465, 275);
+            this.gbCACertificates.Margin = new System.Windows.Forms.Padding(8);
+            this.gbCACertificates.Name = "gbCACertificates";
+            this.gbCACertificates.Size = new System.Drawing.Size(485, 247);
+            this.gbCACertificates.TabIndex = 22;
+            this.gbCACertificates.TabStop = false;
+            this.gbCACertificates.Text = "CA Certificates:";
+            // 
+            // listView2
+            // 
+            this.listView2.Location = new System.Drawing.Point(18, 19);
+            this.listView2.Name = "listView2";
+            this.listView2.Size = new System.Drawing.Size(449, 212);
+            this.listView2.TabIndex = 1;
+            this.listView2.UseCompatibleStateImageBehavior = false;
+            // 
+            // gbQualifiedCertificates
+            // 
+            this.gbQualifiedCertificates.Controls.Add(this.listView1);
+            this.gbQualifiedCertificates.Location = new System.Drawing.Point(12, 275);
+            this.gbQualifiedCertificates.Margin = new System.Windows.Forms.Padding(8);
+            this.gbQualifiedCertificates.Name = "gbQualifiedCertificates";
+            this.gbQualifiedCertificates.Size = new System.Drawing.Size(437, 247);
+            this.gbQualifiedCertificates.TabIndex = 21;
+            this.gbQualifiedCertificates.TabStop = false;
+            this.gbQualifiedCertificates.Text = "Qualified Certificates:";
+            // 
+            // listView1
+            // 
+            this.listView1.Location = new System.Drawing.Point(12, 20);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(412, 212);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(975, 423);
+            this.label11.Margin = new System.Windows.Forms.Padding(3);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(17, 13);
+            this.label11.TabIndex = 19;
+            this.label11.Text = "K:";
+            // 
+            // textBox6
+            // 
+            this.textBox6.BackColor = System.Drawing.SystemColors.Window;
+            this.textBox6.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.textBox6.Location = new System.Drawing.Point(1053, 423);
+            this.textBox6.Margin = new System.Windows.Forms.Padding(0);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.ReadOnly = true;
+            this.textBox6.Size = new System.Drawing.Size(46, 22);
+            this.textBox6.TabIndex = 20;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(975, 391);
+            this.label10.Margin = new System.Windows.Forms.Padding(3);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(18, 13);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "R:";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox2.BackColor = System.Drawing.SystemColors.Window;
+            this.textBox2.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.textBox2.Location = new System.Drawing.Point(1004, 391);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(10);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(95, 22);
+            this.textBox2.TabIndex = 18;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(957, 336);
+            this.label8.Margin = new System.Windows.Forms.Padding(3);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(36, 13);
+            this.label8.TabIndex = 15;
+            this.label8.Text = "G(uc):";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox3.BackColor = System.Drawing.SystemColors.Window;
+            this.textBox3.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.textBox3.Location = new System.Drawing.Point(1004, 314);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(0);
+            this.textBox3.Multiline = true;
+            this.textBox3.Name = "textBox3";
+            this.textBox3.ReadOnly = true;
+            this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+            this.textBox3.Size = new System.Drawing.Size(95, 65);
+            this.textBox3.TabIndex = 16;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(975, 282);
+            this.label7.Margin = new System.Windows.Forms.Padding(3);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(16, 13);
+            this.label7.TabIndex = 13;
+            this.label7.Text = "b:";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox4.BackColor = System.Drawing.SystemColors.Window;
+            this.textBox4.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.textBox4.Location = new System.Drawing.Point(1004, 278);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(14);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.ReadOnly = true;
+            this.textBox4.Size = new System.Drawing.Size(95, 22);
+            this.textBox4.TabIndex = 14;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.listBox1);
+            this.groupBox3.Location = new System.Drawing.Point(12, 12);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(8);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(437, 247);
+            this.groupBox3.TabIndex = 10;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Private Keys:";
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(12, 20);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(412, 199);
+            this.listBox1.TabIndex = 0;
+            // 
+            // gbPrivateKeys
+            // 
+            this.gbPrivateKeys.Enabled = false;
+            this.gbPrivateKeys.Location = new System.Drawing.Point(12, 12);
+            this.gbPrivateKeys.Margin = new System.Windows.Forms.Padding(8);
+            this.gbPrivateKeys.Name = "gbPrivateKeys";
+            this.gbPrivateKeys.Size = new System.Drawing.Size(333, 247);
+            this.gbPrivateKeys.TabIndex = 10;
+            this.gbPrivateKeys.TabStop = false;
+            this.gbPrivateKeys.Text = "Private Keys:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(212, 34);
+            this.label9.Margin = new System.Windows.Forms.Padding(3);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(16, 13);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "p:";
+            // 
             // tabSignature
             // 
             this.tabSignature.BackColor = System.Drawing.SystemColors.Control;
@@ -1664,6 +1978,14 @@
             this.groupBox1.PerformLayout();
             this.gbECCommands.ResumeLayout(false);
             this.gbECCommands.PerformLayout();
+            this.tabCardObjects.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.gbOperations.ResumeLayout(false);
+            this.gbOperations.PerformLayout();
+            this.gbCACertificates.ResumeLayout(false);
+            this.gbQualifiedCertificates.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
             this.tabSignature.ResumeLayout(false);
             this.gbSignatureHash.ResumeLayout(false);
             this.gbSignatureHash.PerformLayout();
@@ -1791,6 +2113,31 @@
         private System.Windows.Forms.Button btnRestoreECPriv;
         private System.Windows.Forms.Button btnBackupECPriv;
         private System.Windows.Forms.ProgressBar pbSigning;
+        private System.Windows.Forms.TabPage tabCardObjects;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox gbCACertificates;
+        private System.Windows.Forms.GroupBox gbQualifiedCertificates;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox gbPrivateKeys;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ListView listView2;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.GroupBox gbOperations;
+        private System.Windows.Forms.Button btnOpenCertFile;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tbCertFile;
+        private System.Windows.Forms.Button btnShowSelectedFile;
+        private System.Windows.Forms.Label lbCertUsageType;
     }
 }
 

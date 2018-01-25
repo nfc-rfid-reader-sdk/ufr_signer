@@ -2233,7 +2233,114 @@ namespace EcdsaTest
                 tabControl.Enabled = true;
             }
         }
+        //----------------------------------------------------------------------
+        private void btnOpenCertFile_Click(object sender, EventArgs e)
+        {
+            X509Certificate2 cert = null;
 
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "PEM files (*.pem;*.crt;*.cer)|*.pem;*.crt;*.cer|PKSC#12 files (*.p12; *.pfx)|*.p12; *.pfx|All files (*.*)|*.*";
+            dialog.InitialDirectory = @"C:\";
+            dialog.Title = "Please select the file containing certificate";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string file_ext = Path.GetExtension(dialog.FileName);
+
+                    if (file_ext == ".p12" || file_ext == ".pfx")
+                    {
+                        frmPassword dlgPasswd = new frmPassword();
+                        if (dlgPasswd.ShowDialog() == DialogResult.OK)
+                        {
+                            cert = new X509Certificate2(dialog.FileName, dlgPasswd.password,
+                            X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                        }
+                    }
+                    else
+                    {
+                        cert = new X509Certificate2(dialog.FileName);
+                    }
+
+                    tbCertFile.Text = dialog.FileName;
+
+                    foreach (X509Extension extension in cert.Extensions)
+                        if (extension.Oid.FriendlyName == "Basic Constraints")
+                        {
+                            X509BasicConstraintsExtension ext = (X509BasicConstraintsExtension)extension;
+                            if (ext.CertificateAuthority)
+                            {
+                                lbCertUsageType.Text = "Selected is CA";
+                                lbCertUsageType.Font = new Font(lbCertUsageType.Font, FontStyle.Bold);
+                            }
+                            else
+                            {
+                                lbCertUsageType.Text = "Selected is not CA";
+                                lbCertUsageType.Font = new Font(lbCertUsageType.Font, FontStyle.Regular);
+                            }
+                        }
+
+                    // Should remove any private key from cert:
+                    if (cert.HasPrivateKey)
+                    {
+                        cert = new X509Certificate2(cert.Export(X509ContentType.Cert));
+                    }
+                    //*/
+
+                    // Now we display certificate dialog:
+                    X509Certificate2UI.DisplayCertificate(cert, this.Handle);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+
+                }
+            }
+        }
+
+        private void btnShowSelectedFile_Click(object sender, EventArgs e)
+        {
+            X509Certificate2 cert = null;
+
+            if (!(File.Exists(tbCertFile.Text) && Path.HasExtension(tbCertFile.Text)))
+            {
+                MessageBox.Show("Invalid certificate file name and / or path.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                string file_ext = Path.GetExtension(tbCertFile.Text);
+
+                if (file_ext == ".p12" || file_ext == ".pfx")
+                {
+                    frmPassword dlgPasswd = new frmPassword();
+                    if (dlgPasswd.ShowDialog() == DialogResult.OK)
+                    {
+                        cert = new X509Certificate2(tbCertFile.Text, dlgPasswd.password,
+                        X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                    }
+                }
+                else
+                {
+                    cert = new X509Certificate2(tbCertFile.Text);
+                }
+
+                X509Certificate2UI.DisplayCertificate(cert, this.Handle);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+
+            }
+        }
 #if MY_DEBUG
         const int INPUT_FILE_BUFFER_LEN = 8192;
         int mECKeyByteSize;
