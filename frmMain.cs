@@ -142,6 +142,14 @@ namespace EcdsaTest
             uFR_Opened = true;
         }
 
+        private void objIndexComboSetItems(int itemsCount)
+        {
+            cbObjIndex.Items.Clear();
+            for (int i = 0; i < itemsCount; i++)
+                cbObjIndex.Items.Add(i.ToString());
+            cbObjIndex.SelectedIndex = 0;
+        }
+
         private void frmMain_Load(object sender, EventArgs e)
         {
             Text = Text + " v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -152,6 +160,9 @@ namespace EcdsaTest
             cbECName.SelectedIndex = 0;
             cbECKeyLength.SelectedIndex = 0;
             cbECKeyIndex.SelectedIndex = 0;
+
+            cbObjType.SelectedIndex = 0;
+            cbObjIndex.SelectedIndex = 0;
 
             cbDigest.SelectedIndex = 0;
             cbCipher.SelectedIndex = 0;
@@ -2286,7 +2297,6 @@ namespace EcdsaTest
                     {
                         cert = new X509Certificate2(cert.Export(X509ContentType.Cert));
                     }
-                    //*/
 
                     // Now we display certificate dialog:
                     X509Certificate2UI.DisplayCertificate(cert, this.Handle);
@@ -2294,10 +2304,6 @@ namespace EcdsaTest
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-
                 }
             }
         }
@@ -2336,11 +2342,98 @@ namespace EcdsaTest
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            finally
-            {
+        }
 
+        private void btnPutCertFromFile_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status;
+            byte obj_index = Convert.ToByte(cbRSAKeyIndex.Text);
+            byte obj_type;
+            UInt16 key_size_bits = Convert.ToUInt16(cbRSAKeyLength.Text);
+            int key_size_bytes, component_size_bytes;
+            int key_offset = 0;
+            byte[] key;
+            X509Certificate2 cert = null;
+
+            if (!(File.Exists(tbCertFile.Text) && Path.HasExtension(tbCertFile.Text)))
+            {
+                MessageBox.Show("Invalid certificate file name and / or path.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                string file_ext = Path.GetExtension(tbCertFile.Text);
+
+                if (file_ext == ".p12" || file_ext == ".pfx")
+                {
+                    frmPassword dlgPasswd = new frmPassword();
+                    if (dlgPasswd.ShowDialog() == DialogResult.OK)
+                    {
+                        cert = new X509Certificate2(tbCertFile.Text, dlgPasswd.password, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                    }
+                }
+                else
+                {
+                    cert = new X509Certificate2(tbCertFile.Text);
+                }
+
+                byte[] raw_cert = cert.Export(X509ContentType.Cert);
+                byte[] raw_subject = cert.SubjectName.RawData;
+                string subject = cert.Subject;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void cbObjType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbObjType.SelectedIndex == 2)
+            {
+                if (cbObjIndex.Items.Count != 12)
+                {
+                    objIndexComboSetItems(12);
+                    cbObjIndex.SelectedIndex = 0;
+                }
+            }
+            else if (cbObjIndex.Items.Count != 3)
+            {
+                objIndexComboSetItems(3);
+                cbObjIndex.SelectedIndex = 0;
+            }
+        }
+        byte cnt = 0;
+        private void btnShowCert_Click(object sender, EventArgs e)
+        {
+            byte obj_type;
+            ListView lstv;
+
+            if (sender == btnShowRSACert)
+            {
+                obj_type = 0;
+                lstv = lstvRSACerts;
+            }
+            else if (sender == btnShowECDSACert)
+            {
+                obj_type = 1;
+                lstv = lstvECDSACerts;
+            }
+            else if (sender == btnShowCACert)
+            {
+                obj_type = 2;
+                lstv = lstvCACerts;
+            }
+            else
+            {
+                MessageBox.Show("Error");
+                return;
+            }
+
+            lstv.Items[cnt++ % 3].SubItems[1].Text = cnt.ToString();
+        }
+
 #if MY_DEBUG
         const int INPUT_FILE_BUFFER_LEN = 8192;
         int mECKeyByteSize;
