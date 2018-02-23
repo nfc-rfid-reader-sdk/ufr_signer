@@ -38,12 +38,48 @@
             "2",
             "Empty"}, -1);
             System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new string[] {
-            "0",
+            "3",
             "Empty"}, -1);
             System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new string[] {
-            "1",
+            "4",
             "Empty"}, -1);
             System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem(new string[] {
+            "5",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem(new string[] {
+            "6",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem(new string[] {
+            "7",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem(new string[] {
+            "8",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem(new string[] {
+            "9",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem(new string[] {
+            "10",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem(new string[] {
+            "11",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem(new string[] {
+            "0",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem(new string[] {
+            "1",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem(new string[] {
+            "2",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem(new string[] {
+            "0",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem(new string[] {
+            "1",
+            "Empty"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -150,10 +186,12 @@
             this.btnShowECDSACert = new System.Windows.Forms.Button();
             this.btnInvalidateECDSACert = new System.Windows.Forms.Button();
             this.lstvECDSACerts = new System.Windows.Forms.ListView();
-            this.defaultColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.gbRSACertificates = new System.Windows.Forms.GroupBox();
             this.lstvRSACerts = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnSaveRSACert = new System.Windows.Forms.Button();
             this.btnShowRSACert = new System.Windows.Forms.Button();
             this.btnInvalidateRSACert = new System.Windows.Forms.Button();
@@ -191,8 +229,8 @@
             this.cbSignatureKeyIndex = new System.Windows.Forms.ComboBox();
             this.lbSignatureKeyIndex = new System.Windows.Forms.Label();
             this.llbDLogicURL = new System.Windows.Forms.LinkLabel();
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl.SuspendLayout();
             this.tabRSAKeys.SuspendLayout();
             this.gbRSAPub.SuspendLayout();
@@ -1264,7 +1302,8 @@
             // 
             // gbOperations
             // 
-            this.gbOperations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbOperations.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbOperations.Controls.Add(this.btnRefresh);
             this.gbOperations.Controls.Add(this.lbId);
             this.gbOperations.Controls.Add(this.textBox1);
@@ -1427,7 +1466,8 @@
             // 
             // gbCACertificates
             // 
-            this.gbCACertificates.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.gbCACertificates.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbCACertificates.Controls.Add(this.btnSaveCACert);
             this.gbCACertificates.Controls.Add(this.btnShowCACert);
@@ -1474,13 +1514,36 @@
             // 
             // lstvCACerts
             // 
-            this.lstvCACerts.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lstvCACerts.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstvCACerts.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader5,
+            this.columnHeader6});
+            this.lstvCACerts.FullRowSelect = true;
+            this.lstvCACerts.GridLines = true;
+            this.lstvCACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstvCACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5,
+            listViewItem6,
+            listViewItem7,
+            listViewItem8,
+            listViewItem9,
+            listViewItem10,
+            listViewItem11,
+            listViewItem12});
             this.lstvCACerts.Location = new System.Drawing.Point(12, 19);
+            this.lstvCACerts.MultiSelect = false;
             this.lstvCACerts.Name = "lstvCACerts";
+            this.lstvCACerts.ShowGroups = false;
             this.lstvCACerts.Size = new System.Drawing.Size(412, 145);
             this.lstvCACerts.TabIndex = 1;
             this.lstvCACerts.UseCompatibleStateImageBehavior = false;
+            this.lstvCACerts.View = System.Windows.Forms.View.Details;
             // 
             // gbECDSACertificates
             // 
@@ -1531,20 +1594,21 @@
             // 
             // lstvECDSACerts
             // 
+            this.lstvECDSACerts.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstvECDSACerts.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.defaultColumn,
-            this.columnHeader3});
+            this.columnHeader3,
+            this.columnHeader4});
             this.lstvECDSACerts.FullRowSelect = true;
             this.lstvECDSACerts.GridLines = true;
             this.lstvECDSACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            listViewItem1.StateImageIndex = 0;
-            listViewItem2.StateImageIndex = 0;
-            listViewItem3.StateImageIndex = 0;
+            listViewItem13.StateImageIndex = 0;
+            listViewItem14.StateImageIndex = 0;
+            listViewItem15.StateImageIndex = 0;
             this.lstvECDSACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3});
-            this.lstvECDSACerts.LabelWrap = false;
+            listViewItem13,
+            listViewItem14,
+            listViewItem15});
             this.lstvECDSACerts.Location = new System.Drawing.Point(12, 20);
             this.lstvECDSACerts.MultiSelect = false;
             this.lstvECDSACerts.Name = "lstvECDSACerts";
@@ -1553,6 +1617,14 @@
             this.lstvECDSACerts.TabIndex = 0;
             this.lstvECDSACerts.UseCompatibleStateImageBehavior = false;
             this.lstvECDSACerts.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Width = 30;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Width = 360;
             // 
             // gbRSACertificates
             // 
@@ -1572,19 +1644,21 @@
             // 
             // lstvRSACerts
             // 
+            this.lstvRSACerts.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstvRSACerts.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
             this.lstvRSACerts.FullRowSelect = true;
             this.lstvRSACerts.GridLines = true;
             this.lstvRSACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            listViewItem4.StateImageIndex = 0;
-            listViewItem5.StateImageIndex = 0;
-            listViewItem6.StateImageIndex = 0;
+            listViewItem16.StateImageIndex = 0;
+            listViewItem17.StateImageIndex = 0;
+            listViewItem18.StateImageIndex = 0;
             this.lstvRSACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem4,
-            listViewItem5,
-            listViewItem6});
+            listViewItem16,
+            listViewItem17,
+            listViewItem18});
             this.lstvRSACerts.LabelWrap = false;
             this.lstvRSACerts.Location = new System.Drawing.Point(11, 20);
             this.lstvRSACerts.MultiSelect = false;
@@ -1594,6 +1668,14 @@
             this.lstvRSACerts.TabIndex = 29;
             this.lstvRSACerts.UseCompatibleStateImageBehavior = false;
             this.lstvRSACerts.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Width = 30;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Width = 360;
             // 
             // btnSaveRSACert
             // 
@@ -2063,13 +2145,13 @@
             this.llbDLogicURL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.llbDLogicURL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llbDLogicURL_LinkClicked);
             // 
-            // columnHeader2
+            // columnHeader5
             // 
-            this.columnHeader2.Width = 300;
+            this.columnHeader5.Width = 30;
             // 
-            // columnHeader3
+            // columnHeader6
             // 
-            this.columnHeader3.Width = 300;
+            this.columnHeader6.Width = 360;
             // 
             // frmMain
             // 
@@ -2271,11 +2353,13 @@
         private System.Windows.Forms.Button btnSaveECDSACert;
         private System.Windows.Forms.Button btnSaveRSACert;
         private System.Windows.Forms.Button btnRefresh;
-        private System.Windows.Forms.ColumnHeader defaultColumn;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ListView lstvRSACerts;
         private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
     }
 }
 
