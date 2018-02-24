@@ -943,6 +943,57 @@ namespace uFR
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetSignature")]
         private static extern DL_STATUS JCAppGetSignature([Out] byte[] sig, UInt16 sig_len);
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppPutObj")]
+        public static extern DL_STATUS JCAppPutObj(byte obj_type, byte obj_index, [In] byte[] obj, UInt16 obj_size, [In] byte[] id, byte id_size);
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppPutObjSubject")]
+        public static extern DL_STATUS JCAppPutObjSubject(byte obj_type, byte obj_index, [In] byte[] subject, byte size);
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppInvalidateCert")]
+        public static extern DL_STATUS JCAppInvalidateCert(byte obj_type, byte obj_index);
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetObjId")]
+        private static extern DL_STATUS JCAppGetObjId(byte obj_type, byte obj_index, [Out] byte[] id, out UInt16 id_size);
+        public static DL_STATUS JCAppGetObjId(byte obj_type, byte obj_index, out byte[] id, out UInt16 size)
+        {
+            DL_STATUS status;
+
+            size = 0;
+            id = null;
+            status = JCAppGetObjId(obj_type, obj_index, id, out size);
+            if (status == DL_STATUS.UFR_OK)
+            {
+                id = new byte[size];
+                status = JCAppGetObjId(obj_type, obj_index, id, out size);
+            }
+            return status;
+        }
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetObjSubject")]
+        private static extern DL_STATUS JCAppGetObjSubject(byte obj_type, byte obj_index, [Out] byte[] subject, out byte subject_size);
+        public static DL_STATUS JCAppGetObjSubject(byte obj_type, byte obj_index, out byte[] subject, out byte size)
+        {
+            DL_STATUS status;
+
+            size = 0;
+            subject = null;
+            status = JCAppGetObjSubject(obj_type, obj_index, subject, out size);
+            if (status == DL_STATUS.UFR_OK)
+            {
+                subject = new byte[size];
+                status = JCAppGetObjSubject(obj_type, obj_index, subject, out size);
+            }
+            return status;
+        }
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetObj")]
+        private static extern DL_STATUS JCAppGetObj(byte obj_type, byte obj_index, [Out] byte[] obj, UInt16 size);
+        public static DL_STATUS JCAppGetObj(byte obj_type, byte obj_index, byte[] obj)
+        {
+            return JCAppGetObj(obj_type, obj_index, obj, (UInt16) obj.Length);
+        }
+
         //----------------------------------------------------------------------
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, EntryPoint = "UfrXrcLockOn")]

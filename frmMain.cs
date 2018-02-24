@@ -28,6 +28,7 @@ namespace EcdsaTest
         const UInt32 MIN_UFR_LIB_VERSION = 0x04030000;
         const UInt32 MIN_UFR_FW_VERSION = 0x0309002F;
         string uFR_NotOpenedMessage = "uFR reader not opened.\r\nYou can't work with DL Signer cards.";
+        string mCertPassword = "";
 
         private bool uFR_Opened = false;
         private bool uFR_Selected = false;
@@ -1016,7 +1017,7 @@ namespace EcdsaTest
 
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "PEM files (*.pem;*.crt;*.cer)|*.pem;*.crt;*.cer|All files (*.*)|*.*";
-            dialog.InitialDirectory = @"C:\";
+            //dialog.InitialDirectory = @"C:\";
             dialog.Title = "Please select the PEM file";
 
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -2251,7 +2252,7 @@ namespace EcdsaTest
 
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "PEM files (*.pem;*.crt;*.cer)|*.pem;*.crt;*.cer|PKSC#12 files (*.p12; *.pfx)|*.p12; *.pfx|All files (*.*)|*.*";
-            dialog.InitialDirectory = @"C:\";
+            //dialog.InitialDirectory = @"C:\";
             dialog.Title = "Please select the file containing certificate";
 
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -2265,8 +2266,8 @@ namespace EcdsaTest
                         frmPassword dlgPasswd = new frmPassword();
                         if (dlgPasswd.ShowDialog() == DialogResult.OK)
                         {
-                            cert = new X509Certificate2(dialog.FileName, dlgPasswd.password,
-                            X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
+                            mCertPassword = dlgPasswd.password;
+                            cert = new X509Certificate2(dialog.FileName, mCertPassword, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
                         }
                     }
                     else
@@ -2291,12 +2292,6 @@ namespace EcdsaTest
                                 lbCertUsageType.Font = new Font(lbCertUsageType.Font, FontStyle.Regular);
                             }
                         }
-
-                    // Should remove any private key from cert:
-                    if (cert.HasPrivateKey)
-                    {
-                        cert = new X509Certificate2(cert.Export(X509ContentType.Cert));
-                    }
 
                     // Now we display certificate dialog:
                     X509Certificate2UI.DisplayCertificate(cert, this.Handle);
@@ -2324,12 +2319,7 @@ namespace EcdsaTest
 
                 if (file_ext == ".p12" || file_ext == ".pfx")
                 {
-                    frmPassword dlgPasswd = new frmPassword();
-                    if (dlgPasswd.ShowDialog() == DialogResult.OK)
-                    {
-                        cert = new X509Certificate2(tbCertFile.Text, dlgPasswd.password,
-                        X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
-                    }
+                    cert = new X509Certificate2(tbCertFile.Text, mCertPassword, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
                 }
                 else
                 {
@@ -2347,12 +2337,8 @@ namespace EcdsaTest
         private void btnPutCertFromFile_Click(object sender, EventArgs e)
         {
             DL_STATUS status;
-            byte obj_index = Convert.ToByte(cbRSAKeyIndex.Text);
-            byte obj_type;
-            UInt16 key_size_bits = Convert.ToUInt16(cbRSAKeyLength.Text);
-            int key_size_bytes, component_size_bytes;
-            int key_offset = 0;
-            byte[] key;
+            byte obj_type = (byte) cbObjType.SelectedIndex;
+            byte obj_index = Convert.ToByte(cbObjIndex.Text);
             X509Certificate2 cert = null;
 
             if (!(File.Exists(tbCertFile.Text) && Path.HasExtension(tbCertFile.Text)))
@@ -2363,28 +2349,173 @@ namespace EcdsaTest
 
             try
             {
+                Cursor.Current = Cursors.WaitCursor;
+
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+
                 string file_ext = Path.GetExtension(tbCertFile.Text);
 
                 if (file_ext == ".p12" || file_ext == ".pfx")
                 {
-                    frmPassword dlgPasswd = new frmPassword();
-                    if (dlgPasswd.ShowDialog() == DialogResult.OK)
-                    {
-                        cert = new X509Certificate2(tbCertFile.Text, dlgPasswd.password, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
-                    }
+                    cert = new X509Certificate2(tbCertFile.Text, mCertPassword, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
                 }
                 else
                 {
                     cert = new X509Certificate2(tbCertFile.Text);
                 }
 
+                // Should remove any private key from cert:
+                if (cert.HasPrivateKey)
+                {
+                    cert = new X509Certificate2(cert.Export(X509ContentType.Cert));
+                }
+
                 byte[] raw_cert = cert.Export(X509ContentType.Cert);
+                if (raw_cert == null || raw_cert.Length == 0)
+                    throw new Exception("Invalid certificate");
                 byte[] raw_subject = cert.SubjectName.RawData;
-                string subject = cert.Subject;
+                if (raw_subject == null || raw_subject.Length == 0)
+                    throw new Exception("Invalid certificate");
+                byte[] raw_id = Encoding.ASCII.GetBytes(tbObjId.Text);
+                if (raw_id.Length == 0)
+                    throw new Exception("Invalid Id");
+
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppPutObj(obj_type,  obj_index, raw_cert, (UInt16) raw_cert.Length, raw_id, (byte) raw_id.Length);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppPutObjSubject(obj_type, obj_index, raw_subject, (byte)raw_subject.Length);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                MessageBox.Show("The certificate has been successfully stored.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status;
+            byte obj_type, obj_index, max_index;
+            ListView lstv;
+
+            X509Certificate2 cert = null;
+
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+
+                byte[] raw_cert;
+                byte[] raw_id;
+                UInt16 cert_size;
+
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                max_index = 3;
+                for (obj_type = 0; obj_type < 3; obj_type++) {
+
+                    switch (obj_type)
+                    {
+                        case 0:
+                            lstv = lstvRSACerts;
+                            break;
+                        case 1:
+                            lstv = lstvECDSACerts;
+                            break;
+                        default:
+                            lstv = lstvCACerts;
+                            max_index = 12;
+                            break;
+                    }
+
+                    for (obj_index = 0; obj_index < max_index; obj_index++)
+                    {
+                        lstv.Items[obj_index].SubItems[1].Text = "Empty";
+
+                        status = uFCoder.JCAppGetObjId(obj_type, obj_index, out raw_id, out cert_size);
+                        if (status != DL_STATUS.UFR_OK)
+                            continue;
+
+                        raw_cert = new byte[cert_size];
+                        status = uFCoder.JCAppGetObj(obj_type, obj_index, raw_cert);
+                        if (status != DL_STATUS.UFR_OK)
+                            continue;
+
+                        try
+                        {
+                            cert = new X509Certificate2(raw_cert);
+                            lstv.Items[obj_index].SubItems[1].Text = cert.Subject;
+                        }
+                        catch (Exception)
+                        {
+                            continue;
+                        }
+                    }
+
+                    // AutoResizeColumns:
+                    lstv.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                    ListView.ColumnHeaderCollection ccnt = lstv.Columns;
+                    int colWidth = TextRenderer.MeasureText(ccnt[1].Text, lstv.Font).Width + 10;
+                    if (colWidth > ccnt[1].Width)
+                    {
+                        ccnt[1].Width = colWidth;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
             }
         }
 
@@ -2404,11 +2535,14 @@ namespace EcdsaTest
                 cbObjIndex.SelectedIndex = 0;
             }
         }
-        byte cnt = 0;
+
         private void btnShowCert_Click(object sender, EventArgs e)
         {
+            DL_STATUS status;
             byte obj_type;
+            byte obj_index;
             ListView lstv;
+            X509Certificate2 cert = null;
 
             if (sender == btnShowRSACert)
             {
@@ -2426,12 +2560,63 @@ namespace EcdsaTest
                 lstv = lstvCACerts;
             }
             else
-            {
-                MessageBox.Show("Error");
                 return;
-            }
 
-            lstv.Items[cnt++ % 3].SubItems[1].Text = cnt.ToString();
+            try
+            {
+                if (lstv.SelectedIndices.Count == 0)
+                    throw new Exception("No items selected.");
+
+                obj_index = (byte)lstv.SelectedIndices[0];
+
+                Cursor.Current = Cursors.WaitCursor;
+
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+
+                byte[] raw_cert;
+                byte[] raw_id;
+                UInt16 cert_size;
+
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetObjId(obj_type, obj_index, out raw_id, out cert_size);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                raw_cert = new byte[cert_size];
+                status = uFCoder.JCAppGetObj(obj_type, obj_index, raw_cert);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                cert = new X509Certificate2(raw_cert);
+                X509Certificate2UI.DisplayCertificate(cert, this.Handle);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
         }
 
 #if MY_DEBUG
