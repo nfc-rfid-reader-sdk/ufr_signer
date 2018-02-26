@@ -2403,6 +2403,14 @@ namespace EcdsaTest
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
+                if (uFR_Selected)
+                {
+                    uFR_Selected = false;
+                    uFCoder.s_block_deselect(100);
+                }
+
+                btnRefresh_Click(btnRefresh, new EventArgs());
+
                 MessageBox.Show("The certificate has been successfully stored.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -2617,6 +2625,90 @@ namespace EcdsaTest
                 }
                 Cursor.Current = Cursors.Default;
             }
+        }
+
+        private void btnInvalidateCert_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status;
+            byte obj_type;
+            byte obj_index;
+            ListView lstv;
+
+            if (sender == btnInvalidateRSACert)
+            {
+                obj_type = 0;
+                lstv = lstvRSACerts;
+            }
+            else if (sender == btnInvalidateECDSACert)
+            {
+                obj_type = 1;
+                lstv = lstvECDSACerts;
+            }
+            else if (sender == btnInvalidateCACert)
+            {
+                obj_type = 2;
+                lstv = lstvCACerts;
+            }
+            else
+                return;
+
+            try
+            {
+                if (lstv.SelectedIndices.Count == 0)
+                    throw new Exception("No items selected.");
+
+                obj_index = (byte)lstv.SelectedIndices[0];
+
+                Cursor.Current = Cursors.WaitCursor;
+
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppInvalidateCert(obj_type, obj_index);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                if (uFR_Selected)
+                {
+                    uFR_Selected = false;
+                    uFCoder.s_block_deselect(100);
+                }
+
+                btnRefresh_Click(btnRefresh, new EventArgs());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void tabControl_Selected(object sender, TabControlEventArgs e)
+        {
+            if (e.TabPage == tabCardObjects)
+                btnRefresh_Click(btnRefresh, new EventArgs());
         }
 
 #if MY_DEBUG

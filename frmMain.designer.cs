@@ -177,14 +177,12 @@
             this.label6 = new System.Windows.Forms.Label();
             this.tbCertFile = new System.Windows.Forms.TextBox();
             this.gbCACertificates = new System.Windows.Forms.GroupBox();
-            this.btnSaveCACert = new System.Windows.Forms.Button();
             this.btnShowCACert = new System.Windows.Forms.Button();
             this.btnInvalidateCACert = new System.Windows.Forms.Button();
             this.lstvCACerts = new System.Windows.Forms.ListView();
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.gbECDSACertificates = new System.Windows.Forms.GroupBox();
-            this.btnSaveECDSACert = new System.Windows.Forms.Button();
             this.btnShowECDSACert = new System.Windows.Forms.Button();
             this.btnInvalidateECDSACert = new System.Windows.Forms.Button();
             this.lstvECDSACerts = new System.Windows.Forms.ListView();
@@ -194,7 +192,6 @@
             this.lstvRSACerts = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.btnSaveRSACert = new System.Windows.Forms.Button();
             this.btnShowRSACert = new System.Windows.Forms.Button();
             this.btnInvalidateRSACert = new System.Windows.Forms.Button();
             this.tabSignature = new System.Windows.Forms.TabPage();
@@ -271,6 +268,7 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(1142, 600);
             this.tabControl.TabIndex = 0;
+            this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
             // 
             // tabRSAKeys
             // 
@@ -1470,7 +1468,6 @@
             this.gbCACertificates.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbCACertificates.Controls.Add(this.btnSaveCACert);
             this.gbCACertificates.Controls.Add(this.btnShowCACert);
             this.gbCACertificates.Controls.Add(this.btnInvalidateCACert);
             this.gbCACertificates.Controls.Add(this.lstvCACerts);
@@ -1482,20 +1479,10 @@
             this.gbCACertificates.TabStop = false;
             this.gbCACertificates.Text = "CA Certificates:";
             // 
-            // btnSaveCACert
-            // 
-            this.btnSaveCACert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveCACert.Location = new System.Drawing.Point(170, 170);
-            this.btnSaveCACert.Name = "btnSaveCACert";
-            this.btnSaveCACert.Size = new System.Drawing.Size(124, 24);
-            this.btnSaveCACert.TabIndex = 30;
-            this.btnSaveCACert.Text = "Save Selected";
-            this.btnSaveCACert.UseVisualStyleBackColor = true;
-            // 
             // btnShowCACert
             // 
             this.btnShowCACert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnShowCACert.Location = new System.Drawing.Point(40, 170);
+            this.btnShowCACert.Location = new System.Drawing.Point(170, 170);
             this.btnShowCACert.Name = "btnShowCACert";
             this.btnShowCACert.Size = new System.Drawing.Size(124, 24);
             this.btnShowCACert.TabIndex = 29;
@@ -1512,6 +1499,7 @@
             this.btnInvalidateCACert.TabIndex = 28;
             this.btnInvalidateCACert.Text = "Invalidate Selected";
             this.btnInvalidateCACert.UseVisualStyleBackColor = true;
+            this.btnInvalidateCACert.Click += new System.EventHandler(this.btnInvalidateCert_Click);
             // 
             // lstvCACerts
             // 
@@ -1559,7 +1547,6 @@
             // 
             this.gbECDSACertificates.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbECDSACertificates.Controls.Add(this.btnSaveECDSACert);
             this.gbECDSACertificates.Controls.Add(this.btnShowECDSACert);
             this.gbECDSACertificates.Controls.Add(this.btnInvalidateECDSACert);
             this.gbECDSACertificates.Controls.Add(this.lstvECDSACerts);
@@ -1571,20 +1558,10 @@
             this.gbECDSACertificates.TabStop = false;
             this.gbECDSACertificates.Text = "Qualified Certificates for ECDSA keys:";
             // 
-            // btnSaveECDSACert
-            // 
-            this.btnSaveECDSACert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveECDSACert.Location = new System.Drawing.Point(170, 108);
-            this.btnSaveECDSACert.Name = "btnSaveECDSACert";
-            this.btnSaveECDSACert.Size = new System.Drawing.Size(124, 24);
-            this.btnSaveECDSACert.TabIndex = 29;
-            this.btnSaveECDSACert.Text = "Save Selected";
-            this.btnSaveECDSACert.UseVisualStyleBackColor = true;
-            // 
             // btnShowECDSACert
             // 
             this.btnShowECDSACert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnShowECDSACert.Location = new System.Drawing.Point(40, 108);
+            this.btnShowECDSACert.Location = new System.Drawing.Point(170, 108);
             this.btnShowECDSACert.Name = "btnShowECDSACert";
             this.btnShowECDSACert.Size = new System.Drawing.Size(124, 24);
             this.btnShowECDSACert.TabIndex = 28;
@@ -1601,6 +1578,7 @@
             this.btnInvalidateECDSACert.TabIndex = 27;
             this.btnInvalidateECDSACert.Text = "Invalidate Selected";
             this.btnInvalidateECDSACert.UseVisualStyleBackColor = true;
+            this.btnInvalidateECDSACert.Click += new System.EventHandler(this.btnInvalidateCert_Click);
             // 
             // lstvECDSACerts
             // 
@@ -1642,7 +1620,6 @@
             this.gbRSACertificates.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbRSACertificates.Controls.Add(this.lstvRSACerts);
-            this.gbRSACertificates.Controls.Add(this.btnSaveRSACert);
             this.gbRSACertificates.Controls.Add(this.btnShowRSACert);
             this.gbRSACertificates.Controls.Add(this.btnInvalidateRSACert);
             this.gbRSACertificates.Location = new System.Drawing.Point(8, 8);
@@ -1689,20 +1666,10 @@
             // 
             this.columnHeader2.Width = 360;
             // 
-            // btnSaveRSACert
-            // 
-            this.btnSaveRSACert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveRSACert.Location = new System.Drawing.Point(169, 108);
-            this.btnSaveRSACert.Name = "btnSaveRSACert";
-            this.btnSaveRSACert.Size = new System.Drawing.Size(124, 24);
-            this.btnSaveRSACert.TabIndex = 28;
-            this.btnSaveRSACert.Text = "Save Selected";
-            this.btnSaveRSACert.UseVisualStyleBackColor = true;
-            // 
             // btnShowRSACert
             // 
             this.btnShowRSACert.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnShowRSACert.Location = new System.Drawing.Point(39, 108);
+            this.btnShowRSACert.Location = new System.Drawing.Point(169, 108);
             this.btnShowRSACert.Name = "btnShowRSACert";
             this.btnShowRSACert.Size = new System.Drawing.Size(124, 24);
             this.btnShowRSACert.TabIndex = 27;
@@ -1720,6 +1687,7 @@
             this.btnInvalidateRSACert.TabIndex = 26;
             this.btnInvalidateRSACert.Text = "Invalidate Selected";
             this.btnInvalidateRSACert.UseVisualStyleBackColor = true;
+            this.btnInvalidateRSACert.Click += new System.EventHandler(this.btnInvalidateCert_Click);
             // 
             // tabSignature
             // 
@@ -2353,9 +2321,6 @@
         private System.Windows.Forms.Button btnPutCertFromFile;
         private System.Windows.Forms.Label lbId;
         private System.Windows.Forms.TextBox tbObjId;
-        private System.Windows.Forms.Button btnSaveCACert;
-        private System.Windows.Forms.Button btnSaveECDSACert;
-        private System.Windows.Forms.Button btnSaveRSACert;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ListView lstvRSACerts;
