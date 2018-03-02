@@ -165,7 +165,7 @@ namespace EcdsaTest
             cbObjType.SelectedIndex = 0;
             cbObjIndex.SelectedIndex = 0;
 
-            cbDigest.SelectedIndex = 0;
+            cbDigest.SelectedIndex = 1;
             cbCipher.SelectedIndex = 0;
             cbSignatureKeyIndex.SelectedIndex = 0;
             cbHashAlg.SelectedIndex = 0;
@@ -1945,6 +1945,9 @@ namespace EcdsaTest
                 }
                 else if (cbCipher.Text.Equals("ECDSA"))
                 {
+                    if (cbDigest.Text == "None")
+                        throw new Exception("\"None\" digest algorithm not supported with ECDSA for now.");
+
                     isECDSACipher = true;
                     jc_signer_cipher = (byte)JCDL_SIGNER_CIPHERS.SIG_CIPHER_ECDSA;
                     jc_signer_padding = (byte)JCDL_SIGNER_PADDINGS.PAD_NULL;
@@ -1952,7 +1955,9 @@ namespace EcdsaTest
 
                 switch (cbDigest.Text)
                 {
-                    //(byte)JC_SIGNER_ALG.ALG_ECDSA_NONE;
+                    case "None":
+                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
+                        break;
                     case "SHA-1":
                         jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA;
                         break;
