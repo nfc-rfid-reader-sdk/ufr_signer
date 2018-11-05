@@ -1,4 +1,4 @@
-﻿namespace EcdsaTest
+﻿namespace uFRSigner
 {
     partial class frmMain
     {
@@ -84,6 +84,9 @@
             "Empty"}, -1);
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabRSAKeys = new System.Windows.Forms.TabPage();
+            this.gpPrivateKeyMode = new System.Windows.Forms.GroupBox();
+            this.rbCRT = new System.Windows.Forms.RadioButton();
+            this.rbModExp = new System.Windows.Forms.RadioButton();
             this.gbRSAPub = new System.Windows.Forms.GroupBox();
             this.lbRSAPubExp = new System.Windows.Forms.Label();
             this.tbRSAPubExp = new System.Windows.Forms.TextBox();
@@ -103,20 +106,30 @@
             this.lbRSAPrivExp = new System.Windows.Forms.Label();
             this.tbRSAPrivExp = new System.Windows.Forms.TextBox();
             this.tbRSAPrivP = new System.Windows.Forms.TextBox();
-            this.gpPrivateKeyMode = new System.Windows.Forms.GroupBox();
-            this.rbCRT = new System.Windows.Forms.RadioButton();
-            this.rbModExp = new System.Windows.Forms.RadioButton();
             this.gbRSACommands = new System.Windows.Forms.GroupBox();
-            this.btnRestoreRSAPriv = new System.Windows.Forms.Button();
-            this.btnBackupRSAPriv = new System.Windows.Forms.Button();
+            this.btnGetRSAPublic = new System.Windows.Forms.Button();
+            this.btnRsaCsr = new System.Windows.Forms.Button();
+            this.btnMkRSAKeyOnCard = new System.Windows.Forms.Button();
             this.btnSaveRSAPub = new System.Windows.Forms.Button();
-            this.btnStoreRSAPriv = new System.Windows.Forms.Button();
-            this.btnMkRSAKey = new System.Windows.Forms.Button();
             this.cbRSAKeyLength = new System.Windows.Forms.ComboBox();
             this.cbRSAKeyIndex = new System.Windows.Forms.ComboBox();
             this.lbRSAKeyLength = new System.Windows.Forms.Label();
             this.lbRSAKeyIndex = new System.Windows.Forms.Label();
+            this.tabHidden = new System.Windows.Forms.TabPage();
+            this.gbHiddenEC = new System.Windows.Forms.GroupBox();
+            this.btnStoreECPriv = new System.Windows.Forms.Button();
+            this.btnRestoreECPriv = new System.Windows.Forms.Button();
+            this.btnBackupECPriv = new System.Windows.Forms.Button();
+            this.btnMkECKey = new System.Windows.Forms.Button();
+            this.btnECImportP12 = new System.Windows.Forms.Button();
+            this.lbHiddenEC = new System.Windows.Forms.Label();
+            this.gbHiddenRSA = new System.Windows.Forms.GroupBox();
+            this.btnMkRSAKey = new System.Windows.Forms.Button();
             this.btnRSAImportP12 = new System.Windows.Forms.Button();
+            this.btnBackupRSAPriv = new System.Windows.Forms.Button();
+            this.btnRestoreRSAPriv = new System.Windows.Forms.Button();
+            this.btnStoreRSAPriv = new System.Windows.Forms.Button();
+            this.lbHiddenRSA = new System.Windows.Forms.Label();
             this.tabECKeys = new System.Windows.Forms.TabPage();
             this.gbECPubKey = new System.Windows.Forms.GroupBox();
             this.lbECPubKey = new System.Windows.Forms.Label();
@@ -149,18 +162,59 @@
             this.lbECParamPrime = new System.Windows.Forms.Label();
             this.tbECParamPrime = new System.Windows.Forms.TextBox();
             this.gbECCommands = new System.Windows.Forms.GroupBox();
-            this.btnRestoreECPriv = new System.Windows.Forms.Button();
-            this.btnBackupECPriv = new System.Windows.Forms.Button();
+            this.btnGetECPublicKey = new System.Windows.Forms.Button();
+            this.btnEcdsaCsr = new System.Windows.Forms.Button();
+            this.btnMkECKeyOnCard = new System.Windows.Forms.Button();
             this.cbECName = new System.Windows.Forms.ComboBox();
             this.lbECName = new System.Windows.Forms.Label();
             this.btnSaveECPub = new System.Windows.Forms.Button();
-            this.btnStoreECPriv = new System.Windows.Forms.Button();
-            this.btnMkECKey = new System.Windows.Forms.Button();
             this.cbECKeyLength = new System.Windows.Forms.ComboBox();
             this.cbECKeyIndex = new System.Windows.Forms.ComboBox();
             this.lbECKeyLength = new System.Windows.Forms.Label();
             this.lbECKeyIndex = new System.Windows.Forms.Label();
-            this.btnECImportP12 = new System.Windows.Forms.Button();
+            this.tabPinCodes = new System.Windows.Forms.TabPage();
+            this.lbAttention = new System.Windows.Forms.Label();
+            this.btnRefreshTriesRemaining = new System.Windows.Forms.Button();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.lbNewPukAgain = new System.Windows.Forms.Label();
+            this.tbNewPukAgain = new System.Windows.Forms.TextBox();
+            this.lbNewPuk = new System.Windows.Forms.Label();
+            this.tbNewPuk = new System.Windows.Forms.TextBox();
+            this.btnChangePuk = new System.Windows.Forms.Button();
+            this.btnUnblockUserPin = new System.Windows.Forms.Button();
+            this.lbPuk = new System.Windows.Forms.Label();
+            this.tbPuk = new System.Windows.Forms.TextBox();
+            this.lbPukTriesRemaining = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.lbNewSOPukAgain = new System.Windows.Forms.Label();
+            this.tbNewSOPukAgain = new System.Windows.Forms.TextBox();
+            this.lbNewSOPuk = new System.Windows.Forms.Label();
+            this.tbNewSOPuk = new System.Windows.Forms.TextBox();
+            this.btnChangeSOPuk = new System.Windows.Forms.Button();
+            this.btnUnblockSOPin = new System.Windows.Forms.Button();
+            this.lbSOPuk = new System.Windows.Forms.Label();
+            this.tbSOPuk = new System.Windows.Forms.TextBox();
+            this.lbPukSOTriesRemaining = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.lbNewPinAgain = new System.Windows.Forms.Label();
+            this.tbNewPinAgain = new System.Windows.Forms.TextBox();
+            this.lbNewPin = new System.Windows.Forms.Label();
+            this.tbNewPin = new System.Windows.Forms.TextBox();
+            this.btnChangeUserPin = new System.Windows.Forms.Button();
+            this.btnUserLogin = new System.Windows.Forms.Button();
+            this.lbPin = new System.Windows.Forms.Label();
+            this.tbPin = new System.Windows.Forms.TextBox();
+            this.lbPinTriesRemaining = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lbNewSOPinAgain = new System.Windows.Forms.Label();
+            this.tbNewSOPinAgain = new System.Windows.Forms.TextBox();
+            this.lbNewSOPin = new System.Windows.Forms.Label();
+            this.tbNewSOPin = new System.Windows.Forms.TextBox();
+            this.lbPinSOTriesRemaining = new System.Windows.Forms.Label();
+            this.btnChangeSOPin = new System.Windows.Forms.Button();
+            this.btnSOLogin = new System.Windows.Forms.Button();
+            this.lbSOPin = new System.Windows.Forms.Label();
+            this.tbSOPin = new System.Windows.Forms.TextBox();
             this.tabCardObjects = new System.Windows.Forms.TabPage();
             this.gbOperations = new System.Windows.Forms.GroupBox();
             this.btnRefresh = new System.Windows.Forms.Button();
@@ -205,6 +259,7 @@
             this.lbHash = new System.Windows.Forms.Label();
             this.tbHash = new System.Windows.Forms.TextBox();
             this.gbSignature = new System.Windows.Forms.GroupBox();
+            this.lbECDSASignatureAttention = new System.Windows.Forms.Label();
             this.pbSigning = new System.Windows.Forms.ProgressBar();
             this.btnSignature = new System.Windows.Forms.Button();
             this.btnSignatureStoreToBin = new System.Windows.Forms.Button();
@@ -230,11 +285,14 @@
             this.llbDLogicURL = new System.Windows.Forms.LinkLabel();
             this.tabControl.SuspendLayout();
             this.tabRSAKeys.SuspendLayout();
+            this.gpPrivateKeyMode.SuspendLayout();
             this.gbRSAPub.SuspendLayout();
             this.gbRSAModulus.SuspendLayout();
             this.gbRSAPriv.SuspendLayout();
-            this.gpPrivateKeyMode.SuspendLayout();
             this.gbRSACommands.SuspendLayout();
+            this.tabHidden.SuspendLayout();
+            this.gbHiddenEC.SuspendLayout();
+            this.gbHiddenRSA.SuspendLayout();
             this.tabECKeys.SuspendLayout();
             this.gbECPubKey.SuspendLayout();
             this.gbECPrivKey.SuspendLayout();
@@ -242,6 +300,11 @@
             this.gbECReductionPolynomial.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.gbECCommands.SuspendLayout();
+            this.tabPinCodes.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tabCardObjects.SuspendLayout();
             this.gbOperations.SuspendLayout();
             this.gbCACertificates.SuspendLayout();
@@ -260,7 +323,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabRSAKeys);
+            this.tabControl.Controls.Add(this.tabHidden);
             this.tabControl.Controls.Add(this.tabECKeys);
+            this.tabControl.Controls.Add(this.tabPinCodes);
             this.tabControl.Controls.Add(this.tabCardObjects);
             this.tabControl.Controls.Add(this.tabSignature);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
@@ -274,6 +339,7 @@
             // 
             this.tabRSAKeys.BackColor = System.Drawing.SystemColors.Control;
             this.tabRSAKeys.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabRSAKeys.Controls.Add(this.gpPrivateKeyMode);
             this.tabRSAKeys.Controls.Add(this.gbRSAPub);
             this.tabRSAKeys.Controls.Add(this.gbRSAModulus);
             this.tabRSAKeys.Controls.Add(this.gbRSAPriv);
@@ -286,17 +352,52 @@
             this.tabRSAKeys.TabIndex = 0;
             this.tabRSAKeys.Text = "RSA Keys";
             // 
+            // gpPrivateKeyMode
+            // 
+            this.gpPrivateKeyMode.Controls.Add(this.rbCRT);
+            this.gpPrivateKeyMode.Controls.Add(this.rbModExp);
+            this.gpPrivateKeyMode.Location = new System.Drawing.Point(8, 221);
+            this.gpPrivateKeyMode.Name = "gpPrivateKeyMode";
+            this.gpPrivateKeyMode.Size = new System.Drawing.Size(1116, 88);
+            this.gpPrivateKeyMode.TabIndex = 4;
+            this.gpPrivateKeyMode.TabStop = false;
+            this.gpPrivateKeyMode.Text = "Private key mode:";
+            // 
+            // rbCRT
+            // 
+            this.rbCRT.AutoSize = true;
+            this.rbCRT.Checked = true;
+            this.rbCRT.Location = new System.Drawing.Point(12, 26);
+            this.rbCRT.Margin = new System.Windows.Forms.Padding(10);
+            this.rbCRT.Name = "rbCRT";
+            this.rbCRT.Size = new System.Drawing.Size(162, 17);
+            this.rbCRT.TabIndex = 0;
+            this.rbCRT.TabStop = true;
+            this.rbCRT.Text = "Chinese Remainder Theorem";
+            this.rbCRT.UseVisualStyleBackColor = true;
+            // 
+            // rbModExp
+            // 
+            this.rbModExp.AutoSize = true;
+            this.rbModExp.Location = new System.Drawing.Point(12, 53);
+            this.rbModExp.Margin = new System.Windows.Forms.Padding(0);
+            this.rbModExp.Name = "rbModExp";
+            this.rbModExp.Size = new System.Drawing.Size(115, 17);
+            this.rbModExp.TabIndex = 1;
+            this.rbModExp.Text = "Modulus/Exponent";
+            this.rbModExp.UseVisualStyleBackColor = true;
+            // 
             // gbRSAPub
             // 
             this.gbRSAPub.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbRSAPub.Controls.Add(this.lbRSAPubExp);
             this.gbRSAPub.Controls.Add(this.tbRSAPubExp);
-            this.gbRSAPub.Location = new System.Drawing.Point(8, 381);
+            this.gbRSAPub.Location = new System.Drawing.Point(8, 153);
             this.gbRSAPub.Margin = new System.Windows.Forms.Padding(8);
             this.gbRSAPub.Name = "gbRSAPub";
             this.gbRSAPub.Size = new System.Drawing.Size(1116, 60);
-            this.gbRSAPub.TabIndex = 3;
+            this.gbRSAPub.TabIndex = 2;
             this.gbRSAPub.TabStop = false;
             this.gbRSAPub.Text = "Public Key";
             // 
@@ -374,13 +475,13 @@
             this.gbRSAPriv.Controls.Add(this.lbRSAPrivExp);
             this.gbRSAPriv.Controls.Add(this.tbRSAPrivExp);
             this.gbRSAPriv.Controls.Add(this.tbRSAPrivP);
-            this.gbRSAPriv.Controls.Add(this.gpPrivateKeyMode);
-            this.gbRSAPriv.Location = new System.Drawing.Point(8, 153);
+            this.gbRSAPriv.Location = new System.Drawing.Point(8, 317);
             this.gbRSAPriv.Margin = new System.Windows.Forms.Padding(0);
             this.gbRSAPriv.Name = "gbRSAPriv";
             this.gbRSAPriv.Size = new System.Drawing.Size(1116, 220);
-            this.gbRSAPriv.TabIndex = 2;
+            this.gbRSAPriv.TabIndex = 3;
             this.gbRSAPriv.TabStop = false;
+            this.gbRSAPriv.Text = "Private key:";
             // 
             // lbRSAPrivP
             // 
@@ -510,56 +611,18 @@
             this.tbRSAPrivP.Size = new System.Drawing.Size(870, 22);
             this.tbRSAPrivP.TabIndex = 2;
             // 
-            // gpPrivateKeyMode
-            // 
-            this.gpPrivateKeyMode.Controls.Add(this.rbCRT);
-            this.gpPrivateKeyMode.Controls.Add(this.rbModExp);
-            this.gpPrivateKeyMode.Location = new System.Drawing.Point(10, 14);
-            this.gpPrivateKeyMode.Name = "gpPrivateKeyMode";
-            this.gpPrivateKeyMode.Size = new System.Drawing.Size(180, 88);
-            this.gpPrivateKeyMode.TabIndex = 0;
-            this.gpPrivateKeyMode.TabStop = false;
-            this.gpPrivateKeyMode.Text = "Private key mode:";
-            // 
-            // rbCRT
-            // 
-            this.rbCRT.AutoSize = true;
-            this.rbCRT.Checked = true;
-            this.rbCRT.Location = new System.Drawing.Point(12, 26);
-            this.rbCRT.Margin = new System.Windows.Forms.Padding(10);
-            this.rbCRT.Name = "rbCRT";
-            this.rbCRT.Size = new System.Drawing.Size(162, 17);
-            this.rbCRT.TabIndex = 0;
-            this.rbCRT.TabStop = true;
-            this.rbCRT.Text = "Chinese Remainder Theorem";
-            this.rbCRT.UseVisualStyleBackColor = true;
-            this.rbCRT.CheckedChanged += new System.EventHandler(this.rbCRT_CheckedChanged);
-            // 
-            // rbModExp
-            // 
-            this.rbModExp.AutoSize = true;
-            this.rbModExp.Location = new System.Drawing.Point(12, 53);
-            this.rbModExp.Margin = new System.Windows.Forms.Padding(0);
-            this.rbModExp.Name = "rbModExp";
-            this.rbModExp.Size = new System.Drawing.Size(115, 17);
-            this.rbModExp.TabIndex = 1;
-            this.rbModExp.Text = "Modulus/Exponent";
-            this.rbModExp.UseVisualStyleBackColor = true;
-            // 
             // gbRSACommands
             // 
             this.gbRSACommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbRSACommands.Controls.Add(this.btnRestoreRSAPriv);
-            this.gbRSACommands.Controls.Add(this.btnBackupRSAPriv);
+            this.gbRSACommands.Controls.Add(this.btnGetRSAPublic);
+            this.gbRSACommands.Controls.Add(this.btnRsaCsr);
+            this.gbRSACommands.Controls.Add(this.btnMkRSAKeyOnCard);
             this.gbRSACommands.Controls.Add(this.btnSaveRSAPub);
-            this.gbRSACommands.Controls.Add(this.btnStoreRSAPriv);
-            this.gbRSACommands.Controls.Add(this.btnMkRSAKey);
             this.gbRSACommands.Controls.Add(this.cbRSAKeyLength);
             this.gbRSACommands.Controls.Add(this.cbRSAKeyIndex);
             this.gbRSACommands.Controls.Add(this.lbRSAKeyLength);
             this.gbRSACommands.Controls.Add(this.lbRSAKeyIndex);
-            this.gbRSACommands.Controls.Add(this.btnRSAImportP12);
             this.gbRSACommands.Location = new System.Drawing.Point(8, 0);
             this.gbRSACommands.Margin = new System.Windows.Forms.Padding(8);
             this.gbRSACommands.Name = "gbRSACommands";
@@ -567,64 +630,49 @@
             this.gbRSACommands.TabIndex = 0;
             this.gbRSACommands.TabStop = false;
             // 
-            // btnRestoreRSAPriv
+            // btnGetRSAPublic
             // 
-            this.btnRestoreRSAPriv.Location = new System.Drawing.Point(573, 43);
-            this.btnRestoreRSAPriv.Margin = new System.Windows.Forms.Padding(0);
-            this.btnRestoreRSAPriv.Name = "btnRestoreRSAPriv";
-            this.btnRestoreRSAPriv.Size = new System.Drawing.Size(160, 21);
-            this.btnRestoreRSAPriv.TabIndex = 9;
-            this.btnRestoreRSAPriv.Text = "Restore private key from pem";
-            this.btnRestoreRSAPriv.UseVisualStyleBackColor = true;
-            this.btnRestoreRSAPriv.Click += new System.EventHandler(this.btnRestoreRSAPriv_Click);
+            this.btnGetRSAPublic.Location = new System.Drawing.Point(412, 16);
+            this.btnGetRSAPublic.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
+            this.btnGetRSAPublic.Name = "btnGetRSAPublic";
+            this.btnGetRSAPublic.Size = new System.Drawing.Size(111, 47);
+            this.btnGetRSAPublic.TabIndex = 3;
+            this.btnGetRSAPublic.Text = "Get RSA Public Key From Card";
+            this.btnGetRSAPublic.UseVisualStyleBackColor = true;
+            this.btnGetRSAPublic.Click += new System.EventHandler(this.btnGetRSAPublic_Click);
             // 
-            // btnBackupRSAPriv
+            // btnRsaCsr
             // 
-            this.btnBackupRSAPriv.BackColor = System.Drawing.SystemColors.Control;
-            this.btnBackupRSAPriv.Location = new System.Drawing.Point(573, 16);
-            this.btnBackupRSAPriv.Margin = new System.Windows.Forms.Padding(0);
-            this.btnBackupRSAPriv.Name = "btnBackupRSAPriv";
-            this.btnBackupRSAPriv.Size = new System.Drawing.Size(160, 21);
-            this.btnBackupRSAPriv.TabIndex = 8;
-            this.btnBackupRSAPriv.Text = "Backup private key to pem";
-            this.btnBackupRSAPriv.UseVisualStyleBackColor = true;
-            this.btnBackupRSAPriv.Click += new System.EventHandler(this.btnBackupRSAPriv_Click);
+            this.btnRsaCsr.Location = new System.Drawing.Point(699, 16);
+            this.btnRsaCsr.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
+            this.btnRsaCsr.Name = "btnRsaCsr";
+            this.btnRsaCsr.Size = new System.Drawing.Size(116, 47);
+            this.btnRsaCsr.TabIndex = 5;
+            this.btnRsaCsr.Text = "Create CSR for RSA key";
+            this.btnRsaCsr.UseVisualStyleBackColor = true;
+            this.btnRsaCsr.Click += new System.EventHandler(this.btnRsaCsr_Click);
+            // 
+            // btnMkRSAKeyOnCard
+            // 
+            this.btnMkRSAKeyOnCard.Location = new System.Drawing.Point(233, 16);
+            this.btnMkRSAKeyOnCard.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
+            this.btnMkRSAKeyOnCard.Name = "btnMkRSAKeyOnCard";
+            this.btnMkRSAKeyOnCard.Size = new System.Drawing.Size(171, 47);
+            this.btnMkRSAKeyOnCard.TabIndex = 2;
+            this.btnMkRSAKeyOnCard.Text = "Generate RSA key pair (on-card)";
+            this.btnMkRSAKeyOnCard.UseVisualStyleBackColor = true;
+            this.btnMkRSAKeyOnCard.Click += new System.EventHandler(this.btnMkRSAKeyOnCard_Click);
             // 
             // btnSaveRSAPub
             // 
-            this.btnSaveRSAPub.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveRSAPub.Location = new System.Drawing.Point(943, 42);
-            this.btnSaveRSAPub.Margin = new System.Windows.Forms.Padding(10);
+            this.btnSaveRSAPub.Location = new System.Drawing.Point(531, 16);
+            this.btnSaveRSAPub.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
             this.btnSaveRSAPub.Name = "btnSaveRSAPub";
-            this.btnSaveRSAPub.Size = new System.Drawing.Size(160, 21);
-            this.btnSaveRSAPub.TabIndex = 7;
+            this.btnSaveRSAPub.Size = new System.Drawing.Size(160, 47);
+            this.btnSaveRSAPub.TabIndex = 4;
             this.btnSaveRSAPub.Text = "Save RSA public key to pem";
             this.btnSaveRSAPub.UseVisualStyleBackColor = true;
             this.btnSaveRSAPub.Click += new System.EventHandler(this.btnSaveRSAPub_Click);
-            // 
-            // btnStoreRSAPriv
-            // 
-            this.btnStoreRSAPriv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStoreRSAPriv.BackColor = System.Drawing.Color.Azure;
-            this.btnStoreRSAPriv.Location = new System.Drawing.Point(943, 15);
-            this.btnStoreRSAPriv.Margin = new System.Windows.Forms.Padding(10);
-            this.btnStoreRSAPriv.Name = "btnStoreRSAPriv";
-            this.btnStoreRSAPriv.Size = new System.Drawing.Size(160, 21);
-            this.btnStoreRSAPriv.TabIndex = 6;
-            this.btnStoreRSAPriv.Text = "Store RSA private key to card";
-            this.btnStoreRSAPriv.UseVisualStyleBackColor = false;
-            this.btnStoreRSAPriv.Click += new System.EventHandler(this.btnStoreRSAPriv_Click);
-            // 
-            // btnMkRSAKey
-            // 
-            this.btnMkRSAKey.Location = new System.Drawing.Point(403, 15);
-            this.btnMkRSAKey.Margin = new System.Windows.Forms.Padding(10);
-            this.btnMkRSAKey.Name = "btnMkRSAKey";
-            this.btnMkRSAKey.Size = new System.Drawing.Size(160, 48);
-            this.btnMkRSAKey.TabIndex = 1;
-            this.btnMkRSAKey.Text = "Generate RSA key pair (off-card)";
-            this.btnMkRSAKey.UseVisualStyleBackColor = true;
-            this.btnMkRSAKey.Click += new System.EventHandler(this.btnMkRSAKey_Click);
             // 
             // cbRSAKeyLength
             // 
@@ -644,7 +692,7 @@
             this.cbRSAKeyLength.Location = new System.Drawing.Point(99, 16);
             this.cbRSAKeyLength.Name = "cbRSAKeyLength";
             this.cbRSAKeyLength.Size = new System.Drawing.Size(121, 21);
-            this.cbRSAKeyLength.TabIndex = 3;
+            this.cbRSAKeyLength.TabIndex = 1;
             // 
             // cbRSAKeyIndex
             // 
@@ -655,10 +703,10 @@
             "0",
             "1",
             "2"});
-            this.cbRSAKeyIndex.Location = new System.Drawing.Point(880, 16);
+            this.cbRSAKeyIndex.Location = new System.Drawing.Point(1053, 16);
             this.cbRSAKeyIndex.Name = "cbRSAKeyIndex";
             this.cbRSAKeyIndex.Size = new System.Drawing.Size(50, 21);
-            this.cbRSAKeyIndex.TabIndex = 5;
+            this.cbRSAKeyIndex.TabIndex = 7;
             // 
             // lbRSAKeyLength
             // 
@@ -666,29 +714,204 @@
             this.lbRSAKeyLength.Location = new System.Drawing.Point(8, 19);
             this.lbRSAKeyLength.Name = "lbRSAKeyLength";
             this.lbRSAKeyLength.Size = new System.Drawing.Size(85, 13);
-            this.lbRSAKeyLength.TabIndex = 2;
+            this.lbRSAKeyLength.TabIndex = 0;
             this.lbRSAKeyLength.Text = "Key length [bits]:";
             // 
             // lbRSAKeyIndex
             // 
             this.lbRSAKeyIndex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lbRSAKeyIndex.AutoSize = true;
-            this.lbRSAKeyIndex.Location = new System.Drawing.Point(777, 19);
+            this.lbRSAKeyIndex.Location = new System.Drawing.Point(950, 19);
             this.lbRSAKeyIndex.Name = "lbRSAKeyIndex";
             this.lbRSAKeyIndex.Size = new System.Drawing.Size(97, 13);
-            this.lbRSAKeyIndex.TabIndex = 4;
+            this.lbRSAKeyIndex.TabIndex = 6;
             this.lbRSAKeyIndex.Text = "Key index (in card):";
+            // 
+            // tabHidden
+            // 
+            this.tabHidden.BackColor = System.Drawing.SystemColors.Control;
+            this.tabHidden.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabHidden.Controls.Add(this.gbHiddenEC);
+            this.tabHidden.Controls.Add(this.gbHiddenRSA);
+            this.tabHidden.Location = new System.Drawing.Point(4, 22);
+            this.tabHidden.Name = "tabHidden";
+            this.tabHidden.Padding = new System.Windows.Forms.Padding(3);
+            this.tabHidden.Size = new System.Drawing.Size(1134, 574);
+            this.tabHidden.TabIndex = 6;
+            this.tabHidden.Text = "Hidden Key Options";
+            // 
+            // gbHiddenEC
+            // 
+            this.gbHiddenEC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbHiddenEC.Controls.Add(this.btnStoreECPriv);
+            this.gbHiddenEC.Controls.Add(this.btnRestoreECPriv);
+            this.gbHiddenEC.Controls.Add(this.btnBackupECPriv);
+            this.gbHiddenEC.Controls.Add(this.btnMkECKey);
+            this.gbHiddenEC.Controls.Add(this.btnECImportP12);
+            this.gbHiddenEC.Controls.Add(this.lbHiddenEC);
+            this.gbHiddenEC.Location = new System.Drawing.Point(7, 136);
+            this.gbHiddenEC.Margin = new System.Windows.Forms.Padding(8);
+            this.gbHiddenEC.Name = "gbHiddenEC";
+            this.gbHiddenEC.Size = new System.Drawing.Size(1116, 109);
+            this.gbHiddenEC.TabIndex = 1;
+            this.gbHiddenEC.TabStop = false;
+            this.gbHiddenEC.Text = "Hidden EC Key Options:";
+            // 
+            // btnStoreECPriv
+            // 
+            this.btnStoreECPriv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnStoreECPriv.BackColor = System.Drawing.Color.Azure;
+            this.btnStoreECPriv.Location = new System.Drawing.Point(724, 47);
+            this.btnStoreECPriv.Margin = new System.Windows.Forms.Padding(10);
+            this.btnStoreECPriv.Name = "btnStoreECPriv";
+            this.btnStoreECPriv.Size = new System.Drawing.Size(160, 47);
+            this.btnStoreECPriv.TabIndex = 5;
+            this.btnStoreECPriv.Text = "Store EC private key to card";
+            this.btnStoreECPriv.UseVisualStyleBackColor = false;
+            this.btnStoreECPriv.Click += new System.EventHandler(this.btnStoreECPriv_Click);
+            // 
+            // btnRestoreECPriv
+            // 
+            this.btnRestoreECPriv.Location = new System.Drawing.Point(554, 47);
+            this.btnRestoreECPriv.Margin = new System.Windows.Forms.Padding(0);
+            this.btnRestoreECPriv.Name = "btnRestoreECPriv";
+            this.btnRestoreECPriv.Size = new System.Drawing.Size(160, 47);
+            this.btnRestoreECPriv.TabIndex = 4;
+            this.btnRestoreECPriv.Text = "Restore private key from pem";
+            this.btnRestoreECPriv.UseVisualStyleBackColor = true;
+            this.btnRestoreECPriv.Click += new System.EventHandler(this.btnRestoreECPriv_Click);
+            // 
+            // btnBackupECPriv
+            // 
+            this.btnBackupECPriv.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.btnBackupECPriv.Location = new System.Drawing.Point(363, 47);
+            this.btnBackupECPriv.Margin = new System.Windows.Forms.Padding(0);
+            this.btnBackupECPriv.Name = "btnBackupECPriv";
+            this.btnBackupECPriv.Size = new System.Drawing.Size(181, 47);
+            this.btnBackupECPriv.TabIndex = 3;
+            this.btnBackupECPriv.Text = "Backup private key to pem";
+            this.btnBackupECPriv.UseVisualStyleBackColor = true;
+            this.btnBackupECPriv.Click += new System.EventHandler(this.btnBackupECPriv_Click);
+            // 
+            // btnMkECKey
+            // 
+            this.btnMkECKey.Location = new System.Drawing.Point(13, 47);
+            this.btnMkECKey.Margin = new System.Windows.Forms.Padding(10);
+            this.btnMkECKey.Name = "btnMkECKey";
+            this.btnMkECKey.Size = new System.Drawing.Size(171, 47);
+            this.btnMkECKey.TabIndex = 1;
+            this.btnMkECKey.Text = "Generate EC key pair (off-card)";
+            this.btnMkECKey.UseVisualStyleBackColor = true;
+            this.btnMkECKey.Click += new System.EventHandler(this.btnMkECKey_Click);
+            // 
+            // btnECImportP12
+            // 
+            this.btnECImportP12.Location = new System.Drawing.Point(193, 47);
+            this.btnECImportP12.Margin = new System.Windows.Forms.Padding(10);
+            this.btnECImportP12.Name = "btnECImportP12";
+            this.btnECImportP12.Size = new System.Drawing.Size(160, 47);
+            this.btnECImportP12.TabIndex = 2;
+            this.btnECImportP12.Text = "Import from PKCS#12 file    (.p12 ;  .pfx)";
+            this.btnECImportP12.UseVisualStyleBackColor = true;
+            this.btnECImportP12.Click += new System.EventHandler(this.btnECImportP12_Click);
+            // 
+            // lbHiddenEC
+            // 
+            this.lbHiddenEC.AutoSize = true;
+            this.lbHiddenEC.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lbHiddenEC.ForeColor = System.Drawing.Color.Blue;
+            this.lbHiddenEC.Location = new System.Drawing.Point(8, 21);
+            this.lbHiddenEC.Name = "lbHiddenEC";
+            this.lbHiddenEC.Size = new System.Drawing.Size(446, 16);
+            this.lbHiddenEC.TabIndex = 0;
+            this.lbHiddenEC.Text = "ATTENTION: EC Keys data and index are on the \"EC Keys\" Tab";
+            // 
+            // gbHiddenRSA
+            // 
+            this.gbHiddenRSA.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbHiddenRSA.Controls.Add(this.btnMkRSAKey);
+            this.gbHiddenRSA.Controls.Add(this.btnRSAImportP12);
+            this.gbHiddenRSA.Controls.Add(this.btnBackupRSAPriv);
+            this.gbHiddenRSA.Controls.Add(this.btnRestoreRSAPriv);
+            this.gbHiddenRSA.Controls.Add(this.btnStoreRSAPriv);
+            this.gbHiddenRSA.Controls.Add(this.lbHiddenRSA);
+            this.gbHiddenRSA.Location = new System.Drawing.Point(7, 11);
+            this.gbHiddenRSA.Margin = new System.Windows.Forms.Padding(8);
+            this.gbHiddenRSA.Name = "gbHiddenRSA";
+            this.gbHiddenRSA.Size = new System.Drawing.Size(1116, 109);
+            this.gbHiddenRSA.TabIndex = 0;
+            this.gbHiddenRSA.TabStop = false;
+            this.gbHiddenRSA.Text = "Hidden RSA Key Options:";
+            // 
+            // btnMkRSAKey
+            // 
+            this.btnMkRSAKey.Location = new System.Drawing.Point(13, 47);
+            this.btnMkRSAKey.Margin = new System.Windows.Forms.Padding(10);
+            this.btnMkRSAKey.Name = "btnMkRSAKey";
+            this.btnMkRSAKey.Size = new System.Drawing.Size(171, 47);
+            this.btnMkRSAKey.TabIndex = 1;
+            this.btnMkRSAKey.Text = "Generate RSA key pair (off-card)";
+            this.btnMkRSAKey.UseVisualStyleBackColor = true;
+            this.btnMkRSAKey.Click += new System.EventHandler(this.btnMkRSAKey_Click);
             // 
             // btnRSAImportP12
             // 
-            this.btnRSAImportP12.Location = new System.Drawing.Point(233, 15);
+            this.btnRSAImportP12.Location = new System.Drawing.Point(193, 47);
             this.btnRSAImportP12.Margin = new System.Windows.Forms.Padding(10);
             this.btnRSAImportP12.Name = "btnRSAImportP12";
-            this.btnRSAImportP12.Size = new System.Drawing.Size(160, 48);
-            this.btnRSAImportP12.TabIndex = 0;
+            this.btnRSAImportP12.Size = new System.Drawing.Size(160, 47);
+            this.btnRSAImportP12.TabIndex = 2;
             this.btnRSAImportP12.Text = "Import from PKCS#12 file    (.p12 ;  .pfx)";
             this.btnRSAImportP12.UseVisualStyleBackColor = true;
             this.btnRSAImportP12.Click += new System.EventHandler(this.btnRSAImportP12_Click);
+            // 
+            // btnBackupRSAPriv
+            // 
+            this.btnBackupRSAPriv.BackColor = System.Drawing.SystemColors.Control;
+            this.btnBackupRSAPriv.Location = new System.Drawing.Point(363, 47);
+            this.btnBackupRSAPriv.Margin = new System.Windows.Forms.Padding(0);
+            this.btnBackupRSAPriv.Name = "btnBackupRSAPriv";
+            this.btnBackupRSAPriv.Size = new System.Drawing.Size(181, 47);
+            this.btnBackupRSAPriv.TabIndex = 3;
+            this.btnBackupRSAPriv.Text = "Backup private key to pem";
+            this.btnBackupRSAPriv.UseVisualStyleBackColor = true;
+            this.btnBackupRSAPriv.Click += new System.EventHandler(this.btnBackupRSAPriv_Click);
+            // 
+            // btnRestoreRSAPriv
+            // 
+            this.btnRestoreRSAPriv.Location = new System.Drawing.Point(554, 47);
+            this.btnRestoreRSAPriv.Margin = new System.Windows.Forms.Padding(0);
+            this.btnRestoreRSAPriv.Name = "btnRestoreRSAPriv";
+            this.btnRestoreRSAPriv.Size = new System.Drawing.Size(160, 47);
+            this.btnRestoreRSAPriv.TabIndex = 4;
+            this.btnRestoreRSAPriv.Text = "Restore private key from pem";
+            this.btnRestoreRSAPriv.UseVisualStyleBackColor = true;
+            this.btnRestoreRSAPriv.Click += new System.EventHandler(this.btnRestoreRSAPriv_Click);
+            // 
+            // btnStoreRSAPriv
+            // 
+            this.btnStoreRSAPriv.BackColor = System.Drawing.Color.Azure;
+            this.btnStoreRSAPriv.Location = new System.Drawing.Point(724, 47);
+            this.btnStoreRSAPriv.Margin = new System.Windows.Forms.Padding(10);
+            this.btnStoreRSAPriv.Name = "btnStoreRSAPriv";
+            this.btnStoreRSAPriv.Size = new System.Drawing.Size(160, 47);
+            this.btnStoreRSAPriv.TabIndex = 5;
+            this.btnStoreRSAPriv.Text = "Store RSA private key to card";
+            this.btnStoreRSAPriv.UseVisualStyleBackColor = false;
+            this.btnStoreRSAPriv.Click += new System.EventHandler(this.btnStoreRSAPriv_Click);
+            // 
+            // lbHiddenRSA
+            // 
+            this.lbHiddenRSA.AutoSize = true;
+            this.lbHiddenRSA.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lbHiddenRSA.ForeColor = System.Drawing.Color.Blue;
+            this.lbHiddenRSA.Location = new System.Drawing.Point(8, 21);
+            this.lbHiddenRSA.Name = "lbHiddenRSA";
+            this.lbHiddenRSA.Size = new System.Drawing.Size(468, 16);
+            this.lbHiddenRSA.TabIndex = 0;
+            this.lbHiddenRSA.Text = "ATTENTION: RSA Keys data and index are on the \"RSA Keys\" Tab";
             // 
             // tabECKeys
             // 
@@ -711,11 +934,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbECPubKey.Controls.Add(this.lbECPubKey);
             this.gbECPubKey.Controls.Add(this.tbECPubKey);
-            this.gbECPubKey.Location = new System.Drawing.Point(8, 443);
+            this.gbECPubKey.Location = new System.Drawing.Point(8, 373);
             this.gbECPubKey.Margin = new System.Windows.Forms.Padding(0);
             this.gbECPubKey.Name = "gbECPubKey";
             this.gbECPubKey.Size = new System.Drawing.Size(1116, 104);
-            this.gbECPubKey.TabIndex = 6;
+            this.gbECPubKey.TabIndex = 2;
             this.gbECPubKey.TabStop = false;
             this.gbECPubKey.Text = "EC public key:";
             // 
@@ -726,7 +949,7 @@
             this.lbECPubKey.Margin = new System.Windows.Forms.Padding(3);
             this.lbECPubKey.Name = "lbECPubKey";
             this.lbECPubKey.Size = new System.Drawing.Size(39, 13);
-            this.lbECPubKey.TabIndex = 17;
+            this.lbECPubKey.TabIndex = 0;
             this.lbECPubKey.Text = "W(uc):";
             // 
             // tbECPubKey
@@ -740,7 +963,7 @@
             this.tbECPubKey.Name = "tbECPubKey";
             this.tbECPubKey.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this.tbECPubKey.Size = new System.Drawing.Size(1049, 65);
-            this.tbECPubKey.TabIndex = 18;
+            this.tbECPubKey.TabIndex = 1;
             // 
             // gbECPrivKey
             // 
@@ -748,11 +971,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbECPrivKey.Controls.Add(this.lbECPrivKey);
             this.gbECPrivKey.Controls.Add(this.tbECPrivKey);
-            this.gbECPrivKey.Location = new System.Drawing.Point(8, 373);
+            this.gbECPrivKey.Location = new System.Drawing.Point(8, 485);
             this.gbECPrivKey.Margin = new System.Windows.Forms.Padding(8);
             this.gbECPrivKey.Name = "gbECPrivKey";
             this.gbECPrivKey.Size = new System.Drawing.Size(1116, 62);
-            this.gbECPrivKey.TabIndex = 5;
+            this.gbECPrivKey.TabIndex = 3;
             this.gbECPrivKey.TabStop = false;
             this.gbECPrivKey.Text = "EC private key:";
             // 
@@ -799,7 +1022,7 @@
             this.gbECDomainParameters.Margin = new System.Windows.Forms.Padding(0);
             this.gbECDomainParameters.Name = "gbECDomainParameters";
             this.gbECDomainParameters.Size = new System.Drawing.Size(1116, 283);
-            this.gbECDomainParameters.TabIndex = 4;
+            this.gbECDomainParameters.TabIndex = 1;
             this.gbECDomainParameters.TabStop = false;
             this.gbECDomainParameters.Text = "EC domain parameters:";
             // 
@@ -810,7 +1033,7 @@
             this.lbECParamK.Margin = new System.Windows.Forms.Padding(3);
             this.lbECParamK.Name = "lbECParamK";
             this.lbECParamK.Size = new System.Drawing.Size(17, 13);
-            this.lbECParamK.TabIndex = 19;
+            this.lbECParamK.TabIndex = 12;
             this.lbECParamK.Text = "K:";
             // 
             // tbECParamK
@@ -822,7 +1045,7 @@
             this.tbECParamK.Name = "tbECParamK";
             this.tbECParamK.ReadOnly = true;
             this.tbECParamK.Size = new System.Drawing.Size(139, 22);
-            this.tbECParamK.TabIndex = 20;
+            this.tbECParamK.TabIndex = 13;
             // 
             // lbECParamR
             // 
@@ -831,7 +1054,7 @@
             this.lbECParamR.Margin = new System.Windows.Forms.Padding(3);
             this.lbECParamR.Name = "lbECParamR";
             this.lbECParamR.Size = new System.Drawing.Size(18, 13);
-            this.lbECParamR.TabIndex = 17;
+            this.lbECParamR.TabIndex = 10;
             this.lbECParamR.Text = "R:";
             // 
             // tbECParamR
@@ -845,7 +1068,7 @@
             this.tbECParamR.Name = "tbECParamR";
             this.tbECParamR.ReadOnly = true;
             this.tbECParamR.Size = new System.Drawing.Size(819, 22);
-            this.tbECParamR.TabIndex = 18;
+            this.tbECParamR.TabIndex = 11;
             // 
             // lbECParamG
             // 
@@ -854,7 +1077,7 @@
             this.lbECParamG.Margin = new System.Windows.Forms.Padding(3);
             this.lbECParamG.Name = "lbECParamG";
             this.lbECParamG.Size = new System.Drawing.Size(36, 13);
-            this.lbECParamG.TabIndex = 15;
+            this.lbECParamG.TabIndex = 8;
             this.lbECParamG.Text = "G(uc):";
             // 
             // tbECParamG
@@ -870,7 +1093,7 @@
             this.tbECParamG.ReadOnly = true;
             this.tbECParamG.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this.tbECParamG.Size = new System.Drawing.Size(819, 65);
-            this.tbECParamG.TabIndex = 16;
+            this.tbECParamG.TabIndex = 9;
             // 
             // lbECParamB
             // 
@@ -879,7 +1102,7 @@
             this.lbECParamB.Margin = new System.Windows.Forms.Padding(3);
             this.lbECParamB.Name = "lbECParamB";
             this.lbECParamB.Size = new System.Drawing.Size(16, 13);
-            this.lbECParamB.TabIndex = 13;
+            this.lbECParamB.TabIndex = 5;
             this.lbECParamB.Text = "b:";
             // 
             // tbECParamB
@@ -893,7 +1116,7 @@
             this.tbECParamB.Name = "tbECParamB";
             this.tbECParamB.ReadOnly = true;
             this.tbECParamB.Size = new System.Drawing.Size(870, 22);
-            this.tbECParamB.TabIndex = 14;
+            this.tbECParamB.TabIndex = 6;
             // 
             // ltbECParamA
             // 
@@ -902,7 +1125,7 @@
             this.ltbECParamA.Margin = new System.Windows.Forms.Padding(3);
             this.ltbECParamA.Name = "ltbECParamA";
             this.ltbECParamA.Size = new System.Drawing.Size(16, 13);
-            this.ltbECParamA.TabIndex = 11;
+            this.ltbECParamA.TabIndex = 3;
             this.ltbECParamA.Text = "a:";
             // 
             // tbECParamA
@@ -916,7 +1139,7 @@
             this.tbECParamA.Name = "tbECParamA";
             this.tbECParamA.ReadOnly = true;
             this.tbECParamA.Size = new System.Drawing.Size(870, 22);
-            this.tbECParamA.TabIndex = 12;
+            this.tbECParamA.TabIndex = 4;
             // 
             // gbECReductionPolynomial
             // 
@@ -932,7 +1155,7 @@
             this.gbECReductionPolynomial.Margin = new System.Windows.Forms.Padding(8);
             this.gbECReductionPolynomial.Name = "gbECReductionPolynomial";
             this.gbECReductionPolynomial.Size = new System.Drawing.Size(220, 151);
-            this.gbECReductionPolynomial.TabIndex = 10;
+            this.gbECReductionPolynomial.TabIndex = 7;
             this.gbECReductionPolynomial.TabStop = false;
             this.gbECReductionPolynomial.Text = "Reduction polynomial:";
             // 
@@ -946,7 +1169,7 @@
             this.rtbECReductionPolynomial.ReadOnly = true;
             this.rtbECReductionPolynomial.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
             this.rtbECReductionPolynomial.Size = new System.Drawing.Size(202, 29);
-            this.rtbECReductionPolynomial.TabIndex = 17;
+            this.rtbECReductionPolynomial.TabIndex = 0;
             this.rtbECReductionPolynomial.Text = " f(x) = ";
             // 
             // lbECParamE3
@@ -956,7 +1179,7 @@
             this.lbECParamE3.Margin = new System.Windows.Forms.Padding(3);
             this.lbECParamE3.Name = "lbECParamE3";
             this.lbECParamE3.Size = new System.Drawing.Size(22, 13);
-            this.lbECParamE3.TabIndex = 15;
+            this.lbECParamE3.TabIndex = 5;
             this.lbECParamE3.Text = "e3:";
             // 
             // tbECParamE3
@@ -968,7 +1191,7 @@
             this.tbECParamE3.Name = "tbECParamE3";
             this.tbECParamE3.ReadOnly = true;
             this.tbECParamE3.Size = new System.Drawing.Size(139, 22);
-            this.tbECParamE3.TabIndex = 16;
+            this.tbECParamE3.TabIndex = 6;
             // 
             // lbECParamE2
             // 
@@ -977,7 +1200,7 @@
             this.lbECParamE2.Margin = new System.Windows.Forms.Padding(3);
             this.lbECParamE2.Name = "lbECParamE2";
             this.lbECParamE2.Size = new System.Drawing.Size(22, 13);
-            this.lbECParamE2.TabIndex = 13;
+            this.lbECParamE2.TabIndex = 3;
             this.lbECParamE2.Text = "e2:";
             // 
             // tbECParamE2
@@ -989,7 +1212,7 @@
             this.tbECParamE2.Name = "tbECParamE2";
             this.tbECParamE2.ReadOnly = true;
             this.tbECParamE2.Size = new System.Drawing.Size(139, 22);
-            this.tbECParamE2.TabIndex = 14;
+            this.tbECParamE2.TabIndex = 4;
             // 
             // lbECParamE1
             // 
@@ -998,7 +1221,7 @@
             this.lbECParamE1.Margin = new System.Windows.Forms.Padding(3);
             this.lbECParamE1.Name = "lbECParamE1";
             this.lbECParamE1.Size = new System.Drawing.Size(22, 13);
-            this.lbECParamE1.TabIndex = 11;
+            this.lbECParamE1.TabIndex = 1;
             this.lbECParamE1.Text = "e1:";
             // 
             // tbECParamE1
@@ -1010,7 +1233,7 @@
             this.tbECParamE1.Name = "tbECParamE1";
             this.tbECParamE1.ReadOnly = true;
             this.tbECParamE1.Size = new System.Drawing.Size(139, 22);
-            this.tbECParamE1.TabIndex = 12;
+            this.tbECParamE1.TabIndex = 2;
             // 
             // groupBox1
             // 
@@ -1021,7 +1244,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(0);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(180, 88);
-            this.groupBox1.TabIndex = 2;
+            this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "EC over field:";
             // 
@@ -1058,7 +1281,7 @@
             this.lbECParamPrime.Margin = new System.Windows.Forms.Padding(3);
             this.lbECParamPrime.Name = "lbECParamPrime";
             this.lbECParamPrime.Size = new System.Drawing.Size(16, 13);
-            this.lbECParamPrime.TabIndex = 0;
+            this.lbECParamPrime.TabIndex = 1;
             this.lbECParamPrime.Text = "p:";
             // 
             // tbECParamPrime
@@ -1072,53 +1295,61 @@
             this.tbECParamPrime.Name = "tbECParamPrime";
             this.tbECParamPrime.ReadOnly = true;
             this.tbECParamPrime.Size = new System.Drawing.Size(870, 22);
-            this.tbECParamPrime.TabIndex = 1;
+            this.tbECParamPrime.TabIndex = 2;
             // 
             // gbECCommands
             // 
             this.gbECCommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbECCommands.Controls.Add(this.btnRestoreECPriv);
-            this.gbECCommands.Controls.Add(this.btnBackupECPriv);
+            this.gbECCommands.Controls.Add(this.btnGetECPublicKey);
+            this.gbECCommands.Controls.Add(this.btnEcdsaCsr);
+            this.gbECCommands.Controls.Add(this.btnMkECKeyOnCard);
             this.gbECCommands.Controls.Add(this.cbECName);
             this.gbECCommands.Controls.Add(this.lbECName);
             this.gbECCommands.Controls.Add(this.btnSaveECPub);
-            this.gbECCommands.Controls.Add(this.btnStoreECPriv);
-            this.gbECCommands.Controls.Add(this.btnMkECKey);
             this.gbECCommands.Controls.Add(this.cbECKeyLength);
             this.gbECCommands.Controls.Add(this.cbECKeyIndex);
             this.gbECCommands.Controls.Add(this.lbECKeyLength);
             this.gbECCommands.Controls.Add(this.lbECKeyIndex);
-            this.gbECCommands.Controls.Add(this.btnECImportP12);
             this.gbECCommands.Location = new System.Drawing.Point(8, 0);
             this.gbECCommands.Margin = new System.Windows.Forms.Padding(8);
             this.gbECCommands.Name = "gbECCommands";
             this.gbECCommands.Size = new System.Drawing.Size(1116, 74);
-            this.gbECCommands.TabIndex = 1;
+            this.gbECCommands.TabIndex = 0;
             this.gbECCommands.TabStop = false;
             // 
-            // btnRestoreECPriv
+            // btnGetECPublicKey
             // 
-            this.btnRestoreECPriv.Location = new System.Drawing.Point(573, 43);
-            this.btnRestoreECPriv.Margin = new System.Windows.Forms.Padding(0);
-            this.btnRestoreECPriv.Name = "btnRestoreECPriv";
-            this.btnRestoreECPriv.Size = new System.Drawing.Size(160, 21);
-            this.btnRestoreECPriv.TabIndex = 11;
-            this.btnRestoreECPriv.Text = "Restore private key from pem";
-            this.btnRestoreECPriv.UseVisualStyleBackColor = true;
-            this.btnRestoreECPriv.Click += new System.EventHandler(this.btnRestoreECPriv_Click);
+            this.btnGetECPublicKey.Location = new System.Drawing.Point(412, 16);
+            this.btnGetECPublicKey.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
+            this.btnGetECPublicKey.Name = "btnGetECPublicKey";
+            this.btnGetECPublicKey.Size = new System.Drawing.Size(111, 47);
+            this.btnGetECPublicKey.TabIndex = 5;
+            this.btnGetECPublicKey.Text = "Get EC Public Key From Card";
+            this.btnGetECPublicKey.UseVisualStyleBackColor = true;
+            this.btnGetECPublicKey.Click += new System.EventHandler(this.btnGetECPublicKey_Click);
             // 
-            // btnBackupECPriv
+            // btnEcdsaCsr
             // 
-            this.btnBackupECPriv.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.btnBackupECPriv.Location = new System.Drawing.Point(573, 16);
-            this.btnBackupECPriv.Margin = new System.Windows.Forms.Padding(0);
-            this.btnBackupECPriv.Name = "btnBackupECPriv";
-            this.btnBackupECPriv.Size = new System.Drawing.Size(160, 21);
-            this.btnBackupECPriv.TabIndex = 10;
-            this.btnBackupECPriv.Text = "Backup private key to pem";
-            this.btnBackupECPriv.UseVisualStyleBackColor = true;
-            this.btnBackupECPriv.Click += new System.EventHandler(this.btnBackupECPriv_Click);
+            this.btnEcdsaCsr.Location = new System.Drawing.Point(699, 16);
+            this.btnEcdsaCsr.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
+            this.btnEcdsaCsr.Name = "btnEcdsaCsr";
+            this.btnEcdsaCsr.Size = new System.Drawing.Size(116, 47);
+            this.btnEcdsaCsr.TabIndex = 7;
+            this.btnEcdsaCsr.Text = "Create CSR for EC key";
+            this.btnEcdsaCsr.UseVisualStyleBackColor = true;
+            this.btnEcdsaCsr.Click += new System.EventHandler(this.btnEcdsaCsr_Click);
+            // 
+            // btnMkECKeyOnCard
+            // 
+            this.btnMkECKeyOnCard.Location = new System.Drawing.Point(233, 16);
+            this.btnMkECKeyOnCard.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
+            this.btnMkECKeyOnCard.Name = "btnMkECKeyOnCard";
+            this.btnMkECKeyOnCard.Size = new System.Drawing.Size(171, 47);
+            this.btnMkECKeyOnCard.TabIndex = 4;
+            this.btnMkECKeyOnCard.Text = "Generate EC key pair (on-card)";
+            this.btnMkECKeyOnCard.UseVisualStyleBackColor = true;
+            this.btnMkECKeyOnCard.Click += new System.EventHandler(this.btnMkECKeyOnCard_Click);
             // 
             // cbECName
             // 
@@ -1164,7 +1395,7 @@
             this.cbECName.Margin = new System.Windows.Forms.Padding(2);
             this.cbECName.Name = "cbECName";
             this.cbECName.Size = new System.Drawing.Size(122, 21);
-            this.cbECName.TabIndex = 9;
+            this.cbECName.TabIndex = 1;
             this.cbECName.SelectedIndexChanged += new System.EventHandler(this.cbECName_SelectedIndexChanged);
             // 
             // lbECName
@@ -1173,44 +1404,19 @@
             this.lbECName.Location = new System.Drawing.Point(8, 19);
             this.lbECName.Name = "lbECName";
             this.lbECName.Size = new System.Drawing.Size(67, 13);
-            this.lbECName.TabIndex = 8;
+            this.lbECName.TabIndex = 0;
             this.lbECName.Text = "Curve name:";
             // 
             // btnSaveECPub
             // 
-            this.btnSaveECPub.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveECPub.Location = new System.Drawing.Point(943, 42);
-            this.btnSaveECPub.Margin = new System.Windows.Forms.Padding(10);
+            this.btnSaveECPub.Location = new System.Drawing.Point(531, 16);
+            this.btnSaveECPub.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
             this.btnSaveECPub.Name = "btnSaveECPub";
-            this.btnSaveECPub.Size = new System.Drawing.Size(160, 21);
-            this.btnSaveECPub.TabIndex = 7;
+            this.btnSaveECPub.Size = new System.Drawing.Size(160, 47);
+            this.btnSaveECPub.TabIndex = 6;
             this.btnSaveECPub.Text = "Save EC public key to pem";
             this.btnSaveECPub.UseVisualStyleBackColor = true;
             this.btnSaveECPub.Click += new System.EventHandler(this.btnSaveECPub_Click);
-            // 
-            // btnStoreECPriv
-            // 
-            this.btnStoreECPriv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStoreECPriv.BackColor = System.Drawing.Color.Azure;
-            this.btnStoreECPriv.Location = new System.Drawing.Point(943, 15);
-            this.btnStoreECPriv.Margin = new System.Windows.Forms.Padding(10);
-            this.btnStoreECPriv.Name = "btnStoreECPriv";
-            this.btnStoreECPriv.Size = new System.Drawing.Size(160, 21);
-            this.btnStoreECPriv.TabIndex = 6;
-            this.btnStoreECPriv.Text = "Store EC private key to card";
-            this.btnStoreECPriv.UseVisualStyleBackColor = false;
-            this.btnStoreECPriv.Click += new System.EventHandler(this.btnStoreECPriv_Click);
-            // 
-            // btnMkECKey
-            // 
-            this.btnMkECKey.Location = new System.Drawing.Point(403, 15);
-            this.btnMkECKey.Margin = new System.Windows.Forms.Padding(10);
-            this.btnMkECKey.Name = "btnMkECKey";
-            this.btnMkECKey.Size = new System.Drawing.Size(160, 48);
-            this.btnMkECKey.TabIndex = 1;
-            this.btnMkECKey.Text = "Generate EC key pair (off-card)";
-            this.btnMkECKey.UseVisualStyleBackColor = true;
-            this.btnMkECKey.Click += new System.EventHandler(this.btnMkECKey_Click);
             // 
             // cbECKeyLength
             // 
@@ -1249,10 +1455,10 @@
             "0",
             "1",
             "2"});
-            this.cbECKeyIndex.Location = new System.Drawing.Point(880, 16);
+            this.cbECKeyIndex.Location = new System.Drawing.Point(1052, 16);
             this.cbECKeyIndex.Name = "cbECKeyIndex";
             this.cbECKeyIndex.Size = new System.Drawing.Size(50, 21);
-            this.cbECKeyIndex.TabIndex = 5;
+            this.cbECKeyIndex.TabIndex = 9;
             // 
             // lbECKeyLength
             // 
@@ -1267,22 +1473,554 @@
             // 
             this.lbECKeyIndex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lbECKeyIndex.AutoSize = true;
-            this.lbECKeyIndex.Location = new System.Drawing.Point(777, 19);
+            this.lbECKeyIndex.Location = new System.Drawing.Point(949, 19);
             this.lbECKeyIndex.Name = "lbECKeyIndex";
             this.lbECKeyIndex.Size = new System.Drawing.Size(97, 13);
-            this.lbECKeyIndex.TabIndex = 4;
+            this.lbECKeyIndex.TabIndex = 8;
             this.lbECKeyIndex.Text = "Key index (in card):";
             // 
-            // btnECImportP12
+            // tabPinCodes
             // 
-            this.btnECImportP12.Location = new System.Drawing.Point(233, 15);
-            this.btnECImportP12.Margin = new System.Windows.Forms.Padding(10);
-            this.btnECImportP12.Name = "btnECImportP12";
-            this.btnECImportP12.Size = new System.Drawing.Size(160, 48);
-            this.btnECImportP12.TabIndex = 0;
-            this.btnECImportP12.Text = "Import from PKCS#12 file    (.p12 ;  .pfx)";
-            this.btnECImportP12.UseVisualStyleBackColor = true;
-            this.btnECImportP12.Click += new System.EventHandler(this.btnECImportP12_Click);
+            this.tabPinCodes.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPinCodes.Controls.Add(this.lbAttention);
+            this.tabPinCodes.Controls.Add(this.btnRefreshTriesRemaining);
+            this.tabPinCodes.Controls.Add(this.groupBox5);
+            this.tabPinCodes.Controls.Add(this.groupBox4);
+            this.tabPinCodes.Controls.Add(this.groupBox3);
+            this.tabPinCodes.Controls.Add(this.groupBox2);
+            this.tabPinCodes.Location = new System.Drawing.Point(4, 22);
+            this.tabPinCodes.Name = "tabPinCodes";
+            this.tabPinCodes.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPinCodes.Size = new System.Drawing.Size(1134, 574);
+            this.tabPinCodes.TabIndex = 5;
+            this.tabPinCodes.Text = "PIN Codes";
+            // 
+            // lbAttention
+            // 
+            this.lbAttention.AutoSize = true;
+            this.lbAttention.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lbAttention.ForeColor = System.Drawing.Color.Red;
+            this.lbAttention.Location = new System.Drawing.Point(8, 444);
+            this.lbAttention.Name = "lbAttention";
+            this.lbAttention.Size = new System.Drawing.Size(543, 16);
+            this.lbAttention.TabIndex = 4;
+            this.lbAttention.Text = "ATTENTION: After successful login don\'t change PIN (SO PIN) input text fields";
+            // 
+            // btnRefreshTriesRemaining
+            // 
+            this.btnRefreshTriesRemaining.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefreshTriesRemaining.BackColor = System.Drawing.Color.Ivory;
+            this.btnRefreshTriesRemaining.Location = new System.Drawing.Point(901, 430);
+            this.btnRefreshTriesRemaining.Name = "btnRefreshTriesRemaining";
+            this.btnRefreshTriesRemaining.Size = new System.Drawing.Size(222, 45);
+            this.btnRefreshTriesRemaining.TabIndex = 5;
+            this.btnRefreshTriesRemaining.Text = "Refresh tries remaining";
+            this.btnRefreshTriesRemaining.UseVisualStyleBackColor = false;
+            this.btnRefreshTriesRemaining.Click += new System.EventHandler(this.btnRefreshTriesRemaining_Click);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.lbNewPukAgain);
+            this.groupBox5.Controls.Add(this.tbNewPukAgain);
+            this.groupBox5.Controls.Add(this.lbNewPuk);
+            this.groupBox5.Controls.Add(this.tbNewPuk);
+            this.groupBox5.Controls.Add(this.btnChangePuk);
+            this.groupBox5.Controls.Add(this.btnUnblockUserPin);
+            this.groupBox5.Controls.Add(this.lbPuk);
+            this.groupBox5.Controls.Add(this.tbPuk);
+            this.groupBox5.Controls.Add(this.lbPukTriesRemaining);
+            this.groupBox5.Location = new System.Drawing.Point(575, 224);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(8);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(548, 195);
+            this.groupBox5.TabIndex = 3;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "User Personal Unblocking Code (PUK):";
+            // 
+            // lbNewPukAgain
+            // 
+            this.lbNewPukAgain.AutoSize = true;
+            this.lbNewPukAgain.Location = new System.Drawing.Point(18, 94);
+            this.lbNewPukAgain.Margin = new System.Windows.Forms.Padding(3);
+            this.lbNewPukAgain.Name = "lbNewPukAgain";
+            this.lbNewPukAgain.Size = new System.Drawing.Size(92, 13);
+            this.lbNewPukAgain.TabIndex = 4;
+            this.lbNewPukAgain.Text = "New PUK (again):";
+            // 
+            // tbNewPukAgain
+            // 
+            this.tbNewPukAgain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbNewPukAgain.BackColor = System.Drawing.SystemColors.Window;
+            this.tbNewPukAgain.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbNewPukAgain.Location = new System.Drawing.Point(139, 91);
+            this.tbNewPukAgain.Margin = new System.Windows.Forms.Padding(10);
+            this.tbNewPukAgain.MaxLength = 8;
+            this.tbNewPukAgain.Name = "tbNewPukAgain";
+            this.tbNewPukAgain.PasswordChar = '*';
+            this.tbNewPukAgain.Size = new System.Drawing.Size(227, 22);
+            this.tbNewPukAgain.TabIndex = 5;
+            this.tbNewPukAgain.TextChanged += new System.EventHandler(this.tbNewPuk_TextChanged);
+            // 
+            // lbNewPuk
+            // 
+            this.lbNewPuk.AutoSize = true;
+            this.lbNewPuk.Location = new System.Drawing.Point(18, 62);
+            this.lbNewPuk.Margin = new System.Windows.Forms.Padding(3);
+            this.lbNewPuk.Name = "lbNewPuk";
+            this.lbNewPuk.Size = new System.Drawing.Size(57, 13);
+            this.lbNewPuk.TabIndex = 2;
+            this.lbNewPuk.Text = "New PUK:";
+            // 
+            // tbNewPuk
+            // 
+            this.tbNewPuk.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbNewPuk.BackColor = System.Drawing.SystemColors.Window;
+            this.tbNewPuk.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbNewPuk.Location = new System.Drawing.Point(139, 59);
+            this.tbNewPuk.Margin = new System.Windows.Forms.Padding(10);
+            this.tbNewPuk.MaxLength = 8;
+            this.tbNewPuk.Name = "tbNewPuk";
+            this.tbNewPuk.PasswordChar = '*';
+            this.tbNewPuk.Size = new System.Drawing.Size(227, 22);
+            this.tbNewPuk.TabIndex = 3;
+            this.tbNewPuk.TextChanged += new System.EventHandler(this.tbNewPuk_TextChanged);
+            // 
+            // btnChangePuk
+            // 
+            this.btnChangePuk.Enabled = false;
+            this.btnChangePuk.Location = new System.Drawing.Point(388, 59);
+            this.btnChangePuk.Name = "btnChangePuk";
+            this.btnChangePuk.Size = new System.Drawing.Size(138, 24);
+            this.btnChangePuk.TabIndex = 7;
+            this.btnChangePuk.Text = "Change PUK";
+            this.btnChangePuk.UseVisualStyleBackColor = true;
+            // 
+            // btnUnblockUserPin
+            // 
+            this.btnUnblockUserPin.Enabled = false;
+            this.btnUnblockUserPin.Location = new System.Drawing.Point(388, 26);
+            this.btnUnblockUserPin.Name = "btnUnblockUserPin";
+            this.btnUnblockUserPin.Size = new System.Drawing.Size(138, 24);
+            this.btnUnblockUserPin.TabIndex = 6;
+            this.btnUnblockUserPin.Text = "Unblock PIN";
+            this.btnUnblockUserPin.UseVisualStyleBackColor = true;
+            this.btnUnblockUserPin.Click += new System.EventHandler(this.btnUnblockUserPin_Click);
+            // 
+            // lbPuk
+            // 
+            this.lbPuk.AutoSize = true;
+            this.lbPuk.Location = new System.Drawing.Point(18, 29);
+            this.lbPuk.Margin = new System.Windows.Forms.Padding(3);
+            this.lbPuk.Name = "lbPuk";
+            this.lbPuk.Size = new System.Drawing.Size(32, 13);
+            this.lbPuk.TabIndex = 0;
+            this.lbPuk.Text = "PUK:";
+            // 
+            // tbPuk
+            // 
+            this.tbPuk.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbPuk.BackColor = System.Drawing.SystemColors.Window;
+            this.tbPuk.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbPuk.Location = new System.Drawing.Point(139, 26);
+            this.tbPuk.Margin = new System.Windows.Forms.Padding(10);
+            this.tbPuk.MaxLength = 8;
+            this.tbPuk.Name = "tbPuk";
+            this.tbPuk.PasswordChar = '*';
+            this.tbPuk.Size = new System.Drawing.Size(227, 22);
+            this.tbPuk.TabIndex = 1;
+            this.tbPuk.TextChanged += new System.EventHandler(this.tbPuk_TextChanged);
+            // 
+            // lbPukTriesRemaining
+            // 
+            this.lbPukTriesRemaining.AutoSize = true;
+            this.lbPukTriesRemaining.Location = new System.Drawing.Point(20, 171);
+            this.lbPukTriesRemaining.Name = "lbPukTriesRemaining";
+            this.lbPukTriesRemaining.Size = new System.Drawing.Size(10, 13);
+            this.lbPukTriesRemaining.TabIndex = 8;
+            this.lbPukTriesRemaining.Text = "-";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.lbNewSOPukAgain);
+            this.groupBox4.Controls.Add(this.tbNewSOPukAgain);
+            this.groupBox4.Controls.Add(this.lbNewSOPuk);
+            this.groupBox4.Controls.Add(this.tbNewSOPuk);
+            this.groupBox4.Controls.Add(this.btnChangeSOPuk);
+            this.groupBox4.Controls.Add(this.btnUnblockSOPin);
+            this.groupBox4.Controls.Add(this.lbSOPuk);
+            this.groupBox4.Controls.Add(this.tbSOPuk);
+            this.groupBox4.Controls.Add(this.lbPukSOTriesRemaining);
+            this.groupBox4.Location = new System.Drawing.Point(11, 224);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(8);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(548, 195);
+            this.groupBox4.TabIndex = 2;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Security Officer (SO) Personal Unblocking Code (SO PUK):";
+            // 
+            // lbNewSOPukAgain
+            // 
+            this.lbNewSOPukAgain.AutoSize = true;
+            this.lbNewSOPukAgain.Location = new System.Drawing.Point(20, 95);
+            this.lbNewSOPukAgain.Margin = new System.Windows.Forms.Padding(3);
+            this.lbNewSOPukAgain.Name = "lbNewSOPukAgain";
+            this.lbNewSOPukAgain.Size = new System.Drawing.Size(110, 13);
+            this.lbNewSOPukAgain.TabIndex = 4;
+            this.lbNewSOPukAgain.Text = "New SO PUK (again):";
+            // 
+            // tbNewSOPukAgain
+            // 
+            this.tbNewSOPukAgain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbNewSOPukAgain.BackColor = System.Drawing.SystemColors.Window;
+            this.tbNewSOPukAgain.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbNewSOPukAgain.Location = new System.Drawing.Point(139, 92);
+            this.tbNewSOPukAgain.Margin = new System.Windows.Forms.Padding(10);
+            this.tbNewSOPukAgain.MaxLength = 8;
+            this.tbNewSOPukAgain.Name = "tbNewSOPukAgain";
+            this.tbNewSOPukAgain.PasswordChar = '*';
+            this.tbNewSOPukAgain.Size = new System.Drawing.Size(229, 22);
+            this.tbNewSOPukAgain.TabIndex = 5;
+            this.tbNewSOPukAgain.TextChanged += new System.EventHandler(this.tbNewSOPuk_TextChanged);
+            // 
+            // lbNewSOPuk
+            // 
+            this.lbNewSOPuk.AutoSize = true;
+            this.lbNewSOPuk.Location = new System.Drawing.Point(20, 62);
+            this.lbNewSOPuk.Margin = new System.Windows.Forms.Padding(3);
+            this.lbNewSOPuk.Name = "lbNewSOPuk";
+            this.lbNewSOPuk.Size = new System.Drawing.Size(75, 13);
+            this.lbNewSOPuk.TabIndex = 2;
+            this.lbNewSOPuk.Text = "New SO PUK:";
+            // 
+            // tbNewSOPuk
+            // 
+            this.tbNewSOPuk.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbNewSOPuk.BackColor = System.Drawing.SystemColors.Window;
+            this.tbNewSOPuk.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbNewSOPuk.Location = new System.Drawing.Point(139, 59);
+            this.tbNewSOPuk.Margin = new System.Windows.Forms.Padding(10);
+            this.tbNewSOPuk.MaxLength = 8;
+            this.tbNewSOPuk.Name = "tbNewSOPuk";
+            this.tbNewSOPuk.PasswordChar = '*';
+            this.tbNewSOPuk.Size = new System.Drawing.Size(229, 22);
+            this.tbNewSOPuk.TabIndex = 3;
+            this.tbNewSOPuk.TextChanged += new System.EventHandler(this.tbNewSOPuk_TextChanged);
+            // 
+            // btnChangeSOPuk
+            // 
+            this.btnChangeSOPuk.Enabled = false;
+            this.btnChangeSOPuk.Location = new System.Drawing.Point(390, 59);
+            this.btnChangeSOPuk.Name = "btnChangeSOPuk";
+            this.btnChangeSOPuk.Size = new System.Drawing.Size(138, 24);
+            this.btnChangeSOPuk.TabIndex = 7;
+            this.btnChangeSOPuk.Text = "Change SO PUK";
+            this.btnChangeSOPuk.UseVisualStyleBackColor = true;
+            // 
+            // btnUnblockSOPin
+            // 
+            this.btnUnblockSOPin.Enabled = false;
+            this.btnUnblockSOPin.Location = new System.Drawing.Point(390, 26);
+            this.btnUnblockSOPin.Name = "btnUnblockSOPin";
+            this.btnUnblockSOPin.Size = new System.Drawing.Size(138, 24);
+            this.btnUnblockSOPin.TabIndex = 6;
+            this.btnUnblockSOPin.Text = "Unblock SO PIN";
+            this.btnUnblockSOPin.UseVisualStyleBackColor = true;
+            this.btnUnblockSOPin.Click += new System.EventHandler(this.btnUnblockSOPin_Click);
+            // 
+            // lbSOPuk
+            // 
+            this.lbSOPuk.AutoSize = true;
+            this.lbSOPuk.Location = new System.Drawing.Point(20, 29);
+            this.lbSOPuk.Margin = new System.Windows.Forms.Padding(3);
+            this.lbSOPuk.Name = "lbSOPuk";
+            this.lbSOPuk.Size = new System.Drawing.Size(50, 13);
+            this.lbSOPuk.TabIndex = 0;
+            this.lbSOPuk.Text = "SO PUK:";
+            // 
+            // tbSOPuk
+            // 
+            this.tbSOPuk.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbSOPuk.BackColor = System.Drawing.SystemColors.Window;
+            this.tbSOPuk.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbSOPuk.Location = new System.Drawing.Point(139, 26);
+            this.tbSOPuk.Margin = new System.Windows.Forms.Padding(10);
+            this.tbSOPuk.MaxLength = 8;
+            this.tbSOPuk.Name = "tbSOPuk";
+            this.tbSOPuk.PasswordChar = '*';
+            this.tbSOPuk.Size = new System.Drawing.Size(229, 22);
+            this.tbSOPuk.TabIndex = 1;
+            this.tbSOPuk.TextChanged += new System.EventHandler(this.tbSOPuk_TextChanged);
+            // 
+            // lbPukSOTriesRemaining
+            // 
+            this.lbPukSOTriesRemaining.AutoSize = true;
+            this.lbPukSOTriesRemaining.Location = new System.Drawing.Point(20, 171);
+            this.lbPukSOTriesRemaining.Name = "lbPukSOTriesRemaining";
+            this.lbPukSOTriesRemaining.Size = new System.Drawing.Size(10, 13);
+            this.lbPukSOTriesRemaining.TabIndex = 8;
+            this.lbPukSOTriesRemaining.Text = "-";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.lbNewPinAgain);
+            this.groupBox3.Controls.Add(this.tbNewPinAgain);
+            this.groupBox3.Controls.Add(this.lbNewPin);
+            this.groupBox3.Controls.Add(this.tbNewPin);
+            this.groupBox3.Controls.Add(this.btnChangeUserPin);
+            this.groupBox3.Controls.Add(this.btnUserLogin);
+            this.groupBox3.Controls.Add(this.lbPin);
+            this.groupBox3.Controls.Add(this.tbPin);
+            this.groupBox3.Controls.Add(this.lbPinTriesRemaining);
+            this.groupBox3.Location = new System.Drawing.Point(575, 11);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(8);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(548, 197);
+            this.groupBox3.TabIndex = 1;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "User Personal Identification Number (PIN):";
+            // 
+            // lbNewPinAgain
+            // 
+            this.lbNewPinAgain.AutoSize = true;
+            this.lbNewPinAgain.Location = new System.Drawing.Point(18, 95);
+            this.lbNewPinAgain.Margin = new System.Windows.Forms.Padding(3);
+            this.lbNewPinAgain.Name = "lbNewPinAgain";
+            this.lbNewPinAgain.Size = new System.Drawing.Size(88, 13);
+            this.lbNewPinAgain.TabIndex = 4;
+            this.lbNewPinAgain.Text = "New PIN (again):";
+            // 
+            // tbNewPinAgain
+            // 
+            this.tbNewPinAgain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbNewPinAgain.BackColor = System.Drawing.SystemColors.Window;
+            this.tbNewPinAgain.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbNewPinAgain.Location = new System.Drawing.Point(139, 92);
+            this.tbNewPinAgain.Margin = new System.Windows.Forms.Padding(10);
+            this.tbNewPinAgain.MaxLength = 8;
+            this.tbNewPinAgain.Name = "tbNewPinAgain";
+            this.tbNewPinAgain.PasswordChar = '*';
+            this.tbNewPinAgain.Size = new System.Drawing.Size(229, 22);
+            this.tbNewPinAgain.TabIndex = 5;
+            this.tbNewPinAgain.TextChanged += new System.EventHandler(this.tbNewPin_TextChanged);
+            // 
+            // lbNewPin
+            // 
+            this.lbNewPin.AutoSize = true;
+            this.lbNewPin.Location = new System.Drawing.Point(18, 62);
+            this.lbNewPin.Margin = new System.Windows.Forms.Padding(3);
+            this.lbNewPin.Name = "lbNewPin";
+            this.lbNewPin.Size = new System.Drawing.Size(53, 13);
+            this.lbNewPin.TabIndex = 2;
+            this.lbNewPin.Text = "New PIN:";
+            // 
+            // tbNewPin
+            // 
+            this.tbNewPin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbNewPin.BackColor = System.Drawing.SystemColors.Window;
+            this.tbNewPin.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbNewPin.Location = new System.Drawing.Point(139, 59);
+            this.tbNewPin.Margin = new System.Windows.Forms.Padding(10);
+            this.tbNewPin.MaxLength = 8;
+            this.tbNewPin.Name = "tbNewPin";
+            this.tbNewPin.PasswordChar = '*';
+            this.tbNewPin.Size = new System.Drawing.Size(229, 22);
+            this.tbNewPin.TabIndex = 3;
+            this.tbNewPin.TextChanged += new System.EventHandler(this.tbNewPin_TextChanged);
+            // 
+            // btnChangeUserPin
+            // 
+            this.btnChangeUserPin.Enabled = false;
+            this.btnChangeUserPin.Location = new System.Drawing.Point(388, 59);
+            this.btnChangeUserPin.Name = "btnChangeUserPin";
+            this.btnChangeUserPin.Size = new System.Drawing.Size(138, 24);
+            this.btnChangeUserPin.TabIndex = 7;
+            this.btnChangeUserPin.Text = "Change PIN";
+            this.btnChangeUserPin.UseVisualStyleBackColor = true;
+            // 
+            // btnUserLogin
+            // 
+            this.btnUserLogin.Enabled = false;
+            this.btnUserLogin.Location = new System.Drawing.Point(388, 26);
+            this.btnUserLogin.Name = "btnUserLogin";
+            this.btnUserLogin.Size = new System.Drawing.Size(138, 24);
+            this.btnUserLogin.TabIndex = 6;
+            this.btnUserLogin.Text = "User Login";
+            this.btnUserLogin.UseVisualStyleBackColor = true;
+            this.btnUserLogin.Click += new System.EventHandler(this.btnUserLogin_Click);
+            // 
+            // lbPin
+            // 
+            this.lbPin.AutoSize = true;
+            this.lbPin.Location = new System.Drawing.Point(18, 29);
+            this.lbPin.Margin = new System.Windows.Forms.Padding(3);
+            this.lbPin.Name = "lbPin";
+            this.lbPin.Size = new System.Drawing.Size(28, 13);
+            this.lbPin.TabIndex = 0;
+            this.lbPin.Text = "PIN:";
+            // 
+            // tbPin
+            // 
+            this.tbPin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbPin.BackColor = System.Drawing.SystemColors.Window;
+            this.tbPin.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbPin.Location = new System.Drawing.Point(139, 26);
+            this.tbPin.Margin = new System.Windows.Forms.Padding(10);
+            this.tbPin.MaxLength = 8;
+            this.tbPin.Name = "tbPin";
+            this.tbPin.PasswordChar = '*';
+            this.tbPin.Size = new System.Drawing.Size(229, 22);
+            this.tbPin.TabIndex = 1;
+            this.tbPin.TextChanged += new System.EventHandler(this.tbPin_TextChanged);
+            // 
+            // lbPinTriesRemaining
+            // 
+            this.lbPinTriesRemaining.AutoSize = true;
+            this.lbPinTriesRemaining.Location = new System.Drawing.Point(20, 171);
+            this.lbPinTriesRemaining.Name = "lbPinTriesRemaining";
+            this.lbPinTriesRemaining.Size = new System.Drawing.Size(10, 13);
+            this.lbPinTriesRemaining.TabIndex = 8;
+            this.lbPinTriesRemaining.Text = "-";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.lbNewSOPinAgain);
+            this.groupBox2.Controls.Add(this.tbNewSOPinAgain);
+            this.groupBox2.Controls.Add(this.lbNewSOPin);
+            this.groupBox2.Controls.Add(this.tbNewSOPin);
+            this.groupBox2.Controls.Add(this.lbPinSOTriesRemaining);
+            this.groupBox2.Controls.Add(this.btnChangeSOPin);
+            this.groupBox2.Controls.Add(this.btnSOLogin);
+            this.groupBox2.Controls.Add(this.lbSOPin);
+            this.groupBox2.Controls.Add(this.tbSOPin);
+            this.groupBox2.Location = new System.Drawing.Point(11, 11);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(8);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(548, 197);
+            this.groupBox2.TabIndex = 0;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Security Officer (SO) Personal Identification Number (SO PIN):";
+            // 
+            // lbNewSOPinAgain
+            // 
+            this.lbNewSOPinAgain.AutoSize = true;
+            this.lbNewSOPinAgain.Location = new System.Drawing.Point(20, 95);
+            this.lbNewSOPinAgain.Margin = new System.Windows.Forms.Padding(3);
+            this.lbNewSOPinAgain.Name = "lbNewSOPinAgain";
+            this.lbNewSOPinAgain.Size = new System.Drawing.Size(106, 13);
+            this.lbNewSOPinAgain.TabIndex = 4;
+            this.lbNewSOPinAgain.Text = "New SO PIN (again):";
+            // 
+            // tbNewSOPinAgain
+            // 
+            this.tbNewSOPinAgain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbNewSOPinAgain.BackColor = System.Drawing.SystemColors.Window;
+            this.tbNewSOPinAgain.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbNewSOPinAgain.Location = new System.Drawing.Point(139, 92);
+            this.tbNewSOPinAgain.Margin = new System.Windows.Forms.Padding(10);
+            this.tbNewSOPinAgain.MaxLength = 8;
+            this.tbNewSOPinAgain.Name = "tbNewSOPinAgain";
+            this.tbNewSOPinAgain.PasswordChar = '*';
+            this.tbNewSOPinAgain.Size = new System.Drawing.Size(229, 22);
+            this.tbNewSOPinAgain.TabIndex = 5;
+            this.tbNewSOPinAgain.TextChanged += new System.EventHandler(this.tbNewSOPin_TextChanged);
+            // 
+            // lbNewSOPin
+            // 
+            this.lbNewSOPin.AutoSize = true;
+            this.lbNewSOPin.Location = new System.Drawing.Point(20, 62);
+            this.lbNewSOPin.Margin = new System.Windows.Forms.Padding(3);
+            this.lbNewSOPin.Name = "lbNewSOPin";
+            this.lbNewSOPin.Size = new System.Drawing.Size(71, 13);
+            this.lbNewSOPin.TabIndex = 2;
+            this.lbNewSOPin.Text = "New SO PIN:";
+            // 
+            // tbNewSOPin
+            // 
+            this.tbNewSOPin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbNewSOPin.BackColor = System.Drawing.SystemColors.Window;
+            this.tbNewSOPin.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbNewSOPin.Location = new System.Drawing.Point(139, 59);
+            this.tbNewSOPin.Margin = new System.Windows.Forms.Padding(10);
+            this.tbNewSOPin.MaxLength = 8;
+            this.tbNewSOPin.Name = "tbNewSOPin";
+            this.tbNewSOPin.PasswordChar = '*';
+            this.tbNewSOPin.Size = new System.Drawing.Size(229, 22);
+            this.tbNewSOPin.TabIndex = 3;
+            this.tbNewSOPin.TextChanged += new System.EventHandler(this.tbNewSOPin_TextChanged);
+            // 
+            // lbPinSOTriesRemaining
+            // 
+            this.lbPinSOTriesRemaining.AutoSize = true;
+            this.lbPinSOTriesRemaining.Location = new System.Drawing.Point(20, 171);
+            this.lbPinSOTriesRemaining.Name = "lbPinSOTriesRemaining";
+            this.lbPinSOTriesRemaining.Size = new System.Drawing.Size(10, 13);
+            this.lbPinSOTriesRemaining.TabIndex = 8;
+            this.lbPinSOTriesRemaining.Text = "-";
+            // 
+            // btnChangeSOPin
+            // 
+            this.btnChangeSOPin.Enabled = false;
+            this.btnChangeSOPin.Location = new System.Drawing.Point(390, 59);
+            this.btnChangeSOPin.Name = "btnChangeSOPin";
+            this.btnChangeSOPin.Size = new System.Drawing.Size(138, 24);
+            this.btnChangeSOPin.TabIndex = 7;
+            this.btnChangeSOPin.Text = "Change SO PIN";
+            this.btnChangeSOPin.UseVisualStyleBackColor = true;
+            // 
+            // btnSOLogin
+            // 
+            this.btnSOLogin.Enabled = false;
+            this.btnSOLogin.Location = new System.Drawing.Point(390, 26);
+            this.btnSOLogin.Name = "btnSOLogin";
+            this.btnSOLogin.Size = new System.Drawing.Size(138, 24);
+            this.btnSOLogin.TabIndex = 6;
+            this.btnSOLogin.Text = "SO Login";
+            this.btnSOLogin.UseVisualStyleBackColor = true;
+            this.btnSOLogin.Click += new System.EventHandler(this.btnSOLogin_Click);
+            // 
+            // lbSOPin
+            // 
+            this.lbSOPin.AutoSize = true;
+            this.lbSOPin.Location = new System.Drawing.Point(20, 29);
+            this.lbSOPin.Margin = new System.Windows.Forms.Padding(3);
+            this.lbSOPin.Name = "lbSOPin";
+            this.lbSOPin.Size = new System.Drawing.Size(46, 13);
+            this.lbSOPin.TabIndex = 0;
+            this.lbSOPin.Text = "SO PIN:";
+            // 
+            // tbSOPin
+            // 
+            this.tbSOPin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbSOPin.BackColor = System.Drawing.SystemColors.Window;
+            this.tbSOPin.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.tbSOPin.Location = new System.Drawing.Point(139, 26);
+            this.tbSOPin.Margin = new System.Windows.Forms.Padding(10);
+            this.tbSOPin.MaxLength = 8;
+            this.tbSOPin.Name = "tbSOPin";
+            this.tbSOPin.PasswordChar = '*';
+            this.tbSOPin.Size = new System.Drawing.Size(229, 22);
+            this.tbSOPin.TabIndex = 1;
+            this.tbSOPin.TextChanged += new System.EventHandler(this.tbSOPin_TextChanged);
             // 
             // tabCardObjects
             // 
@@ -1319,7 +2057,7 @@
             this.gbOperations.Margin = new System.Windows.Forms.Padding(8);
             this.gbOperations.Name = "gbOperations";
             this.gbOperations.Size = new System.Drawing.Size(661, 520);
-            this.gbOperations.TabIndex = 29;
+            this.gbOperations.TabIndex = 3;
             this.gbOperations.TabStop = false;
             // 
             // btnRefresh
@@ -1329,7 +2067,7 @@
             this.btnRefresh.Location = new System.Drawing.Point(10, 426);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(640, 84);
-            this.btnRefresh.TabIndex = 35;
+            this.btnRefresh.TabIndex = 12;
             this.btnRefresh.Text = "Refresh objects from the card";
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
@@ -1341,7 +2079,7 @@
             this.lbId.Margin = new System.Windows.Forms.Padding(3);
             this.lbId.Name = "lbId";
             this.lbId.Size = new System.Drawing.Size(60, 13);
-            this.lbId.TabIndex = 33;
+            this.lbId.TabIndex = 5;
             this.lbId.Text = "Objects ID:";
             // 
             // tbObjId
@@ -1354,7 +2092,7 @@
             this.tbObjId.Margin = new System.Windows.Forms.Padding(10);
             this.tbObjId.Name = "tbObjId";
             this.tbObjId.Size = new System.Drawing.Size(400, 20);
-            this.tbObjId.TabIndex = 34;
+            this.tbObjId.TabIndex = 6;
             // 
             // btnPutCertFromFile
             // 
@@ -1362,7 +2100,7 @@
             this.btnPutCertFromFile.Location = new System.Drawing.Point(507, 168);
             this.btnPutCertFromFile.Name = "btnPutCertFromFile";
             this.btnPutCertFromFile.Size = new System.Drawing.Size(138, 72);
-            this.btnPutCertFromFile.TabIndex = 32;
+            this.btnPutCertFromFile.TabIndex = 11;
             this.btnPutCertFromFile.Text = "Put certificate from file in the card with designated ID, object type and index";
             this.btnPutCertFromFile.UseVisualStyleBackColor = false;
             this.btnPutCertFromFile.Click += new System.EventHandler(this.btnPutCertFromFile_Click);
@@ -1378,7 +2116,7 @@
             this.cbObjType.Location = new System.Drawing.Point(94, 201);
             this.cbObjType.Name = "cbObjType";
             this.cbObjType.Size = new System.Drawing.Size(124, 21);
-            this.cbObjType.TabIndex = 31;
+            this.cbObjType.TabIndex = 8;
             this.cbObjType.SelectedIndexChanged += new System.EventHandler(this.cbObjType_SelectedIndexChanged);
             // 
             // lbObjType
@@ -1387,7 +2125,7 @@
             this.lbObjType.Location = new System.Drawing.Point(24, 204);
             this.lbObjType.Name = "lbObjType";
             this.lbObjType.Size = new System.Drawing.Size(64, 13);
-            this.lbObjType.TabIndex = 30;
+            this.lbObjType.TabIndex = 7;
             this.lbObjType.Text = "Object type:";
             // 
             // cbObjIndex
@@ -1401,7 +2139,7 @@
             this.cbObjIndex.Location = new System.Drawing.Point(94, 228);
             this.cbObjIndex.Name = "cbObjIndex";
             this.cbObjIndex.Size = new System.Drawing.Size(50, 21);
-            this.cbObjIndex.TabIndex = 29;
+            this.cbObjIndex.TabIndex = 10;
             // 
             // lbObjIndex
             // 
@@ -1409,7 +2147,7 @@
             this.lbObjIndex.Location = new System.Drawing.Point(19, 231);
             this.lbObjIndex.Name = "lbObjIndex";
             this.lbObjIndex.Size = new System.Drawing.Size(69, 13);
-            this.lbObjIndex.TabIndex = 28;
+            this.lbObjIndex.TabIndex = 9;
             this.lbObjIndex.Text = "Object index:";
             // 
             // lbCertUsageType
@@ -1417,7 +2155,7 @@
             this.lbCertUsageType.Location = new System.Drawing.Point(98, 50);
             this.lbCertUsageType.Name = "lbCertUsageType";
             this.lbCertUsageType.Size = new System.Drawing.Size(369, 18);
-            this.lbCertUsageType.TabIndex = 27;
+            this.lbCertUsageType.TabIndex = 2;
             this.lbCertUsageType.Text = ".";
             // 
             // btnShowSelectedFile
@@ -1425,7 +2163,7 @@
             this.btnShowSelectedFile.Location = new System.Drawing.Point(507, 44);
             this.btnShowSelectedFile.Name = "btnShowSelectedFile";
             this.btnShowSelectedFile.Size = new System.Drawing.Size(138, 24);
-            this.btnShowSelectedFile.TabIndex = 26;
+            this.btnShowSelectedFile.TabIndex = 4;
             this.btnShowSelectedFile.Text = "Show certificate";
             this.btnShowSelectedFile.UseVisualStyleBackColor = true;
             this.btnShowSelectedFile.Click += new System.EventHandler(this.btnShowSelectedFile_Click);
@@ -1435,7 +2173,7 @@
             this.btnOpenCertFile.Location = new System.Drawing.Point(507, 14);
             this.btnOpenCertFile.Name = "btnOpenCertFile";
             this.btnOpenCertFile.Size = new System.Drawing.Size(138, 24);
-            this.btnOpenCertFile.TabIndex = 25;
+            this.btnOpenCertFile.TabIndex = 3;
             this.btnOpenCertFile.Text = "Open certificate file";
             this.btnOpenCertFile.UseVisualStyleBackColor = true;
             this.btnOpenCertFile.Click += new System.EventHandler(this.btnOpenCertFile_Click);
@@ -1447,7 +2185,7 @@
             this.label6.Margin = new System.Windows.Forms.Padding(3);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(68, 13);
-            this.label6.TabIndex = 13;
+            this.label6.TabIndex = 0;
             this.label6.Text = "Selected file:";
             // 
             // tbCertFile
@@ -1461,7 +2199,7 @@
             this.tbCertFile.Name = "tbCertFile";
             this.tbCertFile.ReadOnly = true;
             this.tbCertFile.Size = new System.Drawing.Size(400, 20);
-            this.tbCertFile.TabIndex = 14;
+            this.tbCertFile.TabIndex = 1;
             // 
             // gbCACertificates
             // 
@@ -1475,7 +2213,7 @@
             this.gbCACertificates.Margin = new System.Windows.Forms.Padding(8);
             this.gbCACertificates.Name = "gbCACertificates";
             this.gbCACertificates.Size = new System.Drawing.Size(438, 204);
-            this.gbCACertificates.TabIndex = 28;
+            this.gbCACertificates.TabIndex = 2;
             this.gbCACertificates.TabStop = false;
             this.gbCACertificates.Text = "CA Certificates:";
             // 
@@ -1485,7 +2223,7 @@
             this.btnShowCACert.Location = new System.Drawing.Point(170, 170);
             this.btnShowCACert.Name = "btnShowCACert";
             this.btnShowCACert.Size = new System.Drawing.Size(124, 24);
-            this.btnShowCACert.TabIndex = 29;
+            this.btnShowCACert.TabIndex = 1;
             this.btnShowCACert.Text = "Show Selected";
             this.btnShowCACert.UseVisualStyleBackColor = true;
             this.btnShowCACert.Click += new System.EventHandler(this.btnShowCert_Click);
@@ -1496,7 +2234,7 @@
             this.btnInvalidateCACert.Location = new System.Drawing.Point(300, 170);
             this.btnInvalidateCACert.Name = "btnInvalidateCACert";
             this.btnInvalidateCACert.Size = new System.Drawing.Size(124, 24);
-            this.btnInvalidateCACert.TabIndex = 28;
+            this.btnInvalidateCACert.TabIndex = 2;
             this.btnInvalidateCACert.Text = "Invalidate Selected";
             this.btnInvalidateCACert.UseVisualStyleBackColor = true;
             this.btnInvalidateCACert.Click += new System.EventHandler(this.btnInvalidateCert_Click);
@@ -1531,7 +2269,7 @@
             this.lstvCACerts.Name = "lstvCACerts";
             this.lstvCACerts.ShowGroups = false;
             this.lstvCACerts.Size = new System.Drawing.Size(412, 145);
-            this.lstvCACerts.TabIndex = 1;
+            this.lstvCACerts.TabIndex = 0;
             this.lstvCACerts.UseCompatibleStateImageBehavior = false;
             this.lstvCACerts.View = System.Windows.Forms.View.Details;
             // 
@@ -1554,7 +2292,7 @@
             this.gbECDSACertificates.Margin = new System.Windows.Forms.Padding(8);
             this.gbECDSACertificates.Name = "gbECDSACertificates";
             this.gbECDSACertificates.Size = new System.Drawing.Size(437, 142);
-            this.gbECDSACertificates.TabIndex = 27;
+            this.gbECDSACertificates.TabIndex = 1;
             this.gbECDSACertificates.TabStop = false;
             this.gbECDSACertificates.Text = "Qualified Certificates for ECDSA keys:";
             // 
@@ -1564,7 +2302,7 @@
             this.btnShowECDSACert.Location = new System.Drawing.Point(170, 108);
             this.btnShowECDSACert.Name = "btnShowECDSACert";
             this.btnShowECDSACert.Size = new System.Drawing.Size(124, 24);
-            this.btnShowECDSACert.TabIndex = 28;
+            this.btnShowECDSACert.TabIndex = 1;
             this.btnShowECDSACert.Text = "Show Selected";
             this.btnShowECDSACert.UseVisualStyleBackColor = true;
             this.btnShowECDSACert.Click += new System.EventHandler(this.btnShowCert_Click);
@@ -1575,7 +2313,7 @@
             this.btnInvalidateECDSACert.Location = new System.Drawing.Point(300, 108);
             this.btnInvalidateECDSACert.Name = "btnInvalidateECDSACert";
             this.btnInvalidateECDSACert.Size = new System.Drawing.Size(124, 24);
-            this.btnInvalidateECDSACert.TabIndex = 27;
+            this.btnInvalidateECDSACert.TabIndex = 2;
             this.btnInvalidateECDSACert.Text = "Invalidate Selected";
             this.btnInvalidateECDSACert.UseVisualStyleBackColor = true;
             this.btnInvalidateECDSACert.Click += new System.EventHandler(this.btnInvalidateCert_Click);
@@ -1626,7 +2364,7 @@
             this.gbRSACertificates.Margin = new System.Windows.Forms.Padding(8);
             this.gbRSACertificates.Name = "gbRSACertificates";
             this.gbRSACertificates.Size = new System.Drawing.Size(437, 142);
-            this.gbRSACertificates.TabIndex = 26;
+            this.gbRSACertificates.TabIndex = 0;
             this.gbRSACertificates.TabStop = false;
             this.gbRSACertificates.Text = "Qualified Certificates for RSA keys:";
             // 
@@ -1654,7 +2392,7 @@
             this.lstvRSACerts.Name = "lstvRSACerts";
             this.lstvRSACerts.ShowGroups = false;
             this.lstvRSACerts.Size = new System.Drawing.Size(412, 82);
-            this.lstvRSACerts.TabIndex = 29;
+            this.lstvRSACerts.TabIndex = 0;
             this.lstvRSACerts.UseCompatibleStateImageBehavior = false;
             this.lstvRSACerts.View = System.Windows.Forms.View.Details;
             // 
@@ -1672,7 +2410,7 @@
             this.btnShowRSACert.Location = new System.Drawing.Point(169, 108);
             this.btnShowRSACert.Name = "btnShowRSACert";
             this.btnShowRSACert.Size = new System.Drawing.Size(124, 24);
-            this.btnShowRSACert.TabIndex = 27;
+            this.btnShowRSACert.TabIndex = 1;
             this.btnShowRSACert.Text = "Show Selected";
             this.btnShowRSACert.UseVisualStyleBackColor = true;
             this.btnShowRSACert.Click += new System.EventHandler(this.btnShowCert_Click);
@@ -1684,7 +2422,7 @@
             this.btnInvalidateRSACert.Name = "btnInvalidateRSACert";
             this.btnInvalidateRSACert.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnInvalidateRSACert.Size = new System.Drawing.Size(124, 24);
-            this.btnInvalidateRSACert.TabIndex = 26;
+            this.btnInvalidateRSACert.TabIndex = 2;
             this.btnInvalidateRSACert.Text = "Invalidate Selected";
             this.btnInvalidateRSACert.UseVisualStyleBackColor = true;
             this.btnInvalidateRSACert.Click += new System.EventHandler(this.btnInvalidateCert_Click);
@@ -1715,11 +2453,11 @@
             this.gbSignatureHash.Controls.Add(this.rbHashHex);
             this.gbSignatureHash.Controls.Add(this.lbHash);
             this.gbSignatureHash.Controls.Add(this.tbHash);
-            this.gbSignatureHash.Location = new System.Drawing.Point(8, 361);
+            this.gbSignatureHash.Location = new System.Drawing.Point(8, 391);
             this.gbSignatureHash.Margin = new System.Windows.Forms.Padding(0);
             this.gbSignatureHash.Name = "gbSignatureHash";
             this.gbSignatureHash.Size = new System.Drawing.Size(1116, 85);
-            this.gbSignatureHash.TabIndex = 25;
+            this.gbSignatureHash.TabIndex = 3;
             this.gbSignatureHash.TabStop = false;
             this.gbSignatureHash.Text = "Signature Hash (optional):";
             // 
@@ -1731,7 +2469,7 @@
             this.btnHashStoreToBin.Margin = new System.Windows.Forms.Padding(0);
             this.btnHashStoreToBin.Name = "btnHashStoreToBin";
             this.btnHashStoreToBin.Size = new System.Drawing.Size(160, 21);
-            this.btnHashStoreToBin.TabIndex = 27;
+            this.btnHashStoreToBin.TabIndex = 7;
             this.btnHashStoreToBin.Text = "Save hash to file";
             this.btnHashStoreToBin.UseVisualStyleBackColor = true;
             this.btnHashStoreToBin.Click += new System.EventHandler(this.btnHashStoreToBin_Click);
@@ -1744,7 +2482,7 @@
             this.btnHash.Margin = new System.Windows.Forms.Padding(0);
             this.btnHash.Name = "btnHash";
             this.btnHash.Size = new System.Drawing.Size(160, 21);
-            this.btnHash.TabIndex = 26;
+            this.btnHash.TabIndex = 6;
             this.btnHash.Text = "Calculate hash (optional)";
             this.btnHash.UseVisualStyleBackColor = false;
             this.btnHash.Click += new System.EventHandler(this.btnHash_Click);
@@ -1762,7 +2500,7 @@
             this.cbHashAlg.Location = new System.Drawing.Point(301, 19);
             this.cbHashAlg.Name = "cbHashAlg";
             this.cbHashAlg.Size = new System.Drawing.Size(80, 21);
-            this.cbHashAlg.TabIndex = 24;
+            this.cbHashAlg.TabIndex = 3;
             this.cbHashAlg.SelectedIndexChanged += new System.EventHandler(this.cbHashAlg_SelectedIndexChanged);
             // 
             // lbHashAlg
@@ -1771,7 +2509,7 @@
             this.lbHashAlg.Location = new System.Drawing.Point(215, 22);
             this.lbHashAlg.Name = "lbHashAlg";
             this.lbHashAlg.Size = new System.Drawing.Size(80, 13);
-            this.lbHashAlg.TabIndex = 23;
+            this.lbHashAlg.TabIndex = 2;
             this.lbHashAlg.Text = "Hash algorithm:";
             // 
             // rbHashBase64
@@ -1780,7 +2518,7 @@
             this.rbHashBase64.Location = new System.Drawing.Point(122, 24);
             this.rbHashBase64.Name = "rbHashBase64";
             this.rbHashBase64.Size = new System.Drawing.Size(61, 17);
-            this.rbHashBase64.TabIndex = 22;
+            this.rbHashBase64.TabIndex = 1;
             this.rbHashBase64.TabStop = true;
             this.rbHashBase64.Text = "Base64";
             this.rbHashBase64.UseVisualStyleBackColor = true;
@@ -1793,7 +2531,7 @@
             this.rbHashHex.Location = new System.Drawing.Point(69, 24);
             this.rbHashHex.Name = "rbHashHex";
             this.rbHashHex.Size = new System.Drawing.Size(47, 17);
-            this.rbHashHex.TabIndex = 21;
+            this.rbHashHex.TabIndex = 0;
             this.rbHashHex.TabStop = true;
             this.rbHashHex.Text = "HEX";
             this.rbHashHex.UseVisualStyleBackColor = true;
@@ -1806,7 +2544,7 @@
             this.lbHash.Margin = new System.Windows.Forms.Padding(3);
             this.lbHash.Name = "lbHash";
             this.lbHash.Size = new System.Drawing.Size(35, 13);
-            this.lbHash.TabIndex = 17;
+            this.lbHash.TabIndex = 4;
             this.lbHash.Text = "Hash:";
             // 
             // tbHash
@@ -1820,12 +2558,13 @@
             this.tbHash.ReadOnly = true;
             this.tbHash.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this.tbHash.Size = new System.Drawing.Size(1033, 22);
-            this.tbHash.TabIndex = 18;
+            this.tbHash.TabIndex = 5;
             // 
             // gbSignature
             // 
             this.gbSignature.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbSignature.Controls.Add(this.lbECDSASignatureAttention);
             this.gbSignature.Controls.Add(this.pbSigning);
             this.gbSignature.Controls.Add(this.btnSignature);
             this.gbSignature.Controls.Add(this.btnSignatureStoreToBin);
@@ -1836,10 +2575,23 @@
             this.gbSignature.Location = new System.Drawing.Point(8, 217);
             this.gbSignature.Margin = new System.Windows.Forms.Padding(8);
             this.gbSignature.Name = "gbSignature";
-            this.gbSignature.Size = new System.Drawing.Size(1116, 136);
-            this.gbSignature.TabIndex = 24;
+            this.gbSignature.Size = new System.Drawing.Size(1116, 166);
+            this.gbSignature.TabIndex = 2;
             this.gbSignature.TabStop = false;
             this.gbSignature.Text = "Signature:";
+            // 
+            // lbECDSASignatureAttention
+            // 
+            this.lbECDSASignatureAttention.AutoSize = true;
+            this.lbECDSASignatureAttention.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lbECDSASignatureAttention.ForeColor = System.Drawing.Color.Blue;
+            this.lbECDSASignatureAttention.Location = new System.Drawing.Point(66, 141);
+            this.lbECDSASignatureAttention.Name = "lbECDSASignatureAttention";
+            this.lbECDSASignatureAttention.Size = new System.Drawing.Size(705, 13);
+            this.lbECDSASignatureAttention.TabIndex = 33;
+            this.lbECDSASignatureAttention.Text = "Attention: in the case of ECDSA the signature is encoded using ASN.1 standard usi" +
+    "ng Distinguished Encoding Rules (DER)";
+            this.lbECDSASignatureAttention.Visible = false;
             // 
             // pbSigning
             // 
@@ -1850,7 +2602,7 @@
             this.pbSigning.Size = new System.Drawing.Size(1033, 10);
             this.pbSigning.Step = 1;
             this.pbSigning.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.pbSigning.TabIndex = 32;
+            this.pbSigning.TabIndex = 6;
             // 
             // btnSignature
             // 
@@ -1860,7 +2612,7 @@
             this.btnSignature.Margin = new System.Windows.Forms.Padding(0);
             this.btnSignature.Name = "btnSignature";
             this.btnSignature.Size = new System.Drawing.Size(160, 21);
-            this.btnSignature.TabIndex = 28;
+            this.btnSignature.TabIndex = 4;
             this.btnSignature.Text = "Get signature";
             this.btnSignature.UseVisualStyleBackColor = false;
             this.btnSignature.Click += new System.EventHandler(this.btnSignature_Click);
@@ -1873,7 +2625,7 @@
             this.btnSignatureStoreToBin.Margin = new System.Windows.Forms.Padding(10);
             this.btnSignatureStoreToBin.Name = "btnSignatureStoreToBin";
             this.btnSignatureStoreToBin.Size = new System.Drawing.Size(160, 21);
-            this.btnSignatureStoreToBin.TabIndex = 27;
+            this.btnSignatureStoreToBin.TabIndex = 5;
             this.btnSignatureStoreToBin.Text = "Save signature to binary file";
             this.btnSignatureStoreToBin.UseVisualStyleBackColor = true;
             this.btnSignatureStoreToBin.Click += new System.EventHandler(this.btnSignatureStoreToBin_Click);
@@ -1884,7 +2636,7 @@
             this.rbSignatureBase64.Location = new System.Drawing.Point(122, 24);
             this.rbSignatureBase64.Name = "rbSignatureBase64";
             this.rbSignatureBase64.Size = new System.Drawing.Size(61, 17);
-            this.rbSignatureBase64.TabIndex = 22;
+            this.rbSignatureBase64.TabIndex = 1;
             this.rbSignatureBase64.TabStop = true;
             this.rbSignatureBase64.Text = "Base64";
             this.rbSignatureBase64.UseVisualStyleBackColor = true;
@@ -1897,7 +2649,7 @@
             this.rbSignatureHex.Location = new System.Drawing.Point(69, 24);
             this.rbSignatureHex.Name = "rbSignatureHex";
             this.rbSignatureHex.Size = new System.Drawing.Size(47, 17);
-            this.rbSignatureHex.TabIndex = 21;
+            this.rbSignatureHex.TabIndex = 0;
             this.rbSignatureHex.TabStop = true;
             this.rbSignatureHex.Text = "HEX";
             this.rbSignatureHex.UseVisualStyleBackColor = true;
@@ -1910,7 +2662,7 @@
             this.lbSignature.Margin = new System.Windows.Forms.Padding(3);
             this.lbSignature.Name = "lbSignature";
             this.lbSignature.Size = new System.Drawing.Size(55, 13);
-            this.lbSignature.TabIndex = 17;
+            this.lbSignature.TabIndex = 2;
             this.lbSignature.Text = "Signature:";
             // 
             // tbSignature
@@ -1925,7 +2677,7 @@
             this.tbSignature.ReadOnly = true;
             this.tbSignature.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this.tbSignature.Size = new System.Drawing.Size(1033, 65);
-            this.tbSignature.TabIndex = 18;
+            this.tbSignature.TabIndex = 3;
             // 
             // gbMessage
             // 
@@ -1942,7 +2694,7 @@
             this.gbMessage.Margin = new System.Windows.Forms.Padding(0);
             this.gbMessage.Name = "gbMessage";
             this.gbMessage.Size = new System.Drawing.Size(1116, 127);
-            this.gbMessage.TabIndex = 7;
+            this.gbMessage.TabIndex = 1;
             this.gbMessage.TabStop = false;
             this.gbMessage.Text = "Plain text (input message to sign):";
             // 
@@ -1953,7 +2705,7 @@
             this.btnSaveMessageToBin.Margin = new System.Windows.Forms.Padding(10);
             this.btnSaveMessageToBin.Name = "btnSaveMessageToBin";
             this.btnSaveMessageToBin.Size = new System.Drawing.Size(160, 21);
-            this.btnSaveMessageToBin.TabIndex = 30;
+            this.btnSaveMessageToBin.TabIndex = 6;
             this.btnSaveMessageToBin.Text = "Save message to binary file";
             this.btnSaveMessageToBin.UseVisualStyleBackColor = true;
             this.btnSaveMessageToBin.Click += new System.EventHandler(this.btnSaveMessageToBin_Click);
@@ -1964,7 +2716,7 @@
             this.rbMessageFromFile.Location = new System.Drawing.Point(211, 24);
             this.rbMessageFromFile.Name = "rbMessageFromFile";
             this.rbMessageFromFile.Size = new System.Drawing.Size(344, 17);
-            this.rbMessageFromFile.TabIndex = 23;
+            this.rbMessageFromFile.TabIndex = 3;
             this.rbMessageFromFile.TabStop = true;
             this.rbMessageFromFile.Text = "Set file to sign (ATTENTION: it will remove any message text below)";
             this.rbMessageFromFile.UseVisualStyleBackColor = true;
@@ -1976,7 +2728,7 @@
             this.rbMessageBase64.Location = new System.Drawing.Point(86, 24);
             this.rbMessageBase64.Name = "rbMessageBase64";
             this.rbMessageBase64.Size = new System.Drawing.Size(61, 17);
-            this.rbMessageBase64.TabIndex = 22;
+            this.rbMessageBase64.TabIndex = 1;
             this.rbMessageBase64.TabStop = true;
             this.rbMessageBase64.Text = "Base64";
             this.rbMessageBase64.UseVisualStyleBackColor = true;
@@ -1989,7 +2741,7 @@
             this.rbMessageHex.Location = new System.Drawing.Point(33, 24);
             this.rbMessageHex.Name = "rbMessageHex";
             this.rbMessageHex.Size = new System.Drawing.Size(47, 17);
-            this.rbMessageHex.TabIndex = 21;
+            this.rbMessageHex.TabIndex = 0;
             this.rbMessageHex.TabStop = true;
             this.rbMessageHex.Text = "HEX";
             this.rbMessageHex.UseVisualStyleBackColor = true;
@@ -2001,7 +2753,7 @@
             this.rbMessageAscii.Location = new System.Drawing.Point(153, 24);
             this.rbMessageAscii.Name = "rbMessageAscii";
             this.rbMessageAscii.Size = new System.Drawing.Size(52, 17);
-            this.rbMessageAscii.TabIndex = 20;
+            this.rbMessageAscii.TabIndex = 2;
             this.rbMessageAscii.Text = "ASCII";
             this.rbMessageAscii.UseVisualStyleBackColor = true;
             this.rbMessageAscii.Click += new System.EventHandler(this.tbMessageRadixChanged);
@@ -2013,7 +2765,7 @@
             this.lbMessage.Margin = new System.Windows.Forms.Padding(3);
             this.lbMessage.Name = "lbMessage";
             this.lbMessage.Size = new System.Drawing.Size(19, 13);
-            this.lbMessage.TabIndex = 17;
+            this.lbMessage.TabIndex = 4;
             this.lbMessage.Text = "M:";
             // 
             // tbMessage
@@ -2027,7 +2779,7 @@
             this.tbMessage.Name = "tbMessage";
             this.tbMessage.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
             this.tbMessage.Size = new System.Drawing.Size(1069, 65);
-            this.tbMessage.TabIndex = 18;
+            this.tbMessage.TabIndex = 5;
             // 
             // gbSignatureParameters
             // 
@@ -2043,7 +2795,7 @@
             this.gbSignatureParameters.Margin = new System.Windows.Forms.Padding(8);
             this.gbSignatureParameters.Name = "gbSignatureParameters";
             this.gbSignatureParameters.Size = new System.Drawing.Size(1116, 74);
-            this.gbSignatureParameters.TabIndex = 2;
+            this.gbSignatureParameters.TabIndex = 0;
             this.gbSignatureParameters.TabStop = false;
             // 
             // cbCipher
@@ -2056,7 +2808,8 @@
             this.cbCipher.Location = new System.Drawing.Point(99, 43);
             this.cbCipher.Name = "cbCipher";
             this.cbCipher.Size = new System.Drawing.Size(124, 21);
-            this.cbCipher.TabIndex = 9;
+            this.cbCipher.TabIndex = 3;
+            this.cbCipher.SelectedIndexChanged += new System.EventHandler(this.cbCipher_SelectedIndexChanged);
             // 
             // lbCipher
             // 
@@ -2064,7 +2817,7 @@
             this.lbCipher.Location = new System.Drawing.Point(8, 46);
             this.lbCipher.Name = "lbCipher";
             this.lbCipher.Size = new System.Drawing.Size(85, 13);
-            this.lbCipher.TabIndex = 8;
+            this.lbCipher.TabIndex = 2;
             this.lbCipher.Text = "Cipher algorithm:";
             // 
             // cbDigest
@@ -2081,7 +2834,7 @@
             this.cbDigest.Location = new System.Drawing.Point(143, 16);
             this.cbDigest.Name = "cbDigest";
             this.cbDigest.Size = new System.Drawing.Size(80, 21);
-            this.cbDigest.TabIndex = 9;
+            this.cbDigest.TabIndex = 1;
             // 
             // lbDigest
             // 
@@ -2089,7 +2842,7 @@
             this.lbDigest.Location = new System.Drawing.Point(8, 19);
             this.lbDigest.Name = "lbDigest";
             this.lbDigest.Size = new System.Drawing.Size(129, 13);
-            this.lbDigest.TabIndex = 8;
+            this.lbDigest.TabIndex = 0;
             this.lbDigest.Text = "Message digest algorithm:";
             // 
             // cbSignatureKeyIndex
@@ -2141,16 +2894,21 @@
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.tabControl.ResumeLayout(false);
             this.tabRSAKeys.ResumeLayout(false);
+            this.gpPrivateKeyMode.ResumeLayout(false);
+            this.gpPrivateKeyMode.PerformLayout();
             this.gbRSAPub.ResumeLayout(false);
             this.gbRSAPub.PerformLayout();
             this.gbRSAModulus.ResumeLayout(false);
             this.gbRSAModulus.PerformLayout();
             this.gbRSAPriv.ResumeLayout(false);
             this.gbRSAPriv.PerformLayout();
-            this.gpPrivateKeyMode.ResumeLayout(false);
-            this.gpPrivateKeyMode.PerformLayout();
             this.gbRSACommands.ResumeLayout(false);
             this.gbRSACommands.PerformLayout();
+            this.tabHidden.ResumeLayout(false);
+            this.gbHiddenEC.ResumeLayout(false);
+            this.gbHiddenEC.PerformLayout();
+            this.gbHiddenRSA.ResumeLayout(false);
+            this.gbHiddenRSA.PerformLayout();
             this.tabECKeys.ResumeLayout(false);
             this.gbECPubKey.ResumeLayout(false);
             this.gbECPubKey.PerformLayout();
@@ -2164,6 +2922,16 @@
             this.groupBox1.PerformLayout();
             this.gbECCommands.ResumeLayout(false);
             this.gbECCommands.PerformLayout();
+            this.tabPinCodes.ResumeLayout(false);
+            this.tabPinCodes.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.tabCardObjects.ResumeLayout(false);
             this.gbOperations.ResumeLayout(false);
             this.gbOperations.PerformLayout();
@@ -2194,9 +2962,6 @@
         private System.Windows.Forms.ComboBox cbRSAKeyIndex;
         private System.Windows.Forms.Label lbRSAKeyIndex;
         private System.Windows.Forms.GroupBox gbRSACommands;
-        private System.Windows.Forms.Button btnStoreRSAPriv;
-        private System.Windows.Forms.Button btnMkRSAKey;
-        private System.Windows.Forms.Button btnRSAImportP12;
         private System.Windows.Forms.Button btnSaveRSAPub;
         private System.Windows.Forms.GroupBox gbRSAPriv;
         private System.Windows.Forms.TextBox tbRSAPrivPQ;
@@ -2205,9 +2970,6 @@
         private System.Windows.Forms.Label lbRSAPrivExp;
         private System.Windows.Forms.TextBox tbRSAPrivExp;
         private System.Windows.Forms.TextBox tbRSAPrivP;
-        private System.Windows.Forms.GroupBox gpPrivateKeyMode;
-        private System.Windows.Forms.RadioButton rbCRT;
-        private System.Windows.Forms.RadioButton rbModExp;
         private System.Windows.Forms.Label lbRSAPrivP;
         private System.Windows.Forms.Label lbRSAPrivQ;
         private System.Windows.Forms.Label lbRSAPrivPQ;
@@ -2222,13 +2984,10 @@
         private System.Windows.Forms.TextBox tbRSAPubExp;
         private System.Windows.Forms.GroupBox gbECCommands;
         private System.Windows.Forms.Button btnSaveECPub;
-        private System.Windows.Forms.Button btnStoreECPriv;
-        private System.Windows.Forms.Button btnMkECKey;
         private System.Windows.Forms.ComboBox cbECKeyLength;
         private System.Windows.Forms.ComboBox cbECKeyIndex;
         private System.Windows.Forms.Label lbECKeyLength;
         private System.Windows.Forms.Label lbECKeyIndex;
-        private System.Windows.Forms.Button btnECImportP12;
         private System.Windows.Forms.ComboBox cbECName;
         private System.Windows.Forms.Label lbECName;
         private System.Windows.Forms.GroupBox gbECDomainParameters;
@@ -2292,10 +3051,6 @@
         private System.Windows.Forms.Button btnSignatureStoreToBin;
         private System.Windows.Forms.Button btnHashStoreToBin;
         private System.Windows.Forms.Button btnSaveMessageToBin;
-        private System.Windows.Forms.Button btnRestoreRSAPriv;
-        private System.Windows.Forms.Button btnBackupRSAPriv;
-        private System.Windows.Forms.Button btnRestoreECPriv;
-        private System.Windows.Forms.Button btnBackupECPriv;
         private System.Windows.Forms.ProgressBar pbSigning;
         private System.Windows.Forms.TabPage tabCardObjects;
         private System.Windows.Forms.GroupBox gbOperations;
@@ -2330,6 +3085,74 @@
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.TabPage tabPinCodes;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button btnChangeSOPin;
+        private System.Windows.Forms.Button btnSOLogin;
+        private System.Windows.Forms.Label lbSOPin;
+        private System.Windows.Forms.TextBox tbSOPin;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label lbPukTriesRemaining;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Label lbPukSOTriesRemaining;
+        private System.Windows.Forms.Label lbPinTriesRemaining;
+        private System.Windows.Forms.Label lbPinSOTriesRemaining;
+        private System.Windows.Forms.Label lbNewSOPin;
+        private System.Windows.Forms.TextBox tbNewSOPin;
+        private System.Windows.Forms.Label lbNewPuk;
+        private System.Windows.Forms.TextBox tbNewPuk;
+        private System.Windows.Forms.Button btnChangePuk;
+        private System.Windows.Forms.Button btnUnblockUserPin;
+        private System.Windows.Forms.Label lbPuk;
+        private System.Windows.Forms.TextBox tbPuk;
+        private System.Windows.Forms.Label lbNewSOPuk;
+        private System.Windows.Forms.TextBox tbNewSOPuk;
+        private System.Windows.Forms.Button btnChangeSOPuk;
+        private System.Windows.Forms.Button btnUnblockSOPin;
+        private System.Windows.Forms.Label lbSOPuk;
+        private System.Windows.Forms.TextBox tbSOPuk;
+        private System.Windows.Forms.Label lbNewPin;
+        private System.Windows.Forms.TextBox tbNewPin;
+        private System.Windows.Forms.Button btnChangeUserPin;
+        private System.Windows.Forms.Button btnUserLogin;
+        private System.Windows.Forms.Label lbPin;
+        private System.Windows.Forms.TextBox tbPin;
+        private System.Windows.Forms.Button btnRefreshTriesRemaining;
+        private System.Windows.Forms.Label lbAttention;
+        private System.Windows.Forms.Label lbNewPukAgain;
+        private System.Windows.Forms.TextBox tbNewPukAgain;
+        private System.Windows.Forms.Label lbNewSOPukAgain;
+        private System.Windows.Forms.TextBox tbNewSOPukAgain;
+        private System.Windows.Forms.Label lbNewPinAgain;
+        private System.Windows.Forms.TextBox tbNewPinAgain;
+        private System.Windows.Forms.Label lbNewSOPinAgain;
+        private System.Windows.Forms.TextBox tbNewSOPinAgain;
+        private System.Windows.Forms.Button btnMkRSAKeyOnCard;
+        private System.Windows.Forms.Button btnMkECKeyOnCard;
+        private System.Windows.Forms.TabPage tabHidden;
+        private System.Windows.Forms.GroupBox gbHiddenRSA;
+        private System.Windows.Forms.Button btnRSAImportP12;
+        private System.Windows.Forms.Button btnBackupRSAPriv;
+        private System.Windows.Forms.Button btnRestoreRSAPriv;
+        private System.Windows.Forms.Button btnStoreRSAPriv;
+        private System.Windows.Forms.Label lbHiddenRSA;
+        private System.Windows.Forms.Button btnMkRSAKey;
+        private System.Windows.Forms.GroupBox gbHiddenEC;
+        private System.Windows.Forms.Label lbHiddenEC;
+        private System.Windows.Forms.Button btnECImportP12;
+        private System.Windows.Forms.Button btnMkECKey;
+        private System.Windows.Forms.Button btnBackupECPriv;
+        private System.Windows.Forms.Button btnStoreECPriv;
+        private System.Windows.Forms.Button btnRestoreECPriv;
+        private System.Windows.Forms.Button btnRsaCsr;
+        private System.Windows.Forms.Button btnEcdsaCsr;
+        private System.Windows.Forms.GroupBox gpPrivateKeyMode;
+        private System.Windows.Forms.RadioButton rbCRT;
+        private System.Windows.Forms.RadioButton rbModExp;
+        private System.Windows.Forms.Button btnGetRSAPublic;
+        private System.Windows.Forms.Button btnGetECPublicKey;
+        private System.Windows.Forms.Label lbECDSASignatureAttention;
     }
 }
 

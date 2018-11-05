@@ -1,4 +1,4 @@
-﻿namespace EcdsaTest
+﻿namespace uFRSigner
 {
     partial class frmPassword
     {
@@ -84,6 +84,8 @@
             this.Controls.Add(this.tbPassword);
             this.Controls.Add(this.lbPassword);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmPassword";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Password";

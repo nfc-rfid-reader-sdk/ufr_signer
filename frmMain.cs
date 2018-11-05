@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
+using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Org.BouncyCastle.Math;
@@ -18,17 +19,19 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.Encoders;
-using System.ComponentModel;
 using uFR;
 
-namespace EcdsaTest
+namespace uFRSigner
 {
     public partial class frmMain : Form
     {
+        frmCSR frmCsr;
         const UInt32 MIN_UFR_LIB_VERSION = 0x04030000;
         const UInt32 MIN_UFR_FW_VERSION = 0x0309002F;
         string uFR_NotOpenedMessage = "uFR reader not opened.\r\nYou can't work with DL Signer cards.";
         string mCertPassword = "";
+        private bool mSOPinLoggedIn = false;
+        private bool mUserPinLoggedIn = false;
 
         private bool uFR_Opened = false;
         private bool uFR_Selected = false;
@@ -78,7 +81,7 @@ namespace EcdsaTest
                 {
                     version = uFCoder.GetDllVersion();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     throw new Exception("Can't find "
                         + uFCoder.DLL_NAME
@@ -154,6 +157,8 @@ namespace EcdsaTest
         private void frmMain_Load(object sender, EventArgs e)
         {
             Text = Text + " v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            frmCsr = frmCSR.getInstance();
 
             cbRSAKeyIndex.SelectedIndex = 0;
             cbRSAKeyLength.SelectedIndex = 8;
@@ -540,9 +545,80 @@ namespace EcdsaTest
             }
         }
 
+        private void btnMkRSAKeyOnCard_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status = DL_STATUS.UFR_OK;
+            byte key_index = Convert.ToByte(cbRSAKeyIndex.Text);
+            byte key_type;
+            UInt16 key_size_bits = Convert.ToUInt16(cbRSAKeyLength.Text);
+
+            try
+            {
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+#if USING_PIN
+                if (!mSOPinLoggedIn)
+                    throw new Exception("To generate key pairs, login as SO (enter SO PIN and click \"SO Login\" on \"PIN Codes\" tab)");
+#endif
+                Cursor.Current = Cursors.WaitCursor;
+
+                if (rbCRT.Checked)
+                {
+                    key_type = (byte)JCDL_KEY_TYPES.TYPE_RSA_CRT_PRIVATE;
+                }
+                else
+                {
+                    key_type = (byte)JCDL_KEY_TYPES.TYPE_RSA_PRIVATE;
+                }
+
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#if USING_PIN
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#endif
+                status = uFCoder.JCAppGenerateKeyPair(key_type, key_index, key_size_bits, null, 0);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                MessageBox.Show("The key has been successfully stored.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                {
+                    mSOPinLoggedIn = false;
+                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
         private void btnStoreRSAPriv_Click(object sender, EventArgs e)
         {
-            DL_STATUS status;
+            DL_STATUS status = DL_STATUS.UFR_OK;
             byte key_index = Convert.ToByte(cbRSAKeyIndex.Text);
             byte key_type;
             UInt16 key_size_bits = Convert.ToUInt16(cbRSAKeyLength.Text);
@@ -554,7 +630,10 @@ namespace EcdsaTest
             {
                 if (!uFR_Opened)
                     throw new Exception(uFR_NotOpenedMessage);
-
+#if USING_PIN
+                if (!mSOPinLoggedIn)
+                    throw new Exception("To store key pairs, login as SO (enter SO PIN and click \"SO Login\" on \"PIN Codes\" tab)");
+#endif
                 Cursor.Current = Cursors.WaitCursor;
 
                 if (rbCRT.Checked)
@@ -618,6 +697,11 @@ namespace EcdsaTest
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
+#if USING_PIN
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#endif
                 status = uFCoder.JCAppPutPrivateKey(key_type, key_index, key, key_size_bits, null, 0);
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
@@ -626,7 +710,14 @@ namespace EcdsaTest
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                {
+                    mSOPinLoggedIn = false;
+                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -662,6 +753,9 @@ namespace EcdsaTest
                     }
                     if (key_bytes_len > barr1.Length)
                         barr1 = zeroPadArray(barr1, 0, key_bytes_len - barr1.Length);
+
+                    /*/ debug:
+                    tbECParamPrime.Text = mECCurve.Curve.Field.Characteristic.ToString();//*/
                     tbECParamPrime.Text = BitConverter.ToString(barr1).Replace("-", "");
                 }
                 else if (mECCurve.Curve.GetType() == typeof(F2mCurve))
@@ -1127,9 +1221,182 @@ namespace EcdsaTest
             }
         }
 
+        private void btnMkECKeyOnCard_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status = DL_STATUS.UFR_OK;
+            byte key_index = Convert.ToByte(cbECKeyIndex.Text);
+            byte key_type;
+            UInt16 key_size_bits = Convert.ToUInt16(cbECKeyLength.Text);
+            UInt16 component_size_bytes = (UInt16) ((key_size_bits + 7) / 8);
+            bool isCurveTrinomial;
+            byte[] param = null;
+            UInt16 param_size = 1; // for r_oversized indicator or (byte)!isCurveTrinomial at index 0
+            UInt16 param_offset = 1;
+            UInt16 temp;
+            byte r_oversized = 0;
+
+            try
+            {
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+#if USING_PIN
+                if (!mSOPinLoggedIn)
+                    throw new Exception("To generate key pairs, login as SO (enter SO PIN and click \"SO Login\" on \"PIN Codes\" tab)");
+#endif
+
+                if (rbECFieldPrime.Checked)
+                {
+                    key_type = (byte)JCDL_KEY_TYPES.TYPE_EC_FP_PRIVATE;
+                    param_size += (UInt16)(component_size_bytes * 6 + 3);
+
+                    // Code is logically deliberately dislocated here:
+                    if (tbECParamR.Text.Length / 2 != component_size_bytes)
+                    {
+                        if (tbECParamR.Text.Length / 2 != component_size_bytes + 1)
+                        {
+                            throw new Exception("Wrong size of the EC curve parameter R");
+                        }
+                        else
+                        {
+                            r_oversized = 1;
+                            ++param_size;
+                        }
+                    }
+                    param = new byte[param_size];
+                    param[0] = r_oversized;
+
+                    if (tbECParamPrime.Text.Length / 2 != component_size_bytes)
+                        throw new Exception("Wrong size of the EC curve parameter p");
+                    Array.Copy(Hex.Decode(tbECParamPrime.Text), 0, param, param_offset, component_size_bytes);
+                    param_offset += component_size_bytes;
+
+                    if (tbECParamA.Text.Length / 2 != component_size_bytes)
+                        throw new Exception("Wrong size of the EC curve parameter a");
+                    Array.Copy(Hex.Decode(tbECParamA.Text), 0, param, param_offset, component_size_bytes);
+                    param_offset += component_size_bytes;
+
+                    if (tbECParamB.Text.Length / 2 != component_size_bytes)
+                        throw new Exception("Wrong size of the EC curve parameter b");
+                    Array.Copy(Hex.Decode(tbECParamB.Text), 0, param, param_offset, component_size_bytes);
+                    param_offset += component_size_bytes;
+
+                    if (tbECParamG.Text.Length / 2 != component_size_bytes * 2 + 1)
+                        throw new Exception("Wrong size of the EC curve parameter G(uc)");
+                    Array.Copy(Hex.Decode(tbECParamG.Text), 0, param, param_offset, component_size_bytes * 2 + 1);
+                    param_offset += (UInt16)(component_size_bytes * 2 + 1);
+
+                    Array.Copy(Hex.Decode(tbECParamR.Text), 0, param, param_offset, component_size_bytes + r_oversized);
+                    param_offset += (UInt16)(component_size_bytes + r_oversized);
+
+                    temp = Convert.ToUInt16(tbECParamK.Text);
+                    param[param_offset++] = (byte)(temp >> 8);
+                    param[param_offset] = (byte)temp;
+                }
+                else
+                {
+                    key_type = (byte)JCDL_KEY_TYPES.TYPE_EC_F2M_PRIVATE;
+                    param_size += (UInt16)(component_size_bytes * 5 + 5);
+
+                    isCurveTrinomial = ((F2mCurve)mECCurve.Curve).IsTrinomial();
+                    if (!isCurveTrinomial)
+                    {
+                        param_size += 4;
+                    }
+                    param = new byte[param_size];
+                    param[0] = (byte)(!isCurveTrinomial ? 1 : 0);
+
+                    if (tbECParamA.Text.Length / 2 != component_size_bytes)
+                        throw new Exception("Wrong size of the EC curve parameter a");
+                    Array.Copy(Hex.Decode(tbECParamA.Text), 0, param, param_offset, component_size_bytes);
+                    param_offset += component_size_bytes;
+
+                    if (tbECParamB.Text.Length / 2 != component_size_bytes)
+                        throw new Exception("Wrong size of the EC curve parameter b");
+                    Array.Copy(Hex.Decode(tbECParamB.Text), 0, param, param_offset, component_size_bytes);
+                    param_offset += component_size_bytes;
+
+                    if (tbECParamG.Text.Length / 2 != component_size_bytes * 2 + 1)
+                        throw new Exception("Wrong size of the EC curve parameter G(uc)");
+                    Array.Copy(Hex.Decode(tbECParamG.Text), 0, param, param_offset, component_size_bytes * 2 + 1);
+                    param_offset += (UInt16)(component_size_bytes * 2 + 1);
+
+                    if (tbECParamR.Text.Length / 2 != component_size_bytes)
+                        throw new Exception("Wrong size of the EC curve parameter R");
+                    Array.Copy(Hex.Decode(tbECParamR.Text), 0, param, param_offset, component_size_bytes);
+                    param_offset += component_size_bytes;
+
+                    temp = Convert.ToUInt16(tbECParamE1.Text);
+                    param[param_offset++] = (byte)(temp >> 8);
+                    param[param_offset++] = (byte)temp;
+
+                    if (!isCurveTrinomial)
+                    {
+                        temp = Convert.ToUInt16(tbECParamE2.Text);
+                        param[param_offset++] = (byte)(temp >> 8);
+                        param[param_offset++] = (byte)temp;
+
+                        temp = Convert.ToUInt16(tbECParamE3.Text);
+                        param[param_offset++] = (byte)(temp >> 8);
+                        param[param_offset++] = (byte)temp;
+                    }
+
+                    temp = Convert.ToUInt16(tbECParamK.Text);
+                    param[param_offset++] = (byte)(temp >> 8);
+                    param[param_offset] = (byte)temp;
+                }
+
+                Cursor.Current = Cursors.WaitCursor;
+
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+#if USING_PIN
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#endif
+
+                status = uFCoder.JCAppGenerateKeyPair(key_type, key_index, key_size_bits, param, param_size);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                MessageBox.Show("The key has been successfully stored.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                {
+                    mSOPinLoggedIn = false;
+                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F), 
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
         private void btnStoreECPriv_Click(object sender, EventArgs e)
         {
-            DL_STATUS status;
+            DL_STATUS status = DL_STATUS.UFR_OK;
             byte key_index = Convert.ToByte(cbECKeyIndex.Text);
             byte key_type;
             byte[] key_param = new byte[1];
@@ -1147,13 +1414,16 @@ namespace EcdsaTest
             {
                 if (!uFR_Opened)
                     throw new Exception(uFR_NotOpenedMessage);
-
+#if USING_PIN
+                if (!mSOPinLoggedIn)
+                    throw new Exception("To store key pairs, login as SO (enter SO PIN and click \"SO Login\" on \"PIN Codes\" tab)");
+#endif
                 Cursor.Current = Cursors.WaitCursor;
 
                 key_param[0] = 0;
                 key_param_len = 1;
 
-                X9ECParameters curve = SecNamedCurves.GetByName(cbECName.Text);
+                //X9ECParameters curve = SecNamedCurves.GetByName(cbECName.Text);
 
                 if (rbECFieldPrime.Checked)
                 {
@@ -1279,6 +1549,12 @@ namespace EcdsaTest
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
+#if USING_PIN
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#endif
+
                 status = uFCoder.JCAppPutPrivateKey(key_type, key_index, key, key_size_bits, key_param, key_param_len);
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
@@ -1287,7 +1563,14 @@ namespace EcdsaTest
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                {
+                    mSOPinLoggedIn = false;
+                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -1396,6 +1679,15 @@ namespace EcdsaTest
                     break;
             }
             populateECDomainParameters(cbECName.Text);
+            /*/ DEBUG:
+            if (tbECParamR.Text.Length != tbECParamA.Text.Length)
+            {
+                tbECParamR.BackColor = Color.MistyRose;
+            }
+            else
+            {
+                tbECParamR.BackColor = SystemColors.Window;
+            }//*/
 
             m_gate_cbECKeyLength = false;
         }
@@ -1912,9 +2204,110 @@ namespace EcdsaTest
             }
         }
 
+        IDigest mLocalDigest;
+        bool mLocalDigestInUse;
+
+        //------------------------------------------------------------------------------
+        const UInt32 ASN1_MAX_LEN_BYTES = 4;
+        //------------------------------------------------------------------------------
+        private bool asn1DecodeLength(byte[] bx, ref UInt32 len, out UInt32 len_bytes)
+        {
+
+            len_bytes = 0;
+
+	        if ((bx[0] & 0x80) != 0x80)
+	        {
+                len_bytes = 1;
+		        len = bx[0];
+		        return true;
+	        }
+
+            len_bytes = (UInt32)bx[0] & 0x7F;
+
+	        if (len_bytes > ASN1_MAX_LEN_BYTES)
+	        {
+                len_bytes = 0;
+		        return false;
+	        }
+
+	        if ((len_bytes< (ASN1_MAX_LEN_BYTES + 1)) && (len_bytes > 0))
+	        {
+		        // Big Endian decoding:
+		        for (int i = (Int32)len_bytes; i > 0; i--)
+		        {
+                    len |= (uint)bx[i] << (8 * ((byte)len_bytes - i));
+		        }
+	        }
+	        else
+	        {
+                len_bytes = 0;
+		        return false;
+	        }
+
+            len_bytes += 1;
+	        return true;
+        }
+
+        private byte[] removeArrItemAt(byte[] inArr, int idx)
+        {
+            byte[] res = new byte[inArr.Length - 1];
+
+            inArr.Take(idx + 1).ToArray().CopyTo(res, 0);
+            inArr.Skip(idx + 1).ToArray().CopyTo(res, idx);
+
+            return res;
+        }
+
+        private byte[] fixEccSignatureSequence(byte[] der_sig)
+        {
+            byte[] res = der_sig.ToArray();
+            int der_idx = 0, der_tmp_idx;
+            uint der_len = 0, der_len_len;
+
+            if (res[der_idx++] != 0x30)
+                throw new Exception("ASN.1 DER signature format error");
+            if (!asn1DecodeLength(res.Skip(der_idx).ToArray(), ref der_len, out der_len_len))
+                throw new Exception("ASN.1 DER signature format error");
+            if (der_len_len != 1)
+                throw new Exception("ASN.1 DER signature format error---");
+            der_idx += (int)der_len_len;
+            if (res[der_idx++] != 2)
+                throw new Exception("ASN.1 DER signature format error");
+            der_tmp_idx = der_idx; // Points to a length TLV field
+            if (!asn1DecodeLength(res.Skip(der_idx).ToArray(), ref der_len, out der_len_len))
+                throw new Exception("ASN.1 DER signature format error");
+            der_idx += (int)der_len_len;
+            if ((res[der_idx] == 0) && ((res[der_idx + 1] & 0x80) == 0))
+            {
+                res = removeArrItemAt(res, der_idx);
+                --der_len;
+                if (der_len_len != 1)
+                    throw new Exception("ASN.1 DER signature format error-");
+                --res[der_tmp_idx];
+                --res[1];
+            }
+            der_idx += (int)der_len;
+            if (res[der_idx++] != 2)
+                throw new Exception("ASN.1 DER signature format error");
+            der_tmp_idx = der_idx; // Points to a length TLV field
+            if (!asn1DecodeLength(res.Skip(der_idx).ToArray(), ref der_len, out der_len_len))
+                throw new Exception("ASN.1 DER signature format error");
+            der_idx += (int)der_len_len;
+            if ((res[der_idx] == 0) && ((res[der_idx + 1] & 0x80) == 0))
+            {
+                res = removeArrItemAt(res, der_idx);
+                if (der_len_len != 1)
+                    throw new Exception("ASN.1 DER signature format error--");
+                --res[der_tmp_idx];
+                --res[1];
+            }
+
+            return res;
+        }
+
         private void btnSignature_Click(object sender, EventArgs e)
         {
-            DL_STATUS status;
+            DL_STATUS status = DL_STATUS.UFR_OK;
             BackgroundWorker bgw = null;
             byte key_index = 0;
             byte jc_signer_cipher = 0;
@@ -1923,12 +2316,18 @@ namespace EcdsaTest
             byte[] sig;
             int chunk_len = 0;
             byte[] chunk;
+            string localDigestMechanism = "";
 
             try
             {
+                mLocalDigestInUse = true;
+
                 if (!uFR_Opened)
                     throw new Exception(uFR_NotOpenedMessage);
-
+#if USING_PIN
+                if (!mUserPinLoggedIn)
+                    throw new Exception("To get signature, login as User (enter User PIN and click \"User Login\" on \"PIN Codes\" tab)");
+#endif
                 if (tbMessage.Text.Trim().Equals(""))
                     throw new Exception("Signing message can't have a zero length.");
 
@@ -1956,26 +2355,35 @@ namespace EcdsaTest
                 switch (cbDigest.Text)
                 {
                     case "None":
+                        mLocalDigestInUse = false;
                         jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
                         break;
                     case "SHA-1":
+                        mLocalDigestInUse = false;
                         jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA;
                         break;
                     case "SHA-224":
-                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA_224;
+                        localDigestMechanism = "SHA-224";
+                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
                         break;
                     case "SHA-256":
-                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA_256;
+                        localDigestMechanism = "SHA-256";
+                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
                         break;
                     case "SHA-384":
-                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA_384;
+                        localDigestMechanism = "SHA-384";
+                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
                         break;
                     case "SHA-512":
-                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA_512;
+                        localDigestMechanism = "SHA-512";
+                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
                         break;
                     default:
                         throw new Exception("Unknown digest algorithm");
                 }
+
+                if (mLocalDigestInUse)
+                    mLocalDigest = DigestUtilities.GetDigest(localDigestMechanism);
 
                 switch (mMessageRadix) // from radix
                 {
@@ -2016,11 +2424,22 @@ namespace EcdsaTest
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
+#if USING_PIN
+                status = uFCoder.JCAppLogin(false, tbPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#endif
+
                 if (mSignigFileStream != null)
                 {
-                    chunk_len = (int)mSignigFileStream.Length > uFCoder.SIG_MAX_PLAIN_DATA_LEN 
-                        ? (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN 
-                        : (int)mSignigFileStream.Length;
+                    if (mLocalDigestInUse)
+                        chunk_len = (int)mSignigFileStream.Length > 4096
+                            ? 4096
+                            : (int)mSignigFileStream.Length;
+                    else
+                        chunk_len = (int)mSignigFileStream.Length > uFCoder.SIG_MAX_PLAIN_DATA_LEN 
+                            ? (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN 
+                            : (int)mSignigFileStream.Length;
 
                     if (mSignigFileStream.Read(chunk, 0, chunk_len) != chunk_len)
                         throw new Exception("Error while reading file " + tbMessage.Text);
@@ -2031,11 +2450,16 @@ namespace EcdsaTest
                 {
                     pbSigning.Maximum = (int)(mSignigFileStream.Length / uFCoder.SIG_MAX_PLAIN_DATA_LEN);
 
-                    status = uFCoder.JCAppSignatureBegin(jc_signer_cipher, jc_signer_digest, jc_signer_padding,
+                    if (mLocalDigestInUse)
+                        mLocalDigest.BlockUpdate(chunk, 0, chunk_len);
+                    else
+                    {
+                        status = uFCoder.JCAppSignatureBegin(jc_signer_cipher, jc_signer_digest, jc_signer_padding,
                                                          key_index, chunk, (UInt16)chunk_len,
                                                          null, 0);
-                    if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                        if (status != DL_STATUS.UFR_OK)
+                            throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    }
 
                     bgw = new BackgroundWorker();
                     bgw.ProgressChanged += bgw_ProgressChanged;
@@ -2068,8 +2492,10 @@ namespace EcdsaTest
                 pbSigning.Value = pbSigning.Maximum - 1;
                 pbSigning.Value = pbSigning.Maximum;
 
-                tbSignatureRadixChanged(rbMessageHex, new EventArgs());
+                tbSignature.Text = "";
+                //tbSignatureRadixChanged(rbMessageHex, new EventArgs());
                 rbSignatureHex.Checked = true;
+                mSignatureRadix = RADIX.Hex;
 
                 if (isECDSACipher)
                 {
@@ -2080,6 +2506,10 @@ namespace EcdsaTest
                     byte[] der_sig = new byte[len - 2];
                     Array.Copy(sig, der_sig, len - 2);
 
+                    der_sig = fixEccSignatureSequence(der_sig);
+
+                    /*/
+                    // If you want to remove DER tags and lengths from signature:
                     Asn1InputStream decoder = new Asn1InputStream(new MemoryStream(der_sig));
                     DerSequence seq = (DerSequence)decoder.ReadObject();
                     DerInteger der_r = (DerInteger)seq[0];
@@ -2102,7 +2532,9 @@ namespace EcdsaTest
                     if (key_size_bytes > s.Length)
                         s = zeroPadArray(s, 0, key_size_bytes - s.Length);
 
-                    tbSignature.Text = BitConverter.ToString(r).Replace("-", "") + BitConverter.ToString(s).Replace("-", "");
+                    tbSignature.Text = BitConverter.ToString(r).Replace("-", "") + BitConverter.ToString(s).Replace("-", "");//*/
+
+                    tbSignature.Text = BitConverter.ToString(der_sig).Replace("-", "");
                 }
                 else
                     tbSignature.Text = BitConverter.ToString(sig).Replace("-", "");
@@ -2111,7 +2543,14 @@ namespace EcdsaTest
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                {
+                    mUserPinLoggedIn = false;
+                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -2187,8 +2626,9 @@ namespace EcdsaTest
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
                 tbSignature.Text = "";
-                tbSignatureRadixChanged(rbMessageHex, new EventArgs());
+                //tbSignatureRadixChanged(rbMessageHex, new EventArgs());
                 rbSignatureHex.Checked = true;
+                mSignatureRadix = RADIX.Hex;
 
                 if (isECDSACipher)
                 {
@@ -2341,7 +2781,7 @@ namespace EcdsaTest
 
         private void btnPutCertFromFile_Click(object sender, EventArgs e)
         {
-            DL_STATUS status;
+            DL_STATUS status = DL_STATUS.UFR_OK;
             byte obj_type = (byte) cbObjType.SelectedIndex;
             byte obj_index = Convert.ToByte(cbObjIndex.Text);
             X509Certificate2 cert = null;
@@ -2358,7 +2798,10 @@ namespace EcdsaTest
 
                 if (!uFR_Opened)
                     throw new Exception(uFR_NotOpenedMessage);
-
+#if USING_PIN
+                if (!mSOPinLoggedIn)
+                    throw new Exception("To store key pairs, login as SO (enter SO PIN and click \"SO Login\" on \"PIN Codes\" tab)");
+#endif
                 string file_ext = Path.GetExtension(tbCertFile.Text);
 
                 if (file_ext == ".p12" || file_ext == ".pfx")
@@ -2400,6 +2843,12 @@ namespace EcdsaTest
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
+#if USING_PIN
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#endif
+
                 status = uFCoder.JCAppPutObj(obj_type,  obj_index, raw_cert, (UInt16) raw_cert.Length, raw_id, (byte) raw_id.Length);
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
@@ -2420,7 +2869,14 @@ namespace EcdsaTest
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                {
+                    mSOPinLoggedIn = false;
+                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -2714,6 +3170,428 @@ namespace EcdsaTest
         {
             if (e.TabPage == tabCardObjects)
                 btnRefresh_Click(btnRefresh, new EventArgs());
+            else if (e.TabPage == tabPinCodes)
+                btnRefreshTriesRemaining_Click(btnRefreshTriesRemaining, new EventArgs());
+        }
+
+        private void btnRefreshTriesRemaining_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status = DL_STATUS.UFR_OK;
+            UInt16 PukSOTriesRemaining, PukTriesRemaining, PinSOTriesRemaining, PinTriesRemaining;
+
+            lbPukSOTriesRemaining.Text = "Tries remaining: ?";
+            lbPukTriesRemaining.Text = "Tries remaining: ?";
+            lbPinSOTriesRemaining.Text = "Tries remaining: ?";
+            lbPinTriesRemaining.Text = "Tries remaining: ?";
+            this.Refresh();
+
+            try
+            {
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PUK, out PukSOTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PUK, out PukTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PIN, out PinSOTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PIN, out PinTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                lbPukSOTriesRemaining.Text = "Tries remaining: " + PukSOTriesRemaining;
+                lbPukTriesRemaining.Text = "Tries remaining: " + PukTriesRemaining;
+                lbPinSOTriesRemaining.Text = "Tries remaining: " + PinSOTriesRemaining;
+                lbPinTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void btnSOLogin_Click(object sender, EventArgs e)
+        {
+#if USING_PIN
+            UInt16 PinTriesRemaining;
+            DL_STATUS status = DL_STATUS.UFR_OK;
+
+            try
+            {
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+            mSOPinLoggedIn = true;
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PIN, out PinTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                lbPinSOTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
+
+                MessageBox.Show("The SO has been successfully logged in", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                mSOPinLoggedIn = false;
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                    lbPinSOTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+#endif
+        }
+
+        private void btnUserLogin_Click(object sender, EventArgs e)
+        {
+#if USING_PIN
+            UInt16 PinTriesRemaining;
+            DL_STATUS status = DL_STATUS.UFR_OK;
+
+            try
+            {
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppLogin(false, tbPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                mUserPinLoggedIn = true;
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PIN, out PinTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                lbPinTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
+
+                MessageBox.Show("The user has been successfully logged in", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                mUserPinLoggedIn = false;
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                    lbPinTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+#endif
+        }
+
+        private void btnUnblockUserPin_Click(object sender, EventArgs e)
+        {
+            UInt16 PinTriesRemaining;
+            DL_STATUS status = DL_STATUS.UFR_OK;
+
+            try
+            {
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppPinUnblock(false, tbPuk.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PUK, out PinTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                lbPukTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
+
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PIN, out PinTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                lbPinTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
+
+                MessageBox.Show("The user PIN has been successfully unblocked", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            }
+            catch (Exception ex)
+            {
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                    lbPukTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void btnUnblockSOPin_Click(object sender, EventArgs e)
+        {
+            UInt16 PinTriesRemaining;
+            DL_STATUS status = DL_STATUS.UFR_OK;
+
+            try
+            {
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppPinUnblock(true, tbSOPuk.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PUK, out PinTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                lbPukSOTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
+
+                status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PIN, out PinTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                lbPinSOTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
+
+                MessageBox.Show("The SO PIN has been successfully unblocked", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                    lbPukSOTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void tbSOPin_TextChanged(object sender, EventArgs e)
+        {
+            btnSOLogin.Enabled = tbSOPin.Text.Length >= uFCoder.JCAPP_MIN_PIN_LENGTH;
+        }
+
+        private void tbPin_TextChanged(object sender, EventArgs e)
+        {
+            btnUserLogin.Enabled = tbPin.Text.Length >= uFCoder.JCAPP_MIN_PIN_LENGTH;
+        }
+
+        private void tbSOPuk_TextChanged(object sender, EventArgs e)
+        {
+            btnUnblockSOPin.Enabled = tbSOPuk.Text.Length == uFCoder.JCAPP_PUK_LENGTH;
+        }
+
+        private void tbPuk_TextChanged(object sender, EventArgs e)
+        {
+            btnUnblockUserPin.Enabled = tbPuk.Text.Length == uFCoder.JCAPP_PUK_LENGTH;
+        }
+
+        private void tbNewSOPin_TextChanged(object sender, EventArgs e)
+        {
+            btnChangeSOPin.Enabled = (tbNewSOPin.Text.Length >= uFCoder.JCAPP_MIN_PIN_LENGTH) && tbNewSOPin.Text.Equals(tbNewSOPinAgain.Text);
+        }
+
+        private void tbNewPin_TextChanged(object sender, EventArgs e)
+        {
+            btnChangeUserPin.Enabled = (tbNewPin.Text.Length >= uFCoder.JCAPP_MIN_PIN_LENGTH) && tbNewPin.Text.Equals(tbNewPinAgain.Text);
+        }
+
+        private void tbNewSOPuk_TextChanged(object sender, EventArgs e)
+        {
+            btnChangeSOPuk.Enabled = (tbNewSOPuk.Text.Length == uFCoder.JCAPP_PUK_LENGTH) && tbNewSOPuk.Text.Equals(tbNewSOPukAgain.Text);
+        }
+
+        private void tbNewPuk_TextChanged(object sender, EventArgs e)
+        {
+            btnChangePuk.Enabled = (tbNewPuk.Text.Length == uFCoder.JCAPP_PUK_LENGTH) && tbNewPuk.Text.Equals(tbNewPukAgain.Text);
+        }
+
+        private void cbCipher_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lbECDSASignatureAttention.Visible = cbCipher.Text.Equals("ECDSA");
+        }
+
+        private void btnGetECPublicKey_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status = DL_STATUS.UFR_OK;
+            byte key_index = Convert.ToByte(cbECKeyIndex.Text);
+            UInt16 k, key_size_bits;
+            byte[] keyW, field, a, b, g, r;
+
+            try
+            {
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+                Cursor.Current = Cursors.WaitCursor;
+
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetEcPublicKey(key_index, out keyW, out field, out a, out b, out g, out r, out k, out key_size_bits);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                tbECPubKey.Text = Hex.ToHexString(keyW);
+                tbECParamPrime.Text = Hex.ToHexString(field);
+                tbECParamA.Text = Hex.ToHexString(a);
+                tbECParamB.Text = Hex.ToHexString(b);
+                tbECParamG.Text = Hex.ToHexString(g);
+                tbECParamR.Text = Hex.ToHexString(r);
+                tbECParamK.Text = k.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void btnRsaCsr_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                byte key_idx = Convert.ToByte(cbRSAKeyIndex.Text);
+
+                AsymmetricKeyParameter key = new RsaKeyParameters(false, new BigInteger(1, Hex.Decode(tbRSAModulus.Text)),
+                            new BigInteger(1, Hex.Decode(tbRSAPubExp.Text)));
+
+                frmCsr.setParameters(key, key_idx, "RSA");
+                frmCsr.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnEcdsaCsr_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                byte key_idx = Convert.ToByte(cbECKeyIndex.Text);
+                X9ECParameters curve = SecNamedCurves.GetByName(cbECName.Text);
+                ECDomainParameters curveSpec = new ECDomainParameters(curve.Curve, curve.G, curve.N, curve.H, curve.GetSeed());
+                AsymmetricKeyParameter key = new ECPublicKeyParameters("ECDSA", curve.Curve.DecodePoint(Hex.Decode(tbECPubKey.Text)), curveSpec);
+
+                frmCsr.setParameters(key, key_idx, "ECDSA");
+                frmCsr.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnGetRSAPublic_Click(object sender, EventArgs e)
+        {
+
         }
 
 #if MY_DEBUG

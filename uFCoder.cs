@@ -167,6 +167,7 @@ namespace uFR
 
         // APDU Error Codes:
         UFR_APDU_JC_APP_NOT_SELECTED = 0x6000,
+        UFR_APDU_JC_APP_BUFF_EMPTY,
         UFR_APDU_WRONG_SELECT_RESPONSE,
         UFR_APDU_WRONG_KEY_TYPE,
         UFR_APDU_WRONG_KEY_SIZE,
@@ -181,12 +182,23 @@ namespace uFR
         UNKNOWN_ERROR */ = 2147483647 // 0x7FFFFFFF
     };
 
+    public enum DL_SECURE_CODE
+    {
+        USER_PIN = 0,
+        SO_PIN,
+        USER_PUK,
+        SO_PUK
+    };
+
     public static class uFCoder
     {
+        public const uint JCAPP_MIN_PIN_LENGTH = 4;
+        public const uint JCAPP_MAX_PIN_LENGTH = 8;
+        public const uint JCAPP_PUK_LENGTH = 8;
         public const uint SIG_MAX_PLAIN_DATA_LEN = 255;
-        public const string JCDL_AID_RID = "A0 F0 F1 F2 F3";
-        public const string JCDL_AID_PIX = "00 01 00 01";
-        public const string JCDL_AID = JCDL_AID_RID + JCDL_AID_PIX;
+        public const string JCDL_AID_RID_PLUS = "F0 44 4C 6F 67 69 63";
+        public const string JCDL_AID_PIX = "00 01";
+        public const string JCDL_AID = JCDL_AID_RID_PLUS + JCDL_AID_PIX;
 
         //--------------------------------------------------------------------------------------------------
 #if WIN64
@@ -891,6 +903,9 @@ namespace uFR
                                                           [In] byte[] key, UInt16 key_bit_len, 
                                                           [In] byte[] key_param, UInt16 key_parm_len);
 
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGenerateKeyPair")]
+        public static extern DL_STATUS JCAppGenerateKeyPair(byte key_type, byte key_index, UInt16 key_bit_len, [In] byte[] param, UInt16 param_size);
+
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppSignatureBegin")]
         public static extern DL_STATUS JCAppSignatureBegin(byte cipher, byte digest, byte padding, byte key_index,
                                                            [In] byte[] chunk, UInt16 chunk_len,
@@ -994,6 +1009,117 @@ namespace uFR
             return JCAppGetObj(obj_type, obj_index, obj, (UInt16) obj.Length);
         }
 
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetErrorDescription")]
+        private static extern IntPtr GetErrorDescription(UInt32 apdu_error_status);
+        public static string JCAppGetErrorDescription(UInt32 apdu_error_status)
+        {
+            IntPtr str_ret = GetErrorDescription(apdu_error_status);
+            return Marshal.PtrToStringAnsi(str_ret);
+        }
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppLogin")]
+        public static extern DL_STATUS JCAppLogin(byte SO, [In] byte[] pin, byte pinSize);
+        public static DL_STATUS JCAppLogin(bool SO, string pin)
+        {
+            if (pin.Length > byte.MaxValue)
+                return DL_STATUS.UFR_PARAMETERS_ERROR;
+
+            byte[] pin_param = Encoding.ASCII.GetBytes(pin);
+            return JCAppLogin(SO ? (byte)1 : (byte)0, pin_param, (byte)pin_param.Length);
+        }
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetPinTriesRemaining")]
+        public static extern DL_STATUS JCAppGetPinTriesRemaining(DL_SECURE_CODE secureCodeType, out UInt16 triesRemaining);
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppPinChange")]
+        public static extern DL_STATUS JCAppPinChange(DL_SECURE_CODE secureCodeType, [In] byte[] newPin, byte newPinSize);
+        public static DL_STATUS JCAppPinChange(DL_SECURE_CODE secureCodeType, string newPin)
+        {
+            if (newPin.Length > byte.MaxValue)
+                return DL_STATUS.UFR_PARAMETERS_ERROR;
+
+            byte[] newPin_param = Encoding.ASCII.GetBytes(newPin);
+            return JCAppPinChange(secureCodeType, newPin_param, (byte)newPin_param.Length);
+        }
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppPinUnblock")]
+        public static extern DL_STATUS JCAppPinUnblock(byte SO, [In] byte[] puk, byte pukSize);
+        public static DL_STATUS JCAppPinUnblock(bool SO, string puk)
+        {
+            if (puk.Length > byte.MaxValue)
+                return DL_STATUS.UFR_PARAMETERS_ERROR;
+
+            byte[] puk_param = Encoding.ASCII.GetBytes(puk);
+            return JCAppPinUnblock(SO ? (byte)1 : (byte)0, puk_param, (byte)puk_param.Length);
+        }
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetRsaPublicKey")]
+        private static extern DL_STATUS JCAppGetRsaPublicKey(byte key_index, [Out] byte[] modulus, out UInt16 modulus_size, 
+                [Out] byte[] exponent, out UInt16 exponent_size);
+        public static DL_STATUS JCAppGetRsaPublicKey(byte key_index, out byte[] modulus, out byte[] exponent)
+        {
+            DL_STATUS status;
+
+            UInt16 modulus_size = 0;
+            UInt16 exponent_size = 0;
+            modulus = null;
+            exponent = null;
+            status = JCAppGetRsaPublicKey(key_index, modulus, out modulus_size, exponent, out exponent_size);
+            if (status == DL_STATUS.UFR_OK)
+            {
+                modulus = new byte[modulus_size];
+                exponent = new byte[exponent_size];
+                status = JCAppGetRsaPublicKey(key_index, modulus, out modulus_size, exponent, out exponent_size);
+            }
+            return status;
+        }
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetEcPublicKey")]
+        private static extern DL_STATUS JCAppGetEcPublicKey(byte key_index, [Out] byte[] keyW, out UInt16 keyW_size,
+                [Out] byte[] field, out UInt16 field_size, [Out] byte[] ab, out UInt16 ab_size, 
+                [Out] byte[] g, out UInt16 g_size, [Out] byte[] r, out UInt16 r_size, out UInt16 k, out UInt16 key_size_bits);
+        public static DL_STATUS JCAppGetEcPublicKey(byte key_index, out byte[] keyW, out byte[] field, out byte[] a, out byte[] b, out byte[] g, out byte[] r,
+                out UInt16 k, out UInt16 key_size_bits)
+        {
+            DL_STATUS status;
+
+            UInt16 keyW_size = 0;
+            UInt16 field_size = 0;
+            UInt16 ab_size = 0;
+            UInt16 g_size = 0;
+            UInt16 r_size = 0;
+            byte[] ab = null;
+            keyW = field = a = b = g = r = null;
+            k = key_size_bits = 0;
+            status = JCAppGetEcPublicKey(key_index, keyW, out keyW_size, field, out field_size, ab, out ab_size, g, out g_size, 
+                    r, out r_size, out k, out key_size_bits);
+            if (status == DL_STATUS.UFR_OK)
+            {
+                keyW = new byte[keyW_size];
+                field = new byte[field_size];
+                ab = new byte[ab_size];
+                g = new byte[g_size];
+                r = new byte[r_size];
+                status = JCAppGetEcPublicKey(key_index, keyW, out keyW_size, field, out field_size, ab, out ab_size, g, out g_size,
+                        r, out r_size, out k, out key_size_bits);
+
+                if (keyW_size != (UInt16)(((key_size_bits + 7) / 8) * 2 + 1))
+                    return DL_STATUS.UFR_APDU_WRONG_KEY_SIZE;
+                if ((field_size != (UInt16)((key_size_bits + 7) / 8)) && (field_size != 6) && (field_size != 2))
+                    return DL_STATUS.UFR_APDU_WRONG_KEY_SIZE;
+                if (ab_size != (UInt16)(((key_size_bits + 7) / 8) * 2))
+                    return DL_STATUS.UFR_APDU_WRONG_KEY_SIZE;
+                if (g_size != (UInt16)(((key_size_bits + 7) / 8) * 2 + 1))
+                    return DL_STATUS.UFR_APDU_WRONG_KEY_SIZE;
+                if ((r_size != (UInt16)((key_size_bits + 7) / 8)) && (r_size != (UInt16)(((key_size_bits + 7) / 8) + 1)))
+                    return DL_STATUS.UFR_APDU_WRONG_KEY_SIZE;
+                a = new byte[(key_size_bits + 7) / 8];
+                b = new byte[(key_size_bits + 7) / 8];
+                Array.Copy(ab, 0, a, 0, (key_size_bits + 7) / 8);
+                Array.Copy(ab, (key_size_bits + 7) / 8, b, 0, (key_size_bits + 7) / 8);
+            }
+            return status;
+        }
         //----------------------------------------------------------------------
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, EntryPoint = "UfrXrcLockOn")]
