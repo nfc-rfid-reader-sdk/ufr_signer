@@ -1561,6 +1561,12 @@
     <Compile Include="bc-sharp-crypto\src\x509\X509V2AttributeCertificateGenerator.cs" />
     <Compile Include="bc-sharp-crypto\src\x509\X509V2CRLGenerator.cs" />
     <Compile Include="bc-sharp-crypto\src\x509\X509V3CertificateGenerator.cs" />
+    <Compile Include="frmPin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPin.Designer.cs">
+      <DependentUpon>frmPin.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmExtKeyUsage.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1600,6 +1606,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="uFCoder.cs" />
+    <EmbeddedResource Include="frmPin.resx">
+      <DependentUpon>frmPin.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmExtKeyUsage.resx">
       <DependentUpon>frmExtKeyUsage.cs</DependentUpon>
     </EmbeddedResource>

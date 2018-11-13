@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using Org.BouncyCastle.Asn1;
@@ -7,11 +8,14 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.Oiw;
+using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.X509.Qualified;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Utilities.Encoders;
-using System.Text;
+using Org.BouncyCastle.Security;
+using uFR;
 
 namespace uFRSigner
 {
@@ -23,8 +27,12 @@ namespace uFRSigner
         List<int> mExtItemsIdxs = new List<int>();
         List<DerObjectIdentifier> mExtItemsOIDs = new List<DerObjectIdentifier>();
         List<X509Extension> mExtItems = new List<X509Extension>();
-        AsymmetricKeyParameter mPublicKey;
+        AsymmetricKeyParameter mPublicKey = null;
+        AsymmetricKeyParameter mPrivateKey = null;
         string mCipherName;
+        string mUserPin;
+        bool mUserPinRenewed;
+        bool mUserPinLoggedIn = false;
         bool mCangedNotSaved = false;
         bool mParametersAreSet = false;
         byte mKeyIndex = 0;
@@ -42,12 +50,22 @@ namespace uFRSigner
             InitializeComponent();
         }
 
-        public void setParameters(AsymmetricKeyParameter public_key, byte key_idx, string cipher_name)
+        public void setParameters(AsymmetricKeyParameter public_key, AsymmetricKeyParameter private_key, byte key_idx, string cipher_name,
+                                  bool user_pin_loged_in, string user_pin)
         {
             if (public_key != null)
                 mPublicKey = public_key;
             else
                 mPublicKey = new RsaKeyParameters(false, BigInteger.One, BigInteger.One); // DUMMY RSA public key - for templates
+
+            if (private_key != null)
+                mPrivateKey = private_key;
+            else
+                mPrivateKey = null;
+
+            mUserPinRenewed = false;
+            mUserPinLoggedIn = user_pin_loged_in;
+            mUserPin = user_pin;
 
             mKeyIndex = key_idx;
             mCipherName = cipher_name;
@@ -73,10 +91,20 @@ namespace uFRSigner
                     MessageBox.Show("Dialog parameters not initialized", "Parameters Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.DialogResult = DialogResult.Cancel;
                 }
+                else
+                {
+                    cbDigest.SelectedIndex = 2;
+                    if (mCipherName.Equals("RSA"))
+                        cbCipher.SelectedIndex = 0;
+                    else
+                        cbCipher.SelectedIndex = 1;
+                    cbKeyIndex.SelectedIndex = mKeyIndex;
+                }
             }
             else
             {
                 mPublicKey = null;
+                mPrivateKey = null;
                 mCipherName = null;
                 mKeyIndex = 0;
                 mParametersAreSet = false;
@@ -87,7 +115,7 @@ namespace uFRSigner
         {
             saveAs(true);
             return;
-
+            /*
             Pkcs10CertificationRequest csr;
 
             DerSequence av = new DerSequence();
@@ -121,8 +149,11 @@ namespace uFRSigner
             if (subjectAlternateNames.Length > 0)
                 extensions.Add(X509Extensions.SubjectAlternativeName, new X509Extension(false, new DerOctetString(new GeneralNames(subjectAlternateNames))));
             */
+
+            /*
             GeneralNames subjectAltName = new GeneralNames(new GeneralName(GeneralName.Rfc822Name, "example@example.org"));
             extensions.Add(X509Extensions.SubjectAlternativeName, new X509Extension(false, new DerOctetString(subjectAltName)));
+            */
 
             //var subject = new X509Name(values.Keys.Reverse().ToList(), values);
 
@@ -144,16 +175,20 @@ namespace uFRSigner
 
             //}
 
+            /*
             mCangedNotSaved = true;
 
             string signatureAlgorithm = cbDigest.Text.Replace("-", "") + "with" + mCipherName;
 
             X509Name subject = new X509Name(mSubjectItemsOIDs, mSubjectItems);
+            */
 
             /*
             Attribute attribute = ;
             DerSet attributes = new DerSet(new Attribute(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(extensions)));
             */
+
+            /*
             Pkcs10CertificationRequestDelaySigned csr_ds =
                 new Pkcs10CertificationRequestDelaySigned(signatureAlgorithm, subject, mPublicKey,
                     new DerSet(new AttributePkcs(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(new X509Extensions(extensions)))));
@@ -164,7 +199,7 @@ namespace uFRSigner
             }
 
             getX509ExtensionsFromCsr(csr_ds);
-            //csr_ds.SignRequest
+            //csr_ds.SignRequest//*/
         }
 
         private string der2pem(byte[] DerByteArray, string HeaderFooter)
@@ -201,24 +236,29 @@ namespace uFRSigner
 
             try
             {
+                if (mSubjectItemsOIDs.Count == 0)
+                {
+                    if (Signed)
+                    {
+                        MessageBox.Show("Distinguished name can't be empty", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Warning!\r\nDistinguished name shouldn't be empty."
+                            + "\r\nThis is OK only if you save \"TBS CSR\" template for future use.",
+                            "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        if (mExtItemsOIDs.Count == 0)
+                            return false;
+                    }
+                }
+
                 dialog = new SaveFileDialog();
                 dialog.Filter = "CSR files (*.pem)|*.pem|All files (*.*)|*.*";
                 dialog.RestoreDirectory = true;
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    if (mSubjectItemsOIDs.Count == 0)
-                    {
-                        if (Signed)
-                        {
-                            MessageBox.Show("Distinguished name can't be empty", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return false;
-                        }
-                        else
-                            MessageBox.Show("Warning!\r\nDistinguished name shouldn't be empty."
-                                + "\r\nThis is OK only if you save \"TBS CSR\" template for future use.",
-                                "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    }
 
                     X509Name subject = new X509Name(mSubjectItemsOIDs, mSubjectItems);
                     string signatureAlgorithm = cbDigest.Text.Replace("-", "") + "with" + mCipherName;
@@ -247,10 +287,17 @@ namespace uFRSigner
 
                     if (Signed)
                     {
-                        // Signed:
+                        /*/
+                        ISigner Signer;
+                        Signer = SignerUtilities.GetSigner(signatureAlgorithm);
+                        Signer.Init(true, mPrivateKey);
+                        Signer.BlockUpdate(dataToSign, 0, dataToSign.Length);
 
-                        // Izvršiti potpisivanje odakle se dobija >>>>>>>>>>>SignedData<<<<<<<<<<<<<<
-                        byte[] SignedData = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+                        byte[] SignedData = Signer.GenerateSignature();
+                        //*/
+
+                        byte[] SignedData = uFRSigner(dataToSign); // Rest of the input parameters needed (here accessible directly from UI):
+                                                                   //      - digest_alg, signature_cipher, card_key_index
                         csr_ds.SignRequest(SignedData);
 
                         toSave = csr_ds.GetDerEncoded();
@@ -293,6 +340,178 @@ namespace uFRSigner
             return true;
         }
 
+        private byte[] uFRSigner(byte[] tbs)
+        {
+            byte key_index = (byte)cbKeyIndex.SelectedIndex;
+            byte jc_signer_cipher = (byte)cbCipher.SelectedIndex;
+            byte jc_signer_digest = 0;
+            byte jc_signer_padding = 0;
+            byte[] signature = null;
+            byte[] dataToSign = null;
+            DL_STATUS status;
+            bool uFR_Selected = false;
+
+            if (cbCipher.Text == "RSA")
+            {
+                jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_NULL;
+                jc_signer_padding = (byte)JCDL_SIGNER_PADDINGS.PAD_PKCS1;
+
+                DerObjectIdentifier oid = null;
+                switch (cbDigest.Text)
+                {
+                    case "SHA-1":
+                        oid = OiwObjectIdentifiers.IdSha1;
+                        break;
+                    case "SHA-224":
+                        oid = NistObjectIdentifiers.IdSha224;
+                        break;
+                    case "SHA-256":
+                        oid = NistObjectIdentifiers.IdSha256;
+                        break;
+                    case "SHA-384":
+                        oid = NistObjectIdentifiers.IdSha384;
+                        break;
+                    case "SHA-512":
+                        oid = NistObjectIdentifiers.IdSha512;
+                        break;
+                }
+                byte[] hash = DigestUtilities.CalculateDigest(cbDigest.Text, tbs);
+                DigestInfo dInfo = new DigestInfo(new AlgorithmIdentifier(oid, DerNull.Instance), hash);
+                dataToSign = dInfo.GetDerEncoded();
+            }
+            else // ECDSA
+            {
+                switch (cbDigest.Text)
+                {
+                    case "SHA-1":
+                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA;
+                        break;
+                    case "SHA-224":
+                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_224;
+                        break;
+                    case "SHA-256":
+                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_256;
+                        break;
+                    case "SHA-384":
+                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_384;
+                        break;
+                    case "SHA-512":
+                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_512;
+                        break;
+                }
+            }
+
+            try
+            {
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+#if USING_PIN
+                bool open_pin_dialog = true;
+                if (mUserPinLoggedIn)
+                {
+                    status = uFCoder.JCAppLogin(false, mUserPin);
+                    if (status != DL_STATUS.UFR_OK)
+                    {
+                        if (((int)status & 0x0A63C0) == 0x0A63C0)
+                        {
+                            mUserPinLoggedIn = false;
+                            open_pin_dialog = true;
+                            MessageBox.Show("Wrong user PIN code. Tries remaining: " + ((int)status & 0x3F),
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                            throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    }
+                }
+                if (open_pin_dialog)
+                {
+                    frmUserPin dlg = new frmUserPin();
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        mUserPinRenewed = true;
+                        mUserPinLoggedIn = true;
+                        mUserPin = dlg.getUserPin();
+                    }
+                    else
+                    {
+                        mUserPinRenewed = false;
+                        mUserPinLoggedIn = false;
+                        throw new Exception("CSR not signed and saved because you haven't successfully logged in using PIN code.");
+                    }
+                }
+#endif
+
+                Cursor.Current = Cursors.WaitCursor;
+
+                if (dataToSign.Length > uFCoder.SIG_MAX_PLAIN_DATA_LEN)
+                {
+                    int chunk_len, src_pos, rest_of_data;
+                    byte[] chunk = new byte[uFCoder.SIG_MAX_PLAIN_DATA_LEN];
+
+                    rest_of_data = dataToSign.Length -  (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN;
+                    src_pos = (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN;
+                    chunk_len = (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN;
+                    Array.Copy(dataToSign, 0, chunk, 0, chunk_len);
+
+                    status = uFCoder.JCAppSignatureBegin(jc_signer_cipher, jc_signer_digest, jc_signer_padding,
+                                                        key_index, chunk, (UInt16)chunk_len,
+                                                        null, 0);
+                    if (status != DL_STATUS.UFR_OK)
+                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                    while (rest_of_data > 0)
+                    {
+                        chunk_len = rest_of_data > uFCoder.SIG_MAX_PLAIN_DATA_LEN ? (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN : rest_of_data;
+                        Array.Copy(dataToSign, src_pos, chunk, 0, chunk_len);
+
+                        status = uFCoder.JCAppSignatureUpdate(chunk, (UInt16)chunk_len);
+                        if (status != DL_STATUS.UFR_OK)
+                            throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                        src_pos += chunk_len;
+                        rest_of_data -= chunk_len;
+                    }
+
+                    status = uFCoder.JCAppSignatureEnd(out signature);
+                    if (status != DL_STATUS.UFR_OK)
+                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                }
+                else
+                {
+                    status = uFCoder.JCAppGenerateSignature(jc_signer_cipher, jc_signer_digest, jc_signer_padding,
+                                                            key_index,
+                                                            dataToSign, (UInt16)dataToSign.Length,
+                                                            out signature,
+                                                            null, 0);
+                    if (status != DL_STATUS.UFR_OK)
+                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                }
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+            }
+
+            return signature;
+        }
+
         private void clearEntries()
         {
             cbRdn.SelectedIndex = 0;
@@ -325,7 +544,7 @@ namespace uFRSigner
                     clearEntries();
                     mCangedNotSaved = false;
                 }
-                else if(dialogResult == DialogResult.No)
+                else if (dialogResult == DialogResult.No)
                 {
                     clearEntries();
                     mCangedNotSaved = false;
@@ -333,7 +552,7 @@ namespace uFRSigner
                 else if (dialogResult == DialogResult.Cancel)
                     return;
             }
-            else
+            else if (mSubjectItemsOIDs.Count != 0 || mExtItemsOIDs.Count != 0)
             {
                 DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete CSR entries?", "Are you sure?", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
@@ -754,177 +973,189 @@ namespace uFRSigner
             return csr;
         }
 
+        private void LoadTbsCsr(Asn1Sequence der_tbs, object sender, EventArgs e)
+        {
+            Asn1Sequence DestinguishedName = null;
+            Asn1Sequence Extensions = null;
+            Asn1TaggedObject a0 = null;
+
+            if (der_tbs.Count == 4)
+            {
+                DerInteger ver = DerInteger.GetInstance(der_tbs[0]);
+                DestinguishedName = Asn1Sequence.GetInstance(der_tbs[1]);
+                Asn1Sequence key = Asn1Sequence.GetInstance(der_tbs[2]);
+                a0 = Asn1TaggedObject.GetInstance(der_tbs[3]);
+            }
+
+            btnClearEntries_Click(sender, e);
+            if (mSubjectItemsOIDs.Count != 0 || mExtItemsIdxs.Count != 0) // Check is it really cleared
+                return;
+
+            parseDestinguishedName(DestinguishedName);
+
+            // Check extensions existence:
+            Asn1Sequence csr_attr = null;
+            try
+            {
+                if (a0.TagNo == 0)
+                {
+                    csr_attr = Asn1Sequence.GetInstance(a0, true);
+                }
+                else
+                    throw new Exception();
+            }
+            catch { }
+
+            if (csr_attr != null)
+            {
+                // Manage extensions:
+                DerObjectIdentifier oid = DerObjectIdentifier.GetInstance(csr_attr[0]);
+                if (oid.Id == PkcsObjectIdentifiers.Pkcs9AtExtensionRequest.Id)
+                {
+                    Asn1Set attr_set = Asn1Set.GetInstance(csr_attr[1]);
+                    Extensions = Asn1Sequence.GetInstance(attr_set[0]);
+                }
+
+                if (Extensions != null)
+                {
+                    for (int i = 0; i < Extensions.Count; i++)
+                    {
+                        Asn1Sequence extension = Asn1Sequence.GetInstance(Extensions[i]);
+                        DerOctetString ext_data;
+                        bool critical;
+                        if (extension.Count == 3 && DerBoolean.GetInstance((extension[1])).IsTrue)
+                        {
+                            critical = true;
+                            ext_data = (DerOctetString)Asn1OctetString.GetInstance(extension[2]);
+                        }
+                        else
+                        {
+                            critical = false;
+                            ext_data = (DerOctetString)Asn1OctetString.GetInstance(extension[1]);
+                        }
+
+                        // in call to mExtItemsIdxs.Add(x) for parameter x must be used index as defined in cbExt
+                        string desc = "";
+                        if (DerObjectIdentifier.GetInstance(extension[0]).Id.Equals(X509Extensions.SubjectAlternativeName.Id))
+                        {
+                            if (parseAltNameEmail(ext_data, out desc))
+                            {
+                                mExtItemsIdxs.Add(0);
+                                mExtItemsOIDs.Add(X509Extensions.SubjectAlternativeName);
+                                mExtItems.Add(new X509Extension(critical, ext_data));
+                                lstExt.Items.Add(cbExt.Items[0] + ": " + desc);
+                            }
+                        }
+                        else if (DerObjectIdentifier.GetInstance(extension[0]).Id.Equals(X509Extensions.KeyUsage.Id))
+                        {
+                            if (parseKeyUsage(ext_data, out desc))
+                            {
+                                mExtItemsIdxs.Add(1);
+                                mExtItemsOIDs.Add(X509Extensions.KeyUsage);
+                                mExtItems.Add(new X509Extension(critical, ext_data));
+                                lstExt.Items.Add(cbExt.Items[1] + ": " + desc);
+                            }
+                        }
+                        else if (DerObjectIdentifier.GetInstance(extension[0]).Id.Equals(X509Extensions.ExtendedKeyUsage.Id))
+                        {
+                            if (parseExtKeyUsage(ext_data, out desc))
+                            {
+                                mExtItemsIdxs.Add(2);
+                                mExtItemsOIDs.Add(X509Extensions.ExtendedKeyUsage);
+                                mExtItems.Add(new X509Extension(critical, ext_data));
+                                lstExt.Items.Add(cbExt.Items[2] + ": " + desc);
+                            }
+                        }
+                        else if (DerObjectIdentifier.GetInstance(extension[0]).Id.Equals(X509Extensions.QCStatements.Id))
+                        {
+                            if (parseQCStatements(ext_data, out desc))
+                            {
+                                mExtItemsIdxs.Add(3);
+                                mExtItemsOIDs.Add(X509Extensions.QCStatements);
+                                mExtItems.Add(new X509Extension(critical, ext_data));
+                                lstExt.Items.Add(cbExt.Items[3] + ": " + desc);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void btnLoadTbsCsr_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "PEM files (*.pem;*.crt;*.cer)|*.pem;*.crt;*.cer|All files (*.*)|*.*";
             //dialog.InitialDirectory = @"C:\";
             dialog.Title = "Please select the PEM file";
-            Asn1Sequence DestinguishedName = null;
-            Asn1Sequence Extensions = null;
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
+                TextReader fileStream = null;
                 try
                 {
                     // Load tbs cert. request from PEM file:
-                    TextReader fileStream = System.IO.File.OpenText(dialog.FileName);
+                    fileStream = System.IO.File.OpenText(dialog.FileName);
                     string b64Str = fileStream.ReadToEnd().Replace("\r\n", "")
                         .Replace("-----BEGIN TBS CERTIFICATE REQUEST-----", "").Replace("-----END TBS CERTIFICATE REQUEST-----", "");
                     Byte[] tbs = Convert.FromBase64String(b64Str);
 
                     Asn1InputStream input = new Asn1InputStream(new MemoryStream(tbs));
-                    DerSequence der_tbs = (DerSequence)input.ReadObject();
+                    Asn1Sequence der_tbs = (Asn1Sequence)input.ReadObject();
 
-                    /* Pach to reverse TBS CSR byte array to a Pkcs10CertificationRequestDelaySigned instance:
-                    DerSequence seq = (DerSequence)decoder.ReadObject();
-                    DerSequence top = new DerSequence(seq);
-                    DerSequence sgnAlg = new DerSequence(PkcsObjectIdentifiers.Sha1WithRsaEncryption);
-                    sgnAlg.AddObject(new DerNull());
-                    top.AddObject(sgnAlg);
-                    top.AddObject(new DerBitString(0xFF));
-                    Pkcs10CertificationRequestDelaySigned csr_ds = new Pkcs10CertificationRequestDelaySigned(top);
-
-
-                    byte[] x = csr_ds.GetDataToSign();
-
-                    byte[] b = new byte[] { 1,2,3,4,5,6,7,8,9,10};
-                    csr_ds.SignRequest(b);
-                    DerBitString sig = csr_ds.Signature;
-                    */
-
-                    /* Schema:
-                    SEQUENCE(4 elem)
-                        
-                        INTEGER 0                   // CSR version
-
-                        SEQUENCE(1 elem)            // Destinguished name
-                            SET(x elem)
-                                SEQUENCE(2 elem)
-                                    OBJECT IDENTIFIER 2.5.4.3 commonName(X.520 DN component)
-                                    UTF8Stringtest
-                                SEQUENCE(2 elem)
-                                …
-                        
-                        SEQUENCE(2 elem)            // key … RSA key folows:
-                            SEQUENCE(2 elem)
-                                OBJECT IDENTIFIER 1.2.840.113549.1.1.1 rsaEncryption(PKCS #1)
-                                NULL
-                            BIT STRING(1 elem)
-                                SEQUENCE(2 elem)
-                                    INTEGER(key_bit_size bits) 84441253225619649293598940536…
-                                    INTEGER 65537
-                        
-                        [0] (0 elem)                // Attributes + extensions
-                    */
-
-                    Asn1TaggedObject a0 = null;
-                    if (der_tbs.Count == 4)
-                    {
-                        DerInteger ver = DerInteger.GetInstance(der_tbs[0]);
-                        DestinguishedName = Asn1Sequence.GetInstance(der_tbs[1]);
-                        Asn1Sequence key = Asn1Sequence.GetInstance(der_tbs[2]);
-                        a0 = Asn1TaggedObject.GetInstance(der_tbs[3]);
-                    }
-
-                    btnClearEntries_Click(sender, e);
-                    if (mSubjectItemsOIDs.Count != 0 || mExtItemsIdxs.Count != 0) // Check is it really cleared
-                        return;
-
-                    parseDestinguishedName(DestinguishedName);
-
-                    // Check extensions existence:
-                    Asn1Sequence csr_attr = null;
-                    try
-                    {
-                        if (a0.TagNo == 0)
-                        {
-                            csr_attr = Asn1Sequence.GetInstance(a0, true);
-                        }
-                        else
-                            throw new Exception();
-                    }
-                    catch {}
-
-                    if (csr_attr != null)
-                    {
-                        // Manage extensions:
-                        DerObjectIdentifier oid = DerObjectIdentifier.GetInstance(csr_attr[0]);
-                        if (oid.Id == PkcsObjectIdentifiers.Pkcs9AtExtensionRequest.Id)
-                        {
-                            Asn1Set attr_set = Asn1Set.GetInstance(csr_attr[1]);
-                            Extensions = Asn1Sequence.GetInstance(attr_set[0]);
-                        }
-
-                        if (Extensions != null)
-                        {
-                            for (int i = 0; i < Extensions.Count; i++)
-                            {
-                                Asn1Sequence extension = Asn1Sequence.GetInstance(Extensions[i]);
-                                DerOctetString ext_data;
-                                bool critical;
-                                if (extension.Count == 3 && DerBoolean.GetInstance((extension[1])).IsTrue)
-                                {
-                                    critical = true;
-                                    ext_data = (DerOctetString)Asn1OctetString.GetInstance(extension[2]);
-                                }
-                                else
-                                {
-                                    critical = false;
-                                    ext_data = (DerOctetString)Asn1OctetString.GetInstance(extension[1]);
-                                }
-
-                                // in call to mExtItemsIdxs.Add(x) for parameter x must be used index as defined in cbExt
-                                string desc = "";
-                                if (DerObjectIdentifier.GetInstance(extension[0]).Id.Equals(X509Extensions.SubjectAlternativeName.Id))
-                                {
-                                    if (parseAltNameEmail(ext_data, out desc))
-                                    {
-                                        mExtItemsIdxs.Add(0);
-                                        mExtItemsOIDs.Add(X509Extensions.SubjectAlternativeName);
-                                        mExtItems.Add(new X509Extension(critical, ext_data));
-                                        lstExt.Items.Add(cbExt.Items[0] + ": " + desc);
-                                    }
-                                }
-                                else if (DerObjectIdentifier.GetInstance(extension[0]).Id.Equals(X509Extensions.KeyUsage.Id))
-                                {
-                                    if (parseKeyUsage(ext_data, out desc))
-                                    {
-                                        mExtItemsIdxs.Add(1);
-                                        mExtItemsOIDs.Add(X509Extensions.KeyUsage);
-                                        mExtItems.Add(new X509Extension(critical, ext_data));
-                                        lstExt.Items.Add(cbExt.Items[1] + ": " + desc);
-                                    }
-                                }
-                                else if (DerObjectIdentifier.GetInstance(extension[0]).Id.Equals(X509Extensions.ExtendedKeyUsage.Id))
-                                {
-                                    if (parseExtKeyUsage(ext_data, out desc))
-                                    {
-                                        mExtItemsIdxs.Add(2);
-                                        mExtItemsOIDs.Add(X509Extensions.ExtendedKeyUsage);
-                                        mExtItems.Add(new X509Extension(critical, ext_data));
-                                        lstExt.Items.Add(cbExt.Items[2] + ": " + desc);
-                                    }
-                                }
-                                else if (DerObjectIdentifier.GetInstance(extension[0]).Id.Equals(X509Extensions.QCStatements.Id))
-                                {
-                                    if (parseQCStatements(ext_data, out desc))
-                                    {
-                                        mExtItemsIdxs.Add(3);
-                                        mExtItemsOIDs.Add(X509Extensions.QCStatements);
-                                        mExtItems.Add(new X509Extension(critical, ext_data));
-                                        lstExt.Items.Add(cbExt.Items[3] + ": " + desc);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    LoadTbsCsr(der_tbs, sender, e);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+                finally
+                {
+                    if (fileStream != null)
+                        fileStream.Close();
+                }
             }
+
+            /* Pach to reverse TBS CSR byte array to a Pkcs10CertificationRequestDelaySigned instance:
+            DerSequence seq = (DerSequence)decoder.ReadObject();
+            DerSequence top = new DerSequence(seq);
+            DerSequence sgnAlg = new DerSequence(PkcsObjectIdentifiers.Sha1WithRsaEncryption);
+            sgnAlg.AddObject(new DerNull());
+            top.AddObject(sgnAlg);
+            top.AddObject(new DerBitString(0xFF));
+            Pkcs10CertificationRequestDelaySigned csr_ds = new Pkcs10CertificationRequestDelaySigned(top);
+
+
+            byte[] x = csr_ds.GetDataToSign();
+
+            byte[] b = new byte[] {1,2,3,4,5,6,7,8,9,10};
+            csr_ds.SignRequest(b);
+            DerBitString sig = csr_ds.Signature;
+            */
+
+            /* Schema:
+            SEQUENCE(4 elem)
+
+                INTEGER 0                   // CSR version
+
+                SEQUENCE(1 elem)            // Destinguished name
+                    SET(x elem)
+                        SEQUENCE(2 elem)
+                            OBJECT IDENTIFIER 2.5.4.3 commonName(X.520 DN component)
+                            UTF8Stringtest
+                        SEQUENCE(2 elem)
+                        …
+
+                SEQUENCE(2 elem)            // key … RSA key folows:
+                    SEQUENCE(2 elem)
+                        OBJECT IDENTIFIER 1.2.840.113549.1.1.1 rsaEncryption(PKCS #1)
+                        NULL
+                    BIT STRING(1 elem)
+                        SEQUENCE(2 elem)
+                            INTEGER(key_bit_size bits) 84441253225619649293598940536…
+                            INTEGER 65537
+
+                [0] (0 elem)                // Attributes + extensions
+            */
         }
 
         private bool parseDestinguishedName(Asn1Sequence DestinguishedName)
@@ -1017,13 +1248,13 @@ namespace uFRSigner
                     description += "nonRepudiation";
                 }
                 if ((bit_map & KeyUsage.KeyEncipherment) == KeyUsage.KeyEncipherment)
-                {   
+                {
                     if (description != "")
                         description += ", ";
                     description += "keyEncipherment";
                 }
                 if ((bit_map & KeyUsage.DataEncipherment) == KeyUsage.DataEncipherment)
-                {   
+                {
                     if (description != "")
                         description += ", ";
                     description += "dataEncipherment";
@@ -1034,19 +1265,19 @@ namespace uFRSigner
                 CrlSign --> "cRLSign"
                 */
                 if ((bit_map & KeyUsage.KeyAgreement) == KeyUsage.KeyAgreement)
-                {   
+                {
                     if (description != "")
                         description += ", ";
                     description += "keyAgreement";
 
                     if ((bit_map & KeyUsage.EncipherOnly) == KeyUsage.EncipherOnly)
-                    {       
+                    {
                         if (description != "")
                             description += ", ";
                         description += "encipherOnly";
                     }
                     if ((bit_map & KeyUsage.DecipherOnly) == KeyUsage.DecipherOnly)
-                    {   
+                    {
                         if (description != "")
                             description += ", ";
                         description += "decipherOnly";
@@ -1292,5 +1523,42 @@ namespace uFRSigner
                     return null;
             }
         }
+
+        private void btnLoadCsr_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "PEM files (*.pem;*.crt;*.cer)|*.pem;*.crt;*.cer|All files (*.*)|*.*";
+            //dialog.InitialDirectory = @"C:\";
+            dialog.Title = "Please select the PEM file";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                TextReader fileStream = null;
+                try
+                {
+                    // Load tbs cert. request from PEM file:
+                    fileStream = System.IO.File.OpenText(dialog.FileName);
+                    string b64Str = fileStream.ReadToEnd().Replace("\r\n", "")
+                        .Replace("-----BEGIN CERTIFICATE REQUEST-----", "").Replace("-----END CERTIFICATE REQUEST-----", "");
+                    Byte[] tbs = Convert.FromBase64String(b64Str);
+
+                    Asn1InputStream input = new Asn1InputStream(new MemoryStream(tbs));
+                    Asn1Sequence der_tbs = (Asn1Sequence)input.ReadObject();
+                    der_tbs = Asn1Sequence.GetInstance(der_tbs[0]);
+
+                    LoadTbsCsr(der_tbs, sender, e);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    if (fileStream != null)
+                        fileStream.Close();
+                }
+            }
+        }
+
     }
 }

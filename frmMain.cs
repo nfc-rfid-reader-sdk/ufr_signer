@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -588,7 +588,7 @@ namespace uFRSigner
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 #endif
-                status = uFCoder.JCAppGenerateKeyPair(key_type, key_index, key_size_bits, null, 0);
+                status = uFCoder.JCAppGenerateKeyPair(key_type, key_index, 0, key_size_bits, null, 0);
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
@@ -604,6 +604,68 @@ namespace uFRSigner
                 }
                 else
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void btnGetRSAPublic_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status = DL_STATUS.UFR_OK;
+            byte key_index = Convert.ToByte(cbRSAKeyIndex.Text);
+            byte[] modulus, exponent;
+
+            try
+            {
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+                Cursor.Current = Cursors.WaitCursor;
+
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetRsaPublicKey(key_index, out modulus, out exponent);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                tbRSAModulus.Text = "";
+                tbRSAPrivExp.Text = "";
+                tbRSAPrivP.Text = "";
+                tbRSAPrivQ.Text = "";
+                tbRSAPrivPQ.Text = "";
+                tbRSAPrivDP1.Text = "";
+                tbRSAPrivDQ1.Text = "";
+                tbRSAPubExp.Text = "";
+
+                string s = (modulus.Length * 8).ToString();
+                int i = cbRSAKeyLength.Items.IndexOf(s);
+                if (i > -1)
+                {
+                    cbRSAKeyLength.SelectedItem = s;
+                    tbRSAModulus.Text = Hex.ToHexString(modulus);
+                    tbRSAPubExp.Text = Hex.ToHexString(exponent);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -1221,6 +1283,19 @@ namespace uFRSigner
             }
         }
 
+        private byte GetECKeyDesignator(string ec_curve_name)
+        {
+            byte ret_val = 0;
+            if (ec_curve_name.Substring(ec_curve_name.Length - 2).Equals("r1"))
+                ret_val = 1;
+            else if (ec_curve_name.Substring(ec_curve_name.Length - 2).Equals("r2"))
+                ret_val = 2;
+            else if (!ec_curve_name.Substring(ec_curve_name.Length - 2).Equals("k1"))
+                ret_val = 3;
+
+            return ret_val;
+        }
+
         private void btnMkECKeyOnCard_Click(object sender, EventArgs e)
         {
             DL_STATUS status = DL_STATUS.UFR_OK;
@@ -1366,7 +1441,7 @@ namespace uFRSigner
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 #endif
 
-                status = uFCoder.JCAppGenerateKeyPair(key_type, key_index, key_size_bits, param, param_size);
+                status = uFCoder.JCAppGenerateKeyPair(key_type, key_index, GetECKeyDesignator(cbECName.Text), key_size_bits, param, param_size);
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
@@ -1587,16 +1662,32 @@ namespace uFRSigner
         // Signature page:
         //======================================================================================================================
         private bool m_gate_cbECKeyLength = false;
+        private bool m_gate_populateECDomainParameters = false;
         private int mECNameCurrComboIndex = 0;
         private void cbECName_SelectedIndexChanged(object sender, EventArgs e)
         {
+            bool populate_ok = true;
+            if (cbECName.SelectedIndex < 0)
+                populate_ok = false;
+
+            cbECName.BackColor = SystemColors.Window;
+
             m_gate_cbECKeyLength = true;
+
+            if (m_gate_populateECDomainParameters)
+            {
+                m_gate_populateECDomainParameters = false;
+                populate_ok = false;
+            }
 
             if (mECNameCurrComboIndex != cbECName.SelectedIndex)
             {
                 mECNameCurrComboIndex = cbECName.SelectedIndex;
-                tbECPrivKey.Text = "";
-                tbECPubKey.Text = "";
+                if (populate_ok)
+                {
+                    tbECPrivKey.Text = "";
+                    tbECPubKey.Text = "";
+                }
             }
 
             if (cbECName.SelectedIndex < 15)
@@ -1678,7 +1769,10 @@ namespace uFRSigner
                     cbECKeyLength.SelectedIndex = 16;
                     break;
             }
-            populateECDomainParameters(cbECName.Text);
+
+            if (populate_ok)
+                populateECDomainParameters(cbECName.Text);
+
             /*/ DEBUG:
             if (tbECParamR.Text.Length != tbECParamA.Text.Length)
             {
@@ -1694,8 +1788,12 @@ namespace uFRSigner
 
         private void cbECKeyLength_SelectedIndexChanged(object sender, EventArgs e)
         {
+            cbECKeyLength.BackColor = SystemColors.Window;
+
             if (m_gate_cbECKeyLength)
+            {
                 return;
+            }
 
             switch (cbECKeyLength.SelectedIndex)
             {
@@ -2383,7 +2481,7 @@ namespace uFRSigner
                 }
 
                 if (mLocalDigestInUse)
-                    mLocalDigest = DigestUtilities.GetDigest(localDigestMechanism);
+                    mLocalDigest = DigestUtilities.GetDigest(localDigestMechanism.Replace("-", ""));
 
                 switch (mMessageRadix) // from radix
                 {
@@ -2477,6 +2575,16 @@ namespace uFRSigner
                 else
                 {
                     Cursor.Current = Cursors.WaitCursor;
+
+                    /*if (mLocalDigestInUse)
+                    {
+                        DerObjectIdentifier oid = Org.BouncyCastle.Asn1.Oiw.OiwObjectIdentifiers.IdSha1;
+                        byte[] hash = DigestUtilities.CalculateDigest("SHA-1", chunk);
+                        Org.BouncyCastle.Asn1.X509.DigestInfo dInfo = 
+                            new Org.BouncyCastle.Asn1.X509.DigestInfo(new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(oid, DerNull.Instance), hash);
+                        chunk = dInfo.GetDerEncoded();
+                        chunk_len = chunk.Length;
+                    }*/
 
                     status = uFCoder.JCAppGenerateSignature(jc_signer_cipher, jc_signer_digest, jc_signer_padding, 
                                                             key_index, 
@@ -3504,7 +3612,7 @@ namespace uFRSigner
         {
             DL_STATUS status = DL_STATUS.UFR_OK;
             byte key_index = Convert.ToByte(cbECKeyIndex.Text);
-            UInt16 k, key_size_bits;
+            UInt16 k, key_size_bits, key_designator;
             byte[] keyW, field, a, b, g, r;
 
             try
@@ -3526,7 +3634,7 @@ namespace uFRSigner
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
-                status = uFCoder.JCAppGetEcPublicKey(key_index, out keyW, out field, out a, out b, out g, out r, out k, out key_size_bits);
+                status = uFCoder.JCAppGetEcPublicKey(key_index, out keyW, out field, out a, out b, out g, out r, out k, out key_size_bits, out key_designator);
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
@@ -3537,6 +3645,20 @@ namespace uFRSigner
                 tbECParamG.Text = Hex.ToHexString(g);
                 tbECParamR.Text = Hex.ToHexString(r);
                 tbECParamK.Text = k.ToString();
+
+                string s = ECCurveDesignator2Name(key_designator);
+                int i = cbECName.Items.IndexOf(s);
+                if (i > -1)
+                {
+                    m_gate_populateECDomainParameters = mECNameCurrComboIndex != i;
+                    cbECName.SelectedItem = s;
+                }
+                else
+                {
+                    cbECName.SelectedIndex = -1;
+                    cbECKeyLength.SelectedIndex = -1;
+                    cbECName.BackColor = cbECKeyLength.BackColor = Color.MistyRose;
+                }
             }
             catch (Exception ex)
             {
@@ -3553,16 +3675,122 @@ namespace uFRSigner
             }
         }
 
+        public DerObjectIdentifier ECCurveDesignator2Oid(UInt16 ec_key_designator)
+        {
+            return SecNamedCurves.GetOid(ECCurveDesignator2Name(ec_key_designator));
+        }
+
+        public string ECCurveDesignator2Name(UInt16 ec_key_designator)
+        {
+            string ret_val = "";
+
+            if ((ec_key_designator & 0x20) == 0x20) // F2m krive
+            {
+                ret_val = "sect";
+                switch (ec_key_designator & 0x0F)
+                {
+                    case 0:
+                        ret_val += "113";
+                        break;
+                    case 1:
+                        ret_val += "131";
+                        break;
+                    case 2:
+                        ret_val += "163";
+                        break;
+                    case 3:
+                        ret_val += "193";
+                        break;
+                    case 4:
+                        ret_val += "233";
+                        break;
+                    case 5:
+                        ret_val += "239";
+                        break;
+                    case 6:
+                        ret_val += "283";
+                        break;
+                    case 7:
+                        ret_val += "409";
+                        break;
+                    case 8:
+                        ret_val += "571";
+                        break;
+                    default:
+                        return "";
+                }
+            }
+            else
+            {
+                ret_val = "secp";
+                switch (ec_key_designator & 0x0F) // // Fp kriva
+                {
+                    case 0:
+                        ret_val += "112";
+                        break;
+                    case 1:
+                        ret_val += "128";
+                        break;
+                    case 2:
+                        ret_val += "160";
+                        break;
+                    case 3:
+                        ret_val += "192";
+                        break;
+                    case 4:
+                        ret_val += "224";
+                        break;
+                    case 5:
+                        ret_val += "256";
+                        break;
+                    case 6:
+                        ret_val += "384";
+                        break;
+                    case 7:
+                        ret_val += "521";
+                        break;
+                    default:
+                        return "";
+                }
+            }
+
+            switch (ec_key_designator >> 6)
+            {
+                case 0:
+                    ret_val += "k1";
+                    break;
+                case 1:
+                    ret_val += "r1";
+                    break;
+                case 2:
+                    ret_val += "r2";
+                    break;
+                //case 3:
+                //    break;
+                default:
+                    return "";
+            }
+
+            return ret_val;
+        }
+
         private void btnRsaCsr_Click(object sender, EventArgs e)
         {
             try
             {
                 byte key_idx = Convert.ToByte(cbRSAKeyIndex.Text);
 
-                AsymmetricKeyParameter key = new RsaKeyParameters(false, new BigInteger(1, Hex.Decode(tbRSAModulus.Text)),
+                AsymmetricKeyParameter pub_key = null;
+                if (!tbRSAPubExp.Text.Equals(""))
+                    pub_key = new RsaKeyParameters(false, new BigInteger(1, Hex.Decode(tbRSAModulus.Text)),
                             new BigInteger(1, Hex.Decode(tbRSAPubExp.Text)));
 
-                frmCsr.setParameters(key, key_idx, "RSA");
+                AsymmetricKeyParameter priv_key = null;
+                if (!tbRSAPrivExp.Text.Equals(""))
+                    priv_key = new RsaKeyParameters(true, new BigInteger(1, Hex.Decode(tbRSAModulus.Text)),
+                            new BigInteger(1, Hex.Decode(tbRSAPrivExp.Text)));
+
+                frmCsr.setParameters(pub_key, priv_key, key_idx, "RSA", mUserPinLoggedIn, tbPin.Text);
                 frmCsr.ShowDialog();
             }
             catch (Exception ex)
@@ -3576,11 +3804,19 @@ namespace uFRSigner
             try
             {
                 byte key_idx = Convert.ToByte(cbECKeyIndex.Text);
-                X9ECParameters curve = SecNamedCurves.GetByName(cbECName.Text);
-                ECDomainParameters curveSpec = new ECDomainParameters(curve.Curve, curve.G, curve.N, curve.H, curve.GetSeed());
-                AsymmetricKeyParameter key = new ECPublicKeyParameters("ECDSA", curve.Curve.DecodePoint(Hex.Decode(tbECPubKey.Text)), curveSpec);
 
-                frmCsr.setParameters(key, key_idx, "ECDSA");
+                X9ECParameters curve = SecNamedCurves.GetByName(cbECName.Text);
+
+                AsymmetricKeyParameter pub_key = null;
+                if (!tbECPubKey.Text.Equals(""))
+                    pub_key = new ECPublicKeyParameters("ECDSA", curve.Curve.DecodePoint(Hex.Decode(tbECPubKey.Text)), SecNamedCurves.GetOid(cbECName.Text));
+                //X9ObjectIdentifiers.Prime256v1 same as SecObjectIdentifiers.SecP256r1
+
+                AsymmetricKeyParameter priv_key = null;
+                if (!tbECPrivKey.Text.Equals(""))
+                    priv_key = new ECPrivateKeyParameters("ECDSA", new BigInteger(1, Hex.Decode(tbECPrivKey.Text)), SecNamedCurves.GetOid(cbECName.Text));
+
+                frmCsr.setParameters(pub_key, priv_key, key_idx, "ECDSA", mUserPinLoggedIn, tbPin.Text);
                 frmCsr.ShowDialog();
             }
             catch (Exception ex)
@@ -3589,9 +3825,56 @@ namespace uFRSigner
             }
         }
 
-        private void btnGetRSAPublic_Click(object sender, EventArgs e)
+        private void btnUserLogout_Click(object sender, EventArgs e)
         {
+            mUserPinLoggedIn = false;
+            tbPin.Text = "";
+        }
 
+        private void btnSOLogout_Click(object sender, EventArgs e)
+        {
+            mSOPinLoggedIn = false;
+            tbSOPin.Text = "";
+        }
+
+        private void btnChangeSOPin_Click(object sender, EventArgs e)
+        {
+            if (!mSOPinLoggedIn)
+                MessageBox.Show("To change SO PIN code, first you need to be logged in as SO", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // Try to change...
+
+            tbNewSOPin.Text = "";
+            tbNewSOPinAgain.Text = "";
+        }
+
+        private void btnChangeUserPin_Click(object sender, EventArgs e)
+        {
+            if (!mSOPinLoggedIn)
+                MessageBox.Show("To change User PIN code, first you need to be logged in as SO", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // Try to change...
+
+            tbNewPin.Text = "";
+            tbNewPinAgain.Text = "";
+        }
+
+        private void btnChangeSOPuk_Click(object sender, EventArgs e)
+        {
+            if (!mSOPinLoggedIn)
+                MessageBox.Show("To change SO PUK code, first you need to be logged in as SO", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // Try to change...
+
+            tbNewSOPuk.Text = "";
+            tbNewSOPukAgain.Text = "";
+        }
+
+        private void btnChangePuk_Click(object sender, EventArgs e)
+        {
+            if (!mSOPinLoggedIn)
+                MessageBox.Show("To change User PUK code, first you need to be logged in as SO", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // Try to change...
+
+            tbNewPuk.Text = "";
+            tbNewPukAgain.Text = "";
         }
 
 #if MY_DEBUG

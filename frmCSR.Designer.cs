@@ -45,7 +45,6 @@
             this.btnPutExt = new System.Windows.Forms.Button();
             this.lstExt = new System.Windows.Forms.ListBox();
             this.cbExt = new System.Windows.Forms.ComboBox();
-            this.btnSignCsr = new System.Windows.Forms.Button();
             this.btnLoadCsr = new System.Windows.Forms.Button();
             this.btnSaveCsr = new System.Windows.Forms.Button();
             this.btnSaveTbsCsr = new System.Windows.Forms.Button();
@@ -53,6 +52,10 @@
             this.btnClearEntries = new System.Windows.Forms.Button();
             this.cbDigest = new System.Windows.Forms.ComboBox();
             this.lbDigest = new System.Windows.Forms.Label();
+            this.cbCipher = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cbKeyIndex = new System.Windows.Forms.ComboBox();
+            this.lbKeyIndex = new System.Windows.Forms.Label();
             this.gbDn.SuspendLayout();
             this.gbExt.SuspendLayout();
             this.SuspendLayout();
@@ -272,53 +275,44 @@
             this.cbExt.TabIndex = 0;
             this.cbExt.SelectedIndexChanged += new System.EventHandler(this.cbExt_SelectedIndexChanged);
             // 
-            // btnSignCsr
-            // 
-            this.btnSignCsr.BackColor = System.Drawing.Color.Ivory;
-            this.btnSignCsr.Location = new System.Drawing.Point(672, 290);
-            this.btnSignCsr.Name = "btnSignCsr";
-            this.btnSignCsr.Size = new System.Drawing.Size(108, 35);
-            this.btnSignCsr.TabIndex = 7;
-            this.btnSignCsr.Text = "Sign CSR";
-            this.btnSignCsr.UseVisualStyleBackColor = false;
-            // 
             // btnLoadCsr
             // 
-            this.btnLoadCsr.Location = new System.Drawing.Point(672, 194);
+            this.btnLoadCsr.Location = new System.Drawing.Point(672, 302);
             this.btnLoadCsr.Name = "btnLoadCsr";
             this.btnLoadCsr.Size = new System.Drawing.Size(108, 35);
-            this.btnLoadCsr.TabIndex = 6;
+            this.btnLoadCsr.TabIndex = 9;
             this.btnLoadCsr.Text = "Load data from CSR";
             this.btnLoadCsr.UseVisualStyleBackColor = true;
+            this.btnLoadCsr.Click += new System.EventHandler(this.btnLoadCsr_Click);
             // 
             // btnSaveCsr
             // 
             this.btnSaveCsr.BackColor = System.Drawing.Color.Azure;
-            this.btnSaveCsr.Location = new System.Drawing.Point(672, 331);
+            this.btnSaveCsr.Location = new System.Drawing.Point(672, 384);
             this.btnSaveCsr.Name = "btnSaveCsr";
             this.btnSaveCsr.Size = new System.Drawing.Size(108, 35);
-            this.btnSaveCsr.TabIndex = 8;
-            this.btnSaveCsr.Text = "Save CSR";
+            this.btnSaveCsr.TabIndex = 12;
+            this.btnSaveCsr.Text = "Sign and Save CSR";
             this.btnSaveCsr.UseVisualStyleBackColor = false;
             this.btnSaveCsr.Click += new System.EventHandler(this.btnSaveCsr_Click);
             // 
             // btnSaveTbsCsr
             // 
             this.btnSaveTbsCsr.BackColor = System.Drawing.Color.Ivory;
-            this.btnSaveTbsCsr.Location = new System.Drawing.Point(672, 112);
+            this.btnSaveTbsCsr.Location = new System.Drawing.Point(672, 343);
             this.btnSaveTbsCsr.Name = "btnSaveTbsCsr";
             this.btnSaveTbsCsr.Size = new System.Drawing.Size(108, 35);
-            this.btnSaveTbsCsr.TabIndex = 4;
+            this.btnSaveTbsCsr.TabIndex = 10;
             this.btnSaveTbsCsr.Text = "Save TBS CSR";
             this.btnSaveTbsCsr.UseVisualStyleBackColor = false;
             this.btnSaveTbsCsr.Click += new System.EventHandler(this.btnSaveTbsCsr_Click);
             // 
             // btnLoadTbsCsr
             // 
-            this.btnLoadTbsCsr.Location = new System.Drawing.Point(672, 153);
+            this.btnLoadTbsCsr.Location = new System.Drawing.Point(672, 261);
             this.btnLoadTbsCsr.Name = "btnLoadTbsCsr";
             this.btnLoadTbsCsr.Size = new System.Drawing.Size(108, 35);
-            this.btnLoadTbsCsr.TabIndex = 5;
+            this.btnLoadTbsCsr.TabIndex = 8;
             this.btnLoadTbsCsr.Text = "Load data from TBS CSR";
             this.btnLoadTbsCsr.UseVisualStyleBackColor = true;
             this.btnLoadTbsCsr.Click += new System.EventHandler(this.btnLoadTbsCsr_Click);
@@ -329,7 +323,7 @@
             this.btnClearEntries.Location = new System.Drawing.Point(672, 425);
             this.btnClearEntries.Name = "btnClearEntries";
             this.btnClearEntries.Size = new System.Drawing.Size(108, 35);
-            this.btnClearEntries.TabIndex = 9;
+            this.btnClearEntries.TabIndex = 13;
             this.btnClearEntries.Text = "Clear entries";
             this.btnClearEntries.UseVisualStyleBackColor = false;
             this.btnClearEntries.Click += new System.EventHandler(this.btnClearEntries_Click);
@@ -352,22 +346,70 @@
             // lbDigest
             // 
             this.lbDigest.AutoSize = true;
-            this.lbDigest.Location = new System.Drawing.Point(672, 9);
+            this.lbDigest.Location = new System.Drawing.Point(663, 9);
             this.lbDigest.Name = "lbDigest";
-            this.lbDigest.Size = new System.Drawing.Size(108, 13);
+            this.lbDigest.Size = new System.Drawing.Size(114, 13);
             this.lbDigest.TabIndex = 2;
-            this.lbDigest.Text = "CSR digest algorithm:";
+            this.lbDigest.Text = "signer digest algorithm:";
             this.lbDigest.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // cbCipher
+            // 
+            this.cbCipher.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbCipher.FormattingEnabled = true;
+            this.cbCipher.Items.AddRange(new object[] {
+            "RSA",
+            "ECDSA"});
+            this.cbCipher.Location = new System.Drawing.Point(697, 91);
+            this.cbCipher.Name = "cbCipher";
+            this.cbCipher.Size = new System.Drawing.Size(80, 21);
+            this.cbCipher.TabIndex = 5;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(662, 70);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(115, 13);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "signer cipher algorithm:";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // cbKeyIndex
+            // 
+            this.cbKeyIndex.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbKeyIndex.FormattingEnabled = true;
+            this.cbKeyIndex.Items.AddRange(new object[] {
+            "0",
+            "1",
+            "2"});
+            this.cbKeyIndex.Location = new System.Drawing.Point(697, 155);
+            this.cbKeyIndex.Name = "cbKeyIndex";
+            this.cbKeyIndex.Size = new System.Drawing.Size(80, 21);
+            this.cbKeyIndex.TabIndex = 7;
+            // 
+            // lbKeyIndex
+            // 
+            this.lbKeyIndex.AutoSize = true;
+            this.lbKeyIndex.Location = new System.Drawing.Point(664, 136);
+            this.lbKeyIndex.Name = "lbKeyIndex";
+            this.lbKeyIndex.Size = new System.Drawing.Size(116, 13);
+            this.lbKeyIndex.TabIndex = 6;
+            this.lbKeyIndex.Text = "signer key index (card):";
+            this.lbKeyIndex.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // frmCSR
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(792, 471);
+            this.Controls.Add(this.cbKeyIndex);
+            this.Controls.Add(this.lbKeyIndex);
+            this.Controls.Add(this.cbCipher);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.cbDigest);
             this.Controls.Add(this.lbDigest);
             this.Controls.Add(this.btnClearEntries);
-            this.Controls.Add(this.btnSignCsr);
             this.Controls.Add(this.btnLoadCsr);
             this.Controls.Add(this.btnSaveCsr);
             this.Controls.Add(this.btnSaveTbsCsr);
@@ -405,7 +447,6 @@
         private System.Windows.Forms.Button btnPutExt;
         private System.Windows.Forms.ListBox lstExt;
         private System.Windows.Forms.ComboBox cbExt;
-        private System.Windows.Forms.Button btnSignCsr;
         private System.Windows.Forms.Button btnLoadCsr;
         private System.Windows.Forms.Button btnSaveCsr;
         private System.Windows.Forms.Button btnSaveTbsCsr;
@@ -416,5 +457,9 @@
         private System.Windows.Forms.ComboBox cbDigest;
         private System.Windows.Forms.Label lbDigest;
         private System.Windows.Forms.CheckBox chkCritical;
+        private System.Windows.Forms.ComboBox cbCipher;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cbKeyIndex;
+        private System.Windows.Forms.Label lbKeyIndex;
     }
 }

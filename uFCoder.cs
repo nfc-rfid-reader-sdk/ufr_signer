@@ -84,6 +84,13 @@ namespace uFR
         TYPE_EC_F2M_PRIVATE,
         TYPE_EC_FP_PRIVATE
     };
+    enum JCDS_EC_KEY_DESIGNATOR
+    {
+        EC_KEY_DSG_K1 = 0,
+        EC_KEY_DSG_R1,
+        EC_KEY_DSG_R2,
+        EC_KEY_DSG_RFU
+    }
     // API Status Codes Type:
     public enum DL_STATUS
     {
@@ -904,7 +911,8 @@ namespace uFR
                                                           [In] byte[] key_param, UInt16 key_parm_len);
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGenerateKeyPair")]
-        public static extern DL_STATUS JCAppGenerateKeyPair(byte key_type, byte key_index, UInt16 key_bit_len, [In] byte[] param, UInt16 param_size);
+        public static extern DL_STATUS JCAppGenerateKeyPair(byte key_type, byte key_index, byte key_designator, 
+                                                            UInt16 key_bit_len, [In] byte[] param, UInt16 param_size);
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppSignatureBegin")]
         public static extern DL_STATUS JCAppSignatureBegin(byte cipher, byte digest, byte padding, byte key_index,
@@ -1077,9 +1085,9 @@ namespace uFR
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetEcPublicKey")]
         private static extern DL_STATUS JCAppGetEcPublicKey(byte key_index, [Out] byte[] keyW, out UInt16 keyW_size,
                 [Out] byte[] field, out UInt16 field_size, [Out] byte[] ab, out UInt16 ab_size, 
-                [Out] byte[] g, out UInt16 g_size, [Out] byte[] r, out UInt16 r_size, out UInt16 k, out UInt16 key_size_bits);
+                [Out] byte[] g, out UInt16 g_size, [Out] byte[] r, out UInt16 r_size, out UInt16 k, out UInt16 key_size_bits, out UInt16 key_designator);
         public static DL_STATUS JCAppGetEcPublicKey(byte key_index, out byte[] keyW, out byte[] field, out byte[] a, out byte[] b, out byte[] g, out byte[] r,
-                out UInt16 k, out UInt16 key_size_bits)
+                out UInt16 k, out UInt16 key_size_bits, out UInt16 key_designator)
         {
             DL_STATUS status;
 
@@ -1090,9 +1098,9 @@ namespace uFR
             UInt16 r_size = 0;
             byte[] ab = null;
             keyW = field = a = b = g = r = null;
-            k = key_size_bits = 0;
+            k = key_size_bits = key_designator = 0;
             status = JCAppGetEcPublicKey(key_index, keyW, out keyW_size, field, out field_size, ab, out ab_size, g, out g_size, 
-                    r, out r_size, out k, out key_size_bits);
+                    r, out r_size, out k, out key_size_bits, out key_designator);
             if (status == DL_STATUS.UFR_OK)
             {
                 keyW = new byte[keyW_size];
@@ -1101,7 +1109,7 @@ namespace uFR
                 g = new byte[g_size];
                 r = new byte[r_size];
                 status = JCAppGetEcPublicKey(key_index, keyW, out keyW_size, field, out field_size, ab, out ab_size, g, out g_size,
-                        r, out r_size, out k, out key_size_bits);
+                        r, out r_size, out k, out key_size_bits, out key_designator);
 
                 if (keyW_size != (UInt16)(((key_size_bits + 7) / 8) * 2 + 1))
                     return DL_STATUS.UFR_APDU_WRONG_KEY_SIZE;
