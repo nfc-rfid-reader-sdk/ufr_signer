@@ -60,7 +60,7 @@ namespace uFRSigner
                 string message = ex.Message;
 
                 mUserPin = "";
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     message = "Wrong user PIN code. Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

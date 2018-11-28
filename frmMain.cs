@@ -20,14 +20,16 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.Encoders;
 using uFR;
+using Org.BouncyCastle.Asn1.Oiw;
+using Org.BouncyCastle.Asn1.Nist;
 
 namespace uFRSigner
 {
     public partial class frmMain : Form
     {
         frmCSR frmCsr;
-        const UInt32 MIN_UFR_LIB_VERSION = 0x04030000;
-        const UInt32 MIN_UFR_FW_VERSION = 0x0309002F;
+        const UInt32 MIN_UFR_LIB_VERSION = 0x04040005; // bytes from left to right: MSB=MajorVer, MidSB_H=MinorVer, MidSB_L=0, LSB=BuildNum
+        const UInt32 MIN_UFR_FW_VERSION = 0x05000007; // bytes from left to right: MSB=MajorVer, MidSB_H=MinorVer, MidSB_L=0, LSB=BuildNum
         string uFR_NotOpenedMessage = "uFR reader not opened.\r\nYou can't work with DL Signer cards.";
         string mCertPassword = "";
         private bool mSOPinLoggedIn = false;
@@ -156,6 +158,16 @@ namespace uFRSigner
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+#if HIDE_KEY_TOOLS
+            tabControl.TabPages.Remove(tabHidden);
+            gbRSAPriv.Visible = gbECPrivKey.Visible = false;
+            tbRSAModulus.ReadOnly = true;
+            tbRSAPubExp.ReadOnly = true;
+            tbECPubKey.ReadOnly = true;
+#endif
+#if !USING_PIN
+            tabControl.TabPages.Remove(tabPinCodes);
+#endif
             Text = Text + " v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             frmCsr = frmCSR.getInstance();
@@ -170,10 +182,12 @@ namespace uFRSigner
             cbObjType.SelectedIndex = 0;
             cbObjIndex.SelectedIndex = 0;
 
-            cbDigest.SelectedIndex = 1;
+            cbDigest.SelectedIndex = 3;
             cbCipher.SelectedIndex = 0;
             cbSignatureKeyIndex.SelectedIndex = 0;
             cbHashAlg.SelectedIndex = 0;
+
+            lbCertUsageType.Text = "";
 
             try
             {
@@ -596,9 +610,11 @@ namespace uFRSigner
             }
             catch (Exception ex)
             {
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                 {
+                    btnSOLogout.Enabled = false;
                     mSOPinLoggedIn = false;
+                    tbSOPin.Text = "";
                     MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -772,9 +788,11 @@ namespace uFRSigner
             }
             catch (Exception ex)
             {
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                 {
+                    btnSOLogout.Enabled = false;
                     mSOPinLoggedIn = false;
+                    tbSOPin.Text = "";
                     MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -1449,9 +1467,11 @@ namespace uFRSigner
             }
             catch (Exception ex)
             {
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                 {
+                    btnSOLogout.Enabled = false;
                     mSOPinLoggedIn = false;
+                    tbSOPin.Text = "";
                     MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F), 
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -1638,9 +1658,11 @@ namespace uFRSigner
             }
             catch (Exception ex)
             {
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                 {
+                    btnSOLogout.Enabled = false;
                     mSOPinLoggedIn = false;
+                    tbSOPin.Text = "";
                     MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -1879,7 +1901,7 @@ namespace uFRSigner
         RADIX mSignatureRadix = RADIX.Hex;
         RADIX mHashRadix = RADIX.Hex;
         Stream mSignigFileStream = null;
-        long mSignigFileBytesRead = 0;
+        long mChunkedBytesToRead;
         bool isECDSACipher = false;
 
         private void tbMessageRadixChanged(object sender, EventArgs e)
@@ -2304,120 +2326,33 @@ namespace uFRSigner
 
         IDigest mLocalDigest;
         bool mLocalDigestInUse;
-
-        //------------------------------------------------------------------------------
-        const UInt32 ASN1_MAX_LEN_BYTES = 4;
-        //------------------------------------------------------------------------------
-        private bool asn1DecodeLength(byte[] bx, ref UInt32 len, out UInt32 len_bytes)
-        {
-
-            len_bytes = 0;
-
-	        if ((bx[0] & 0x80) != 0x80)
-	        {
-                len_bytes = 1;
-		        len = bx[0];
-		        return true;
-	        }
-
-            len_bytes = (UInt32)bx[0] & 0x7F;
-
-	        if (len_bytes > ASN1_MAX_LEN_BYTES)
-	        {
-                len_bytes = 0;
-		        return false;
-	        }
-
-	        if ((len_bytes< (ASN1_MAX_LEN_BYTES + 1)) && (len_bytes > 0))
-	        {
-		        // Big Endian decoding:
-		        for (int i = (Int32)len_bytes; i > 0; i--)
-		        {
-                    len |= (uint)bx[i] << (8 * ((byte)len_bytes - i));
-		        }
-	        }
-	        else
-	        {
-                len_bytes = 0;
-		        return false;
-	        }
-
-            len_bytes += 1;
-	        return true;
-        }
-
-        private byte[] removeArrItemAt(byte[] inArr, int idx)
-        {
-            byte[] res = new byte[inArr.Length - 1];
-
-            inArr.Take(idx + 1).ToArray().CopyTo(res, 0);
-            inArr.Skip(idx + 1).ToArray().CopyTo(res, idx);
-
-            return res;
-        }
-
-        private byte[] fixEccSignatureSequence(byte[] der_sig)
-        {
-            byte[] res = der_sig.ToArray();
-            int der_idx = 0, der_tmp_idx;
-            uint der_len = 0, der_len_len;
-
-            if (res[der_idx++] != 0x30)
-                throw new Exception("ASN.1 DER signature format error");
-            if (!asn1DecodeLength(res.Skip(der_idx).ToArray(), ref der_len, out der_len_len))
-                throw new Exception("ASN.1 DER signature format error");
-            if (der_len_len != 1)
-                throw new Exception("ASN.1 DER signature format error---");
-            der_idx += (int)der_len_len;
-            if (res[der_idx++] != 2)
-                throw new Exception("ASN.1 DER signature format error");
-            der_tmp_idx = der_idx; // Points to a length TLV field
-            if (!asn1DecodeLength(res.Skip(der_idx).ToArray(), ref der_len, out der_len_len))
-                throw new Exception("ASN.1 DER signature format error");
-            der_idx += (int)der_len_len;
-            if ((res[der_idx] == 0) && ((res[der_idx + 1] & 0x80) == 0))
-            {
-                res = removeArrItemAt(res, der_idx);
-                --der_len;
-                if (der_len_len != 1)
-                    throw new Exception("ASN.1 DER signature format error-");
-                --res[der_tmp_idx];
-                --res[1];
-            }
-            der_idx += (int)der_len;
-            if (res[der_idx++] != 2)
-                throw new Exception("ASN.1 DER signature format error");
-            der_tmp_idx = der_idx; // Points to a length TLV field
-            if (!asn1DecodeLength(res.Skip(der_idx).ToArray(), ref der_len, out der_len_len))
-                throw new Exception("ASN.1 DER signature format error");
-            der_idx += (int)der_len_len;
-            if ((res[der_idx] == 0) && ((res[der_idx + 1] & 0x80) == 0))
-            {
-                res = removeArrItemAt(res, der_idx);
-                if (der_len_len != 1)
-                    throw new Exception("ASN.1 DER signature format error--");
-                --res[der_tmp_idx];
-                --res[1];
-            }
-
-            return res;
-        }
+        byte[] mData;
+        int mChunkSize;
+        DerObjectIdentifier mOid;
+        byte jc_signer_cipher;
+        byte jc_signer_digest;
+        byte jc_signer_padding;
+        byte key_index;
+        UInt16 key_size_bits;
 
         private void btnSignature_Click(object sender, EventArgs e)
         {
             DL_STATUS status = DL_STATUS.UFR_OK;
             BackgroundWorker bgw = null;
-            byte key_index = 0;
-            byte jc_signer_cipher = 0;
-            byte jc_signer_digest = 0;
-            byte jc_signer_padding = 0;
             byte[] sig;
-            int chunk_len = 0;
+            bool chunked = false;
             byte[] chunk;
             string localDigestMechanism = "";
 
+            jc_signer_cipher = 0;
+            jc_signer_digest = 0;
+            jc_signer_padding = 0;
+            key_index = 0;
+
             try
             {
+                UseWaitCursor = true;
+
                 mLocalDigestInUse = true;
 
                 if (!uFR_Opened)
@@ -2442,9 +2377,6 @@ namespace uFRSigner
                 }
                 else if (cbCipher.Text.Equals("ECDSA"))
                 {
-                    if (cbDigest.Text == "None")
-                        throw new Exception("\"None\" digest algorithm not supported with ECDSA for now.");
-
                     isECDSACipher = true;
                     jc_signer_cipher = (byte)JCDL_SIGNER_CIPHERS.SIG_CIPHER_ECDSA;
                     jc_signer_padding = (byte)JCDL_SIGNER_PADDINGS.PAD_NULL;
@@ -2453,54 +2385,70 @@ namespace uFRSigner
                 switch (cbDigest.Text)
                 {
                     case "None":
-                        mLocalDigestInUse = false;
+                        localDigestMechanism = null;
                         jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
+                        mOid = null;
                         break;
                     case "SHA-1":
-                        mLocalDigestInUse = false;
+                        localDigestMechanism = "SHA-1";
                         jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA;
+                        mOid = OiwObjectIdentifiers.IdSha1;
                         break;
                     case "SHA-224":
                         localDigestMechanism = "SHA-224";
-                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
+                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA_224;
+                        mOid = NistObjectIdentifiers.IdSha224;
                         break;
                     case "SHA-256":
                         localDigestMechanism = "SHA-256";
-                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
+                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA_256;
+                        mOid = NistObjectIdentifiers.IdSha256;
                         break;
                     case "SHA-384":
                         localDigestMechanism = "SHA-384";
-                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
+                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA_384;
+                        mOid = NistObjectIdentifiers.IdSha384;
                         break;
                     case "SHA-512":
                         localDigestMechanism = "SHA-512";
-                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
+                        jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_SHA_512;
+                        mOid = NistObjectIdentifiers.IdSha512;
                         break;
                     default:
                         throw new Exception("Unknown digest algorithm");
                 }
 
+                if (chkDigestOffCard.Checked)
+                {
+                    jc_signer_digest = (byte)JCDL_SIGNER_DIGESTS.ALG_NULL;
+                    mLocalDigestInUse = true;
+                }
+                else
+                {
+                    mLocalDigestInUse = false;
+                }
+
                 if (mLocalDigestInUse)
-                    mLocalDigest = DigestUtilities.GetDigest(localDigestMechanism.Replace("-", ""));
+                    mLocalDigest = DigestUtilities.GetDigest(localDigestMechanism);
 
                 switch (mMessageRadix) // from radix
                 {
                     case RADIX.Hex:
-                        chunk = Hex.Decode(tbMessage.Text);
+                        mData = Hex.Decode(tbMessage.Text);
                         break;
                     case RADIX.Base64:
-                        chunk = Convert.FromBase64String(tbMessage.Text);
+                        mData = Convert.FromBase64String(tbMessage.Text);
                         break;
                     case RADIX.ASCII:
-                        chunk = Encoding.ASCII.GetBytes(tbMessage.Text);
+                        mData = Encoding.ASCII.GetBytes(tbMessage.Text);
                         break;
                     case RADIX.Exception_FromFile:
-                        chunk = new byte[uFCoder.SIG_MAX_PLAIN_DATA_LEN];
+                        mData = new byte[uFCoder.SIG_MAX_PLAIN_DATA_LEN];
                         break;
                     default:
                         throw new Exception("Unknown input data radix");
                 }
-                chunk_len = chunk.Length;
+                //data.Length;
 
                 pbSigning.Value = 0;
                 pbSigning.Maximum = 10000;
@@ -2527,33 +2475,54 @@ namespace uFRSigner
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 #endif
+                int max_len;
+                if (mLocalDigestInUse)
+                    max_len = 8192;
+                else
+                    max_len = (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN;
 
                 if (mSignigFileStream != null)
                 {
-                    if (mLocalDigestInUse)
-                        chunk_len = (int)mSignigFileStream.Length > 4096
-                            ? 4096
-                            : (int)mSignigFileStream.Length;
-                    else
-                        chunk_len = (int)mSignigFileStream.Length > uFCoder.SIG_MAX_PLAIN_DATA_LEN 
-                            ? (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN 
-                            : (int)mSignigFileStream.Length;
+                    chunked = (int)mSignigFileStream.Length > max_len;
+                    mChunkSize = chunked ? max_len : (int)mSignigFileStream.Length;
 
-                    if (mSignigFileStream.Read(chunk, 0, chunk_len) != chunk_len)
+                    chunk = new byte[mChunkSize];
+                    if (mSignigFileStream.Read(chunk, 0, mChunkSize) != mChunkSize)
                         throw new Exception("Error while reading file " + tbMessage.Text);
-                    mSignigFileBytesRead = chunk_len;
+                    mChunkedBytesToRead = (int)mSignigFileStream.Length - mChunkSize;
+                }
+                else
+                {
+                    chunked = mData.Length > max_len;
+                    mChunkSize = chunked ? max_len : mData.Length;
+
+                    chunk = new byte[mChunkSize];
+                    Array.Copy(mData, 0, chunk, 0, mChunkSize);
+                    mChunkedBytesToRead = mData.Length - mChunkSize;
                 }
 
-                if ((mSignigFileStream != null) && (mSignigFileStream.Length > uFCoder.SIG_MAX_PLAIN_DATA_LEN))
+                // For ECDSA we need key length in bits:
+                if (isECDSACipher)
                 {
-                    pbSigning.Maximum = (int)(mSignigFileStream.Length / uFCoder.SIG_MAX_PLAIN_DATA_LEN);
+                    UInt16 key_designator;
+                    status = uFCoder.JCAppGetEcKeySizeBits(key_index, out key_size_bits, out key_designator);
+                    if (status != DL_STATUS.UFR_OK)
+                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                }
+
+                if (chunked)
+                {
+                    if ((mSignigFileStream != null))
+                        pbSigning.Maximum = (int)(mSignigFileStream.Length / max_len);
+                    else
+                        pbSigning.Maximum = (int)(mData.Length / max_len);
 
                     if (mLocalDigestInUse)
-                        mLocalDigest.BlockUpdate(chunk, 0, chunk_len);
+                        mLocalDigest.BlockUpdate(chunk, 0, mChunkSize);
                     else
                     {
                         status = uFCoder.JCAppSignatureBegin(jc_signer_cipher, jc_signer_digest, jc_signer_padding,
-                                                         key_index, chunk, (UInt16)chunk_len,
+                                                         key_index, chunk, (UInt16)mChunkSize,
                                                          null, 0);
                         if (status != DL_STATUS.UFR_OK)
                             throw new Exception(string.Format("Card error code: 0x{0:X}", status));
@@ -2566,7 +2535,7 @@ namespace uFRSigner
                     bgw.RunWorkerCompleted += bgw_WorkCompleted;
                     bgw.RunWorkerAsync();
 
-                    pbSigning.Value = 5;
+                    // ??? pbSigning.Value = 5;
 
                     // Disable controls critical for execution:
                     tabControl.Enabled = false;
@@ -2574,21 +2543,60 @@ namespace uFRSigner
                 }
                 else
                 {
-                    Cursor.Current = Cursors.WaitCursor;
+                    byte[] to_be_signed;
+                    byte[] hash;
 
-                    /*if (mLocalDigestInUse)
+                    if (localDigestMechanism == null)
+                        hash = chunk;
+                    else
                     {
-                        DerObjectIdentifier oid = Org.BouncyCastle.Asn1.Oiw.OiwObjectIdentifiers.IdSha1;
-                        byte[] hash = DigestUtilities.CalculateDigest("SHA-1", chunk);
-                        Org.BouncyCastle.Asn1.X509.DigestInfo dInfo = 
-                            new Org.BouncyCastle.Asn1.X509.DigestInfo(new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(oid, DerNull.Instance), hash);
-                        chunk = dInfo.GetDerEncoded();
-                        chunk_len = chunk.Length;
-                    }*/
+                        hash = new byte[mLocalDigest.GetDigestSize()];
+                        mLocalDigest.BlockUpdate(chunk, 0, mChunkSize);
+                        mLocalDigest.DoFinal(hash, 0);
+                    }
 
-                    status = uFCoder.JCAppGenerateSignature(jc_signer_cipher, jc_signer_digest, jc_signer_padding, 
-                                                            key_index, 
-                                                            chunk, (UInt16)chunk_len, 
+                    if (isECDSACipher)
+                    {
+                        // ECDSA hash/plain_txt alignment before signing:
+
+                        to_be_signed = Enumerable.Repeat((byte)0, (key_size_bits + 7) / 8).ToArray();
+                        if (to_be_signed.Length > hash.Length)
+                            //Array.Copy(hash, 0, to_be_signed, to_be_signed.Length - hash.Length, hash.Length);
+                            to_be_signed = hash; // Can be done on J3H145 because supporting Cipher.PAD_NULL with Signature.SIG_CIPHER_ECDSA 
+                        else // in case of (to_be_signed.Length <= hash.Length)
+                        {
+                            Array.Copy(hash, 0, to_be_signed, 0, to_be_signed.Length);
+                            if ((key_size_bits % 8) != 0)
+                            {
+                                byte prev_byte = 0;
+                                byte shift_by = (byte)(key_size_bits % 8);
+
+                                for (int i = 0; i < to_be_signed.Length; i++)
+                                {
+                                    byte temp = to_be_signed[i];
+                                    to_be_signed[i] >>= 8 - shift_by;
+                                    to_be_signed[i] |= prev_byte;
+                                    prev_byte = temp <<= shift_by;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // RSA signer preparation:
+                        Org.BouncyCastle.Asn1.X509.DigestInfo dInfo =
+                                new Org.BouncyCastle.Asn1.X509.DigestInfo(new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(mOid, DerNull.Instance), hash);
+                        to_be_signed = dInfo.GetDerEncoded();
+                    }
+
+// Examples (debug):
+//                        hash = DigestUtilities.CalculateDigest(/*localDigestMechanism*/"SHA-256", chunk);
+//                        byte[] temp = DigestUtilities.CalculateDigest(/*localDigestMechanism*/"SHA-256", chunk);
+
+                    status = uFCoder.JCAppGenerateSignature(jc_signer_cipher, jc_signer_digest, jc_signer_padding,
+                                                            key_index,
+                                                            //chunk, (UInt16)mChunkSize, 
+                                                            to_be_signed, (UInt16)to_be_signed.Length,
                                                             out sig, 
                                                             null, 0);
                     if (status != DL_STATUS.UFR_OK)
@@ -2609,12 +2617,12 @@ namespace uFRSigner
                 {
                     // In case of ECDSA signature, last 2 bytes are ushort value representing the key_size in bits
                     int len = sig.Length;
-                    UInt16 key_size_bits = (UInt16)(((UInt16)sig[len - 2] << 8) | sig[len - 1]);
+                    key_size_bits = (UInt16)(((UInt16)sig[len - 2] << 8) | sig[len - 1]);
                     int key_size_bytes = (key_size_bits + 7) / 8;
                     byte[] der_sig = new byte[len - 2];
                     Array.Copy(sig, der_sig, len - 2);
 
-                    der_sig = fixEccSignatureSequence(der_sig);
+                    der_sig = DLogicAsn1Tools.fixEccSignatureSequence(der_sig);
 
                     /*/
                     // If you want to remove DER tags and lengths from signature:
@@ -2651,19 +2659,28 @@ namespace uFRSigner
             }
             catch (Exception ex)
             {
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                 {
                     mUserPinLoggedIn = false;
-                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
+                    tbPin.Text = "";
+                    btnUserLogout.Enabled = false;
+                    MessageBox.Show("Wrong user PIN code. Tries remaining: " + ((int)status & 0x3F),
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else if (((int)status == 0x0A6984)                                   // SW_DATA_INVALID
+                        && (jc_signer_digest == (byte)JCDL_SIGNER_DIGESTS.ALG_NULL))
+                {
+                        MessageBox.Show(ex.Message
+                            + "\r\n\r\nATTENTION:"
+                            + "\r\nWhen \"None\" digest algorithm is in use with RSA, this algorithm is only suitable for messages of limited length."
+                            + "\r\nThe total number of input bytes processed may not be more than RSA key's modulus size in bytes substracted by 11.", 
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
-                Cursor.Current = Cursors.Default;
-
                 if (bgw == null)
                 {
                     if (mSignigFileStream != null)
@@ -2677,6 +2694,8 @@ namespace uFRSigner
                         uFCoder.s_block_deselect(100);
                         uFR_Selected = false;
                     }
+
+                    UseWaitCursor = false;
                 }
             }
 #if MY_DEBUG
@@ -2688,21 +2707,37 @@ namespace uFRSigner
 
         void bgw_DoWork(object sender, DoWorkEventArgs e)
         {
-            int bytesRead;
-            byte[] chunk = new byte[uFCoder.SIG_MAX_PLAIN_DATA_LEN];
+            byte[] chunk = new byte[mChunkSize];
+            int chunk_len = 0;
             DL_STATUS status;
 
             try
             {
-                while ((bytesRead = mSignigFileStream.Read(chunk, 0, (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN)) > 0)
+                do
                 {
-                    status = uFCoder.JCAppSignatureUpdate(chunk, (UInt16)bytesRead);
-                    if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    if (mSignigFileStream != null)
+                        chunk_len = mSignigFileStream.Read(chunk, 0, mChunkSize);
+                    else
+                    {
+                        chunk_len = mChunkedBytesToRead > mChunkSize ? mChunkSize : (int)mChunkedBytesToRead;
+                        Array.Copy(mData, mData.Length - mChunkedBytesToRead, chunk, 0, chunk_len);
+                    }
+                    mChunkedBytesToRead -= chunk_len;
+
+                    if (mLocalDigestInUse)
+                        mLocalDigest.BlockUpdate(chunk, 0, chunk_len);
+                    else
+                    {
+                        status = uFCoder.JCAppSignatureUpdate(chunk, (UInt16)chunk_len);
+                        if (status != DL_STATUS.UFR_OK)
+                            throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    }
 
                     // when using PerformStep() the percentProgress arg is redundant
                     ((BackgroundWorker)sender).ReportProgress(0);
                 }
+                while (mChunkedBytesToRead > 0);
+
             }
             catch (Exception ex)
             {
@@ -2729,9 +2764,62 @@ namespace uFRSigner
                 pbSigning.Value = pbSigning.Maximum;
 
                 byte[] sig;
-                status = uFCoder.JCAppSignatureEnd(out sig);
-                if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                if (mLocalDigestInUse)
+                {
+                    byte[] to_be_signed;
+                    byte[] hash;
+
+                    hash = new byte[mLocalDigest.GetDigestSize()];
+                    mLocalDigest.DoFinal(hash, 0);
+
+                    if (isECDSACipher)
+                    {
+                        // ECDSA hash/plain_txt alignment before signing:
+
+                        to_be_signed = Enumerable.Repeat((byte)0, (key_size_bits + 7) / 8).ToArray();
+                        if (to_be_signed.Length > hash.Length)
+                            //Array.Copy(hash, 0, to_be_signed, to_be_signed.Length - hash.Length, hash.Length);
+                            to_be_signed = hash; // debug
+                        else // in case of (to_be_signed.Length <= hash.Length)
+                        {
+                            Array.Copy(hash, 0, to_be_signed, 0, to_be_signed.Length);
+                            if ((key_size_bits % 8) != 0)
+                            {
+                                byte prev_byte = 0;
+                                byte shift_by = (byte)(key_size_bits % 8);
+
+                                for (int i = 0; i < to_be_signed.Length; i++)
+                                {
+                                    byte temp = to_be_signed[i];
+                                    to_be_signed[i] >>= 8 - shift_by;
+                                    to_be_signed[i] |= prev_byte;
+                                    prev_byte = temp <<= shift_by;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // RSA signer preparation:
+                        Org.BouncyCastle.Asn1.X509.DigestInfo dInfo =
+                                new Org.BouncyCastle.Asn1.X509.DigestInfo(new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(mOid, DerNull.Instance), hash);
+                        to_be_signed = dInfo.GetDerEncoded();
+                    }
+
+                    status = uFCoder.JCAppGenerateSignature(jc_signer_cipher, jc_signer_digest, jc_signer_padding,
+                                                            key_index,
+                                                            to_be_signed, (UInt16)to_be_signed.Length,
+                                                            out sig,
+                                                            null, 0);
+                    if (status != DL_STATUS.UFR_OK)
+                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                }
+                else
+                {
+                    status = uFCoder.JCAppSignatureEnd(out sig);
+                    if (status != DL_STATUS.UFR_OK)
+                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                }
 
                 tbSignature.Text = "";
                 //tbSignatureRadixChanged(rbMessageHex, new EventArgs());
@@ -2747,29 +2835,8 @@ namespace uFRSigner
                     byte[] der_sig = new byte[len - 2];
                     Array.Copy(sig, der_sig, len - 2);
 
-                    Asn1InputStream decoder = new Asn1InputStream(new MemoryStream(sig));
-                    DerSequence seq = (DerSequence)decoder.ReadObject();
-                    DerInteger der_r = (DerInteger)seq[0];
-                    DerInteger der_s = (DerInteger)seq[1];
-                    byte[] r = der_r.PositiveValue.ToByteArray();
-                    byte[] s = der_s.PositiveValue.ToByteArray();
-
-                    // Fix leading zeros (padding or removing depending on mECKeyByteSize:
-                    while (r[0] == 0 && r.Length > key_size_bytes)
-                    {
-                        r = r.Skip(1).ToArray();
-                    }
-                    if (key_size_bytes > r.Length)
-                        r = zeroPadArray(r, 0, key_size_bytes - r.Length);
-
-                    while (s[0] == 0 && s.Length > key_size_bytes)
-                    {
-                        s = s.Skip(1).ToArray();
-                    }
-                    if (key_size_bytes > s.Length)
-                        s = zeroPadArray(s, 0, key_size_bytes - s.Length);
-
-                    tbSignature.Text = BitConverter.ToString(r).Replace("-", "") + BitConverter.ToString(s).Replace("-", "");
+                    der_sig = DLogicAsn1Tools.fixEccSignatureSequence(der_sig);
+                    tbSignature.Text = BitConverter.ToString(der_sig).Replace("-", "");
                 }
                 else
                     tbSignature.Text = BitConverter.ToString(sig).Replace("-", "");
@@ -2796,9 +2863,13 @@ namespace uFRSigner
 
                 // Enable controls critical for execution:
                 tabControl.Enabled = true;
+                UseWaitCursor = false;
+                Cursor.Current = Cursors.Default;
             }
         }
+
         //----------------------------------------------------------------------
+
         private void btnOpenCertFile_Click(object sender, EventArgs e)
         {
             X509Certificate2 cert = null;
@@ -2977,9 +3048,11 @@ namespace uFRSigner
             }
             catch (Exception ex)
             {
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                 {
+                    btnSOLogout.Enabled = false;
                     mSOPinLoggedIn = false;
+                    tbSOPin.Text = "";
                     MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -3374,18 +3447,22 @@ namespace uFRSigner
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
-            mSOPinLoggedIn = true;
+                mSOPinLoggedIn = true;
+
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PIN, out PinTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
                 lbPinSOTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
 
+                btnSOLogout.Enabled = true;
                 MessageBox.Show("The SO has been successfully logged in", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 mSOPinLoggedIn = false;
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                btnSOLogout.Enabled = false;
+                tbSOPin.Text = "";
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     lbPinSOTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -3433,12 +3510,15 @@ namespace uFRSigner
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
                 lbPinTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
 
+                btnUserLogout.Enabled = true;
                 MessageBox.Show("The user has been successfully logged in", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 mUserPinLoggedIn = false;
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                tbPin.Text = "";
+                btnUserLogout.Enabled = false;
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     lbPinTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -3494,7 +3574,7 @@ namespace uFRSigner
             }
             catch (Exception ex)
             {
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     lbPukTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -3548,7 +3628,7 @@ namespace uFRSigner
             }
             catch (Exception ex)
             {
-                if (((int)status & 0x0A63C0) == 0x0A63C0)
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     lbPukSOTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -3605,7 +3685,20 @@ namespace uFRSigner
 
         private void cbCipher_SelectedIndexChanged(object sender, EventArgs e)
         {
-            lbECDSASignatureAttention.Visible = cbCipher.Text.Equals("ECDSA");
+            /*lbECDSASignatureAttention.Visible = cbCipher.Text.Equals("ECDSA");
+            chkDigestOffCard.Checked = chkDigestOffCard.Enabled = !cbCipher.Text.Equals("ECDSA") && !cbDigest.Text.Equals("None");
+            */
+            chkDigestOffCard.Checked = chkDigestOffCard.Enabled = !cbDigest.Text.Equals("None");
+        }
+
+        private void cbDigest_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            /*if (cbCipher.Text.Equals("ECDSA") && cbDigest.Text.Equals("None"))
+                chkDigestOffCard.Checked = chkDigestOffCard.Enabled = !cbCipher.Text.Equals("ECDSA") && !cbDigest.Text.Equals("None");
+            else if (!cbCipher.Text.Equals("ECDSA"))
+                chkDigestOffCard.Checked = chkDigestOffCard.Enabled = !cbDigest.Text.Equals("None");
+            */
+            chkDigestOffCard.Checked = chkDigestOffCard.Enabled = !cbDigest.Text.Equals("None");
         }
 
         private void btnGetECPublicKey_Click(object sender, EventArgs e)
@@ -3825,56 +3918,122 @@ namespace uFRSigner
             }
         }
 
-        private void btnUserLogout_Click(object sender, EventArgs e)
-        {
-            mUserPinLoggedIn = false;
-            tbPin.Text = "";
-        }
-
         private void btnSOLogout_Click(object sender, EventArgs e)
         {
+#if USING_PIN
             mSOPinLoggedIn = false;
             tbSOPin.Text = "";
+            btnSOLogout.Enabled = false;
+#endif
         }
 
-        private void btnChangeSOPin_Click(object sender, EventArgs e)
+        private void btnUserLogout_Click(object sender, EventArgs e)
         {
-            if (!mSOPinLoggedIn)
-                MessageBox.Show("To change SO PIN code, first you need to be logged in as SO", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            // Try to change...
-
-            tbNewSOPin.Text = "";
-            tbNewSOPinAgain.Text = "";
+#if USING_PIN
+            mUserPinLoggedIn = false;
+            tbPin.Text = "";
+            btnUserLogout.Enabled = false;
+#endif
         }
 
-        private void btnChangeUserPin_Click(object sender, EventArgs e)
+        private void PinChange_Click(object sender, EventArgs e)
         {
+#if USING_PIN
+            DL_SECURE_CODE code_to_change = DL_SECURE_CODE.USER_PIN;
+            TextBox tbNewPinSource = null;
+            TextBox tbNewPinSourceAgain = null;
+            Label lbTriesRemaining = null;
+            string pin_name = "";
+            UInt16 PinTriesRemaining;
+            DL_STATUS status = DL_STATUS.UFR_OK;
+
             if (!mSOPinLoggedIn)
+            {
                 MessageBox.Show("To change User PIN code, first you need to be logged in as SO", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            // Try to change...
+                return;
+            }
 
-            tbNewPin.Text = "";
-            tbNewPinAgain.Text = "";
-        }
+            switch (((Button)sender).Name)
+            {
+                case "btnChangeSOPin":
+                    code_to_change = DL_SECURE_CODE.SO_PIN;
+                    tbNewPinSource = tbNewSOPin;
+                    tbNewPinSourceAgain = tbNewSOPinAgain;
+                    lbTriesRemaining = lbPinSOTriesRemaining;
+                    pin_name = "SO PIN";
+                    break;
+                case "btnChangeSOPuk":
+                    code_to_change = DL_SECURE_CODE.SO_PUK;
+                    tbNewPinSource = tbNewSOPuk;
+                    tbNewPinSourceAgain = tbNewSOPukAgain;
+                    lbTriesRemaining = lbPukSOTriesRemaining;
+                    pin_name = "SO PUK";
+                    break;
+                case "btnChangeUserPin":
+                    code_to_change = DL_SECURE_CODE.USER_PIN;
+                    tbNewPinSource = tbNewPin;
+                    tbNewPinSourceAgain = tbNewPinAgain;
+                    lbTriesRemaining = lbPinTriesRemaining;
+                    pin_name = "user PIN";
+                    break; 
+                case "btnChangePuk":
+                    code_to_change = DL_SECURE_CODE.USER_PUK;
+                    tbNewPinSource = tbNewPuk;
+                    tbNewPinSourceAgain = tbNewPukAgain;
+                    lbTriesRemaining = lbPukTriesRemaining;
+                    pin_name = "user PUK";
+                    break;
+            }
 
-        private void btnChangeSOPuk_Click(object sender, EventArgs e)
-        {
-            if (!mSOPinLoggedIn)
-                MessageBox.Show("To change SO PUK code, first you need to be logged in as SO", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            // Try to change...
+            try
+            {
+                // Open JCApp:
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
 
-            tbNewSOPuk.Text = "";
-            tbNewSOPukAgain.Text = "";
-        }
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
 
-        private void btnChangePuk_Click(object sender, EventArgs e)
-        {
-            if (!mSOPinLoggedIn)
-                MessageBox.Show("To change User PUK code, first you need to be logged in as SO", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            // Try to change...
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
-            tbNewPuk.Text = "";
-            tbNewPukAgain.Text = "";
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppPinChange(code_to_change, tbNewPinSource.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                status = uFCoder.JCAppGetPinTriesRemaining(code_to_change, out PinTriesRemaining);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                lbTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
+
+                MessageBox.Show("The " + pin_name + " has been successfully changed", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
+                    lbPinSOTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                tbNewPinSource.Text = "";
+                tbNewPinSourceAgain.Text = "";
+                Cursor.Current = Cursors.Default;
+            }
+#endif
         }
 
 #if MY_DEBUG

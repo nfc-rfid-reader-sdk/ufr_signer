@@ -1128,6 +1128,9 @@ namespace uFR
             }
             return status;
         }
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetEcKeySizeBits")]
+        public static extern DL_STATUS JCAppGetEcKeySizeBits(byte key_index, out UInt16 key_size_bits, out UInt16 key_designator);
         //----------------------------------------------------------------------
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, EntryPoint = "UfrXrcLockOn")]

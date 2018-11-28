@@ -16,6 +16,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Utilities.Encoders;
 using Org.BouncyCastle.Security;
 using uFR;
+using System.Linq;
 
 namespace uFRSigner
 {
@@ -70,6 +71,15 @@ namespace uFRSigner
             mKeyIndex = key_idx;
             mCipherName = cipher_name;
             mParametersAreSet = true;
+
+            if (mCipherName.Equals("ECDSA") && !mPublicKey.GetType().ToString().Equals("Org.BouncyCastle.Crypto.Parameters.RsaKeyParameters"))
+            {
+                lbEcdsaCurve.Text = "using " + Org.BouncyCastle.Asn1.Sec.SecNamedCurves.GetName(((ECPublicKeyParameters)mPublicKey).PublicKeyParamSet);
+            }
+            else
+            {
+                lbEcdsaCurve.Text = "";
+            }
         }
 
         private void frmCSR_Load(object sender, EventArgs e)
@@ -97,7 +107,10 @@ namespace uFRSigner
                     if (mCipherName.Equals("RSA"))
                         cbCipher.SelectedIndex = 0;
                     else
+                    {
                         cbCipher.SelectedIndex = 1;
+                    }
+
                     cbKeyIndex.SelectedIndex = mKeyIndex;
                 }
             }
@@ -350,56 +363,9 @@ namespace uFRSigner
             byte[] dataToSign = null;
             DL_STATUS status;
             bool uFR_Selected = false;
+            UInt16 key_size_bits;
 
-            if (cbCipher.Text == "RSA")
-            {
-                jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_NULL;
-                jc_signer_padding = (byte)JCDL_SIGNER_PADDINGS.PAD_PKCS1;
-
-                DerObjectIdentifier oid = null;
-                switch (cbDigest.Text)
-                {
-                    case "SHA-1":
-                        oid = OiwObjectIdentifiers.IdSha1;
-                        break;
-                    case "SHA-224":
-                        oid = NistObjectIdentifiers.IdSha224;
-                        break;
-                    case "SHA-256":
-                        oid = NistObjectIdentifiers.IdSha256;
-                        break;
-                    case "SHA-384":
-                        oid = NistObjectIdentifiers.IdSha384;
-                        break;
-                    case "SHA-512":
-                        oid = NistObjectIdentifiers.IdSha512;
-                        break;
-                }
-                byte[] hash = DigestUtilities.CalculateDigest(cbDigest.Text, tbs);
-                DigestInfo dInfo = new DigestInfo(new AlgorithmIdentifier(oid, DerNull.Instance), hash);
-                dataToSign = dInfo.GetDerEncoded();
-            }
-            else // ECDSA
-            {
-                switch (cbDigest.Text)
-                {
-                    case "SHA-1":
-                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA;
-                        break;
-                    case "SHA-224":
-                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_224;
-                        break;
-                    case "SHA-256":
-                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_256;
-                        break;
-                    case "SHA-384":
-                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_384;
-                        break;
-                    case "SHA-512":
-                        jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_512;
-                        break;
-                }
-            }
+            byte[] hash = DigestUtilities.CalculateDigest(cbDigest.Text, tbs);
 
             try
             {
@@ -423,7 +389,7 @@ namespace uFRSigner
                     status = uFCoder.JCAppLogin(false, mUserPin);
                     if (status != DL_STATUS.UFR_OK)
                     {
-                        if (((int)status & 0x0A63C0) == 0x0A63C0)
+                        if (((int)status & 0xFFFFC0) == 0x0A63C0)
                         {
                             mUserPinLoggedIn = false;
                             open_pin_dialog = true;
@@ -454,12 +420,90 @@ namespace uFRSigner
 
                 Cursor.Current = Cursors.WaitCursor;
 
+                if (cbCipher.Text == "RSA")
+                {
+                    jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_NULL;
+                    jc_signer_padding = (byte)JCDL_SIGNER_PADDINGS.PAD_PKCS1;
+
+                    DerObjectIdentifier oid = null;
+                    switch (cbDigest.Text)
+                    {
+                        case "SHA-1":
+                            oid = OiwObjectIdentifiers.IdSha1;
+                            break;
+                        case "SHA-224":
+                            oid = NistObjectIdentifiers.IdSha224;
+                            break;
+                        case "SHA-256":
+                            oid = NistObjectIdentifiers.IdSha256;
+                            break;
+                        case "SHA-384":
+                            oid = NistObjectIdentifiers.IdSha384;
+                            break;
+                        case "SHA-512":
+                            oid = NistObjectIdentifiers.IdSha512;
+                            break;
+                    }
+                    DigestInfo dInfo = new DigestInfo(new AlgorithmIdentifier(oid, DerNull.Instance), hash);
+                    dataToSign = dInfo.GetDerEncoded();
+                }
+                else // ECDSA
+                {
+                    switch (cbDigest.Text)
+                    {
+                        case "SHA-1":
+                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA;
+                            break;
+                        case "SHA-224":
+                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_224;
+                            break;
+                        case "SHA-256":
+                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_256;
+                            break;
+                        case "SHA-384":
+                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_384;
+                            break;
+                        case "SHA-512":
+                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_512;
+                            break;
+                    }
+
+                    // For ECDSA, first we need key length in bits:
+                    UInt16 key_designator;
+                    status = uFCoder.JCAppGetEcKeySizeBits(key_index, out key_size_bits, out key_designator);
+                    if (status != DL_STATUS.UFR_OK)
+                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                    // ECDSA hash alignment before signing:
+                    dataToSign = Enumerable.Repeat((byte)0, (key_size_bits + 7) / 8).ToArray();
+                    if (dataToSign.Length > hash.Length)
+                        //Array.Copy(hash, 0, to_be_signed, to_be_signed.Length - hash.Length, hash.Length);
+                        dataToSign = hash; // Can be done on J3H145 because supporting Cipher.PAD_NULL with Signature.SIG_CIPHER_ECDSA 
+                    else // in case of (to_be_signed.Length <= hash.Length)
+                    {
+                        Array.Copy(hash, 0, dataToSign, 0, dataToSign.Length);
+                        if ((key_size_bits % 8) != 0)
+                        {
+                            byte prev_byte = 0;
+                            byte shift_by = (byte)(key_size_bits % 8);
+
+                            for (int i = 0; i < dataToSign.Length; i++)
+                            {
+                                byte temp = dataToSign[i];
+                                dataToSign[i] >>= 8 - shift_by;
+                                dataToSign[i] |= prev_byte;
+                                prev_byte = temp <<= shift_by;
+                            }
+                        }
+                    }
+                }
+
                 if (dataToSign.Length > uFCoder.SIG_MAX_PLAIN_DATA_LEN)
                 {
                     int chunk_len, src_pos, rest_of_data;
                     byte[] chunk = new byte[uFCoder.SIG_MAX_PLAIN_DATA_LEN];
 
-                    rest_of_data = dataToSign.Length -  (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN;
+                    rest_of_data = dataToSign.Length - (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN;
                     src_pos = (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN;
                     chunk_len = (int)uFCoder.SIG_MAX_PLAIN_DATA_LEN;
                     Array.Copy(dataToSign, 0, chunk, 0, chunk_len);
@@ -496,6 +540,18 @@ namespace uFRSigner
                                                             null, 0);
                     if (status != DL_STATUS.UFR_OK)
                         throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                }
+
+                if (cbCipher.Text == "ECDSA")
+                {
+                    // In case of ECDSA signature, last 2 bytes are ushort value representing the key_size in bits
+                    int len = signature.Length;
+                    key_size_bits = (UInt16)(((UInt16)signature[len - 2] << 8) | signature[len - 1]);
+                    int key_size_bytes = (key_size_bits + 7) / 8;
+                    byte[] der_sig = new byte[len - 2];
+                    Array.Copy(signature, der_sig, len - 2);
+
+                    signature = DLogicAsn1Tools.fixEccSignatureSequence(der_sig);
                 }
             }
             finally
@@ -560,6 +616,15 @@ namespace uFRSigner
             }
         }
 
+        private void lstDn_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstDn.SelectedItem != null)
+            {
+                cbRdn.Text = derOID2RDName(mSubjectItemsOIDs[lstDn.SelectedIndex]);
+                ebRdn.Text = mSubjectItems[lstDn.SelectedIndex];
+            }
+        }
+
         private void btnPutRdn_Click(object sender, EventArgs e)
         {
             if (ebRdn.Text[0] == '#')
@@ -567,12 +632,18 @@ namespace uFRSigner
                 MessageBox.Show("'#' character is forbiden at the begining of the RDN string", "Wrong input", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-            mSubjectItemsOIDs.Add(getDerOIDByAttrName(cbRdn.Text));
-            mSubjectItems.Add(ebRdn.Text);
             if (lstDn.SelectedItem == null)
+            {
+                mSubjectItemsOIDs.Add(getDerOIDByAttrName(cbRdn.Text));
+                mSubjectItems.Add(ebRdn.Text);
                 lstDn.Items.Add(cbRdn.Text + " = " + ebRdn.Text);
+            } 
             else
+            {
+                mSubjectItemsOIDs.Insert(lstDn.SelectedIndex, getDerOIDByAttrName(cbRdn.Text));
+                mSubjectItems.Insert(lstDn.SelectedIndex, ebRdn.Text);
                 lstDn.Items.Insert(lstDn.SelectedIndex, cbRdn.Text + " = " + ebRdn.Text);
+            }
 
             mCangedNotSaved = true;
         }
@@ -902,12 +973,24 @@ namespace uFRSigner
             {
                 cbExt.SelectedIndex = mExtItemsIdxs[lstExt.SelectedIndex];
                 chkCritical.Checked = mExtItems[lstExt.SelectedIndex].critical;
+                if (cbExt.SelectedIndex == 0)
+                {
+                    string s;
+                    parseAltNameEmail((DerOctetString)mExtItems[lstExt.SelectedIndex].Value, out s);
+                    ebExt.Text = s;
+                }
             }
         }
 
         private void cbExt_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ebExt.Enabled = cbExt.SelectedIndex == 0;
+            if (cbExt.SelectedIndex == 0)
+                ebExt.Enabled = true;
+            else
+            {
+                ebExt.Enabled = false;
+                ebExt.Text = "";
+            }
             if (mExtItemsIdxs.Contains(cbExt.SelectedIndex))
                 lstExt.SelectedIndex = mExtItemsIdxs.IndexOf(cbExt.SelectedIndex);
             else
@@ -1559,6 +1642,5 @@ namespace uFRSigner
                 }
             }
         }
-
     }
 }

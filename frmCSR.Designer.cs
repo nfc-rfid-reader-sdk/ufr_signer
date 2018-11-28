@@ -56,6 +56,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cbKeyIndex = new System.Windows.Forms.ComboBox();
             this.lbKeyIndex = new System.Windows.Forms.Label();
+            this.lbEcdsaCurve = new System.Windows.Forms.Label();
             this.gbDn.SuspendLayout();
             this.gbExt.SuspendLayout();
             this.SuspendLayout();
@@ -148,6 +149,7 @@
             this.lstDn.ScrollAlwaysVisible = true;
             this.lstDn.Size = new System.Drawing.Size(540, 160);
             this.lstDn.TabIndex = 2;
+            this.lstDn.SelectedIndexChanged += new System.EventHandler(this.lstDn_SelectedIndexChanged);
             // 
             // cbRdn
             // 
@@ -356,6 +358,7 @@
             // cbCipher
             // 
             this.cbCipher.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbCipher.Enabled = false;
             this.cbCipher.FormattingEnabled = true;
             this.cbCipher.Items.AddRange(new object[] {
             "RSA",
@@ -378,6 +381,7 @@
             // cbKeyIndex
             // 
             this.cbKeyIndex.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbKeyIndex.Enabled = false;
             this.cbKeyIndex.FormattingEnabled = true;
             this.cbKeyIndex.Items.AddRange(new object[] {
             "0",
@@ -398,11 +402,20 @@
             this.lbKeyIndex.Text = "signer key index (card):";
             this.lbKeyIndex.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // lbEcdsaCurve
+            // 
+            this.lbEcdsaCurve.Location = new System.Drawing.Point(666, 116);
+            this.lbEcdsaCurve.Name = "lbEcdsaCurve";
+            this.lbEcdsaCurve.Size = new System.Drawing.Size(114, 20);
+            this.lbEcdsaCurve.TabIndex = 14;
+            this.lbEcdsaCurve.Text = "-";
+            // 
             // frmCSR
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(792, 471);
+            this.Controls.Add(this.lbEcdsaCurve);
             this.Controls.Add(this.cbKeyIndex);
             this.Controls.Add(this.lbKeyIndex);
             this.Controls.Add(this.cbCipher);
@@ -461,5 +474,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbKeyIndex;
         private System.Windows.Forms.Label lbKeyIndex;
+        private System.Windows.Forms.Label lbEcdsaCurve;
     }
 }

@@ -28,58 +28,58 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem91 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "0",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem92 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem93 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem94 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new string[] {
             "3",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem95 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new string[] {
             "4",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem96 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem(new string[] {
             "5",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem97 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem(new string[] {
             "6",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem98 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem(new string[] {
             "7",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem99 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem(new string[] {
             "8",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem100 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem(new string[] {
             "9",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem101 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem(new string[] {
             "10",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem102 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem(new string[] {
             "11",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem103 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem(new string[] {
             "0",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem104 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem105 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem106 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem(new string[] {
             "0",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem107 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem108 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -173,7 +173,6 @@
             this.lbECKeyLength = new System.Windows.Forms.Label();
             this.lbECKeyIndex = new System.Windows.Forms.Label();
             this.tabPinCodes = new System.Windows.Forms.TabPage();
-            this.lbAttention = new System.Windows.Forms.Label();
             this.btnRefreshTriesRemaining = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.lbNewPukAgain = new System.Windows.Forms.Label();
@@ -196,6 +195,7 @@
             this.tbSOPuk = new System.Windows.Forms.TextBox();
             this.lbPukSOTriesRemaining = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnUserLogout = new System.Windows.Forms.Button();
             this.lbNewPinAgain = new System.Windows.Forms.Label();
             this.tbNewPinAgain = new System.Windows.Forms.TextBox();
             this.lbNewPin = new System.Windows.Forms.Label();
@@ -206,6 +206,7 @@
             this.tbPin = new System.Windows.Forms.TextBox();
             this.lbPinTriesRemaining = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnSOLogout = new System.Windows.Forms.Button();
             this.lbNewSOPinAgain = new System.Windows.Forms.Label();
             this.tbNewSOPinAgain = new System.Windows.Forms.TextBox();
             this.lbNewSOPin = new System.Windows.Forms.Label();
@@ -259,8 +260,8 @@
             this.lbHash = new System.Windows.Forms.Label();
             this.tbHash = new System.Windows.Forms.TextBox();
             this.gbSignature = new System.Windows.Forms.GroupBox();
-            this.lbECDSASignatureAttention = new System.Windows.Forms.Label();
             this.pbSigning = new System.Windows.Forms.ProgressBar();
+            this.lbECDSASignatureAttention = new System.Windows.Forms.Label();
             this.btnSignature = new System.Windows.Forms.Button();
             this.btnSignatureStoreToBin = new System.Windows.Forms.Button();
             this.rbSignatureBase64 = new System.Windows.Forms.RadioButton();
@@ -276,6 +277,7 @@
             this.lbMessage = new System.Windows.Forms.Label();
             this.tbMessage = new System.Windows.Forms.TextBox();
             this.gbSignatureParameters = new System.Windows.Forms.GroupBox();
+            this.chkDigestOffCard = new System.Windows.Forms.CheckBox();
             this.cbCipher = new System.Windows.Forms.ComboBox();
             this.lbCipher = new System.Windows.Forms.Label();
             this.cbDigest = new System.Windows.Forms.ComboBox();
@@ -283,8 +285,6 @@
             this.cbSignatureKeyIndex = new System.Windows.Forms.ComboBox();
             this.lbSignatureKeyIndex = new System.Windows.Forms.Label();
             this.llbDLogicURL = new System.Windows.Forms.LinkLabel();
-            this.btnUserLogout = new System.Windows.Forms.Button();
-            this.btnSOLogout = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabRSAKeys.SuspendLayout();
             this.gpPrivateKeyMode.SuspendLayout();
@@ -690,8 +690,7 @@
             "1280",
             "1536",
             "1984",
-            "2048",
-            "4096"});
+            "2048"});
             this.cbRSAKeyLength.Location = new System.Drawing.Point(99, 16);
             this.cbRSAKeyLength.Name = "cbRSAKeyLength";
             this.cbRSAKeyLength.Size = new System.Drawing.Size(121, 21);
@@ -1487,7 +1486,6 @@
             // tabPinCodes
             // 
             this.tabPinCodes.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPinCodes.Controls.Add(this.lbAttention);
             this.tabPinCodes.Controls.Add(this.btnRefreshTriesRemaining);
             this.tabPinCodes.Controls.Add(this.groupBox5);
             this.tabPinCodes.Controls.Add(this.groupBox4);
@@ -1499,17 +1497,6 @@
             this.tabPinCodes.Size = new System.Drawing.Size(1134, 574);
             this.tabPinCodes.TabIndex = 5;
             this.tabPinCodes.Text = "PIN Codes";
-            // 
-            // lbAttention
-            // 
-            this.lbAttention.AutoSize = true;
-            this.lbAttention.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lbAttention.ForeColor = System.Drawing.Color.Red;
-            this.lbAttention.Location = new System.Drawing.Point(8, 444);
-            this.lbAttention.Name = "lbAttention";
-            this.lbAttention.Size = new System.Drawing.Size(543, 16);
-            this.lbAttention.TabIndex = 4;
-            this.lbAttention.Text = "ATTENTION: After successful login don\'t change PIN (SO PIN) input text fields";
             // 
             // btnRefreshTriesRemaining
             // 
@@ -1603,7 +1590,7 @@
             this.btnChangePuk.TabIndex = 7;
             this.btnChangePuk.Text = "Change PUK";
             this.btnChangePuk.UseVisualStyleBackColor = true;
-            this.btnChangePuk.Click += new System.EventHandler(this.btnChangePuk_Click);
+            this.btnChangePuk.Click += new System.EventHandler(this.PinChange_Click);
             // 
             // btnUnblockUserPin
             // 
@@ -1730,7 +1717,7 @@
             this.btnChangeSOPuk.TabIndex = 7;
             this.btnChangeSOPuk.Text = "Change SO PUK";
             this.btnChangeSOPuk.UseVisualStyleBackColor = true;
-            this.btnChangeSOPuk.Click += new System.EventHandler(this.btnChangeSOPuk_Click);
+            this.btnChangeSOPuk.Click += new System.EventHandler(this.PinChange_Click);
             // 
             // btnUnblockSOPin
             // 
@@ -1799,6 +1786,17 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "User Personal Identification Number (PIN):";
             // 
+            // btnUserLogout
+            // 
+            this.btnUserLogout.Enabled = false;
+            this.btnUserLogout.Location = new System.Drawing.Point(388, 92);
+            this.btnUserLogout.Name = "btnUserLogout";
+            this.btnUserLogout.Size = new System.Drawing.Size(138, 24);
+            this.btnUserLogout.TabIndex = 9;
+            this.btnUserLogout.Text = "User Logout";
+            this.btnUserLogout.UseVisualStyleBackColor = true;
+            this.btnUserLogout.Click += new System.EventHandler(this.btnUserLogout_Click);
+            // 
             // lbNewPinAgain
             // 
             this.lbNewPinAgain.AutoSize = true;
@@ -1858,7 +1856,7 @@
             this.btnChangeUserPin.TabIndex = 7;
             this.btnChangeUserPin.Text = "Change PIN";
             this.btnChangeUserPin.UseVisualStyleBackColor = true;
-            this.btnChangeUserPin.Click += new System.EventHandler(this.btnChangeUserPin_Click);
+            this.btnChangeUserPin.Click += new System.EventHandler(this.PinChange_Click);
             // 
             // btnUserLogin
             // 
@@ -1926,6 +1924,17 @@
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Security Officer (SO) Personal Identification Number (SO PIN):";
+            // 
+            // btnSOLogout
+            // 
+            this.btnSOLogout.Enabled = false;
+            this.btnSOLogout.Location = new System.Drawing.Point(390, 91);
+            this.btnSOLogout.Name = "btnSOLogout";
+            this.btnSOLogout.Size = new System.Drawing.Size(138, 24);
+            this.btnSOLogout.TabIndex = 9;
+            this.btnSOLogout.Text = "SO Logout";
+            this.btnSOLogout.UseVisualStyleBackColor = true;
+            this.btnSOLogout.Click += new System.EventHandler(this.btnSOLogout_Click);
             // 
             // lbNewSOPinAgain
             // 
@@ -1995,7 +2004,7 @@
             this.btnChangeSOPin.TabIndex = 7;
             this.btnChangeSOPin.Text = "Change SO PIN";
             this.btnChangeSOPin.UseVisualStyleBackColor = true;
-            this.btnChangeSOPin.Click += new System.EventHandler(this.btnChangeSOPin_Click);
+            this.btnChangeSOPin.Click += new System.EventHandler(this.PinChange_Click);
             // 
             // btnSOLogin
             // 
@@ -2263,18 +2272,18 @@
             this.lstvCACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstvCACerts.HideSelection = false;
             this.lstvCACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem91,
-            listViewItem92,
-            listViewItem93,
-            listViewItem94,
-            listViewItem95,
-            listViewItem96,
-            listViewItem97,
-            listViewItem98,
-            listViewItem99,
-            listViewItem100,
-            listViewItem101,
-            listViewItem102});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5,
+            listViewItem6,
+            listViewItem7,
+            listViewItem8,
+            listViewItem9,
+            listViewItem10,
+            listViewItem11,
+            listViewItem12});
             this.lstvCACerts.Location = new System.Drawing.Point(12, 19);
             this.lstvCACerts.MultiSelect = false;
             this.lstvCACerts.Name = "lstvCACerts";
@@ -2340,13 +2349,13 @@
             this.lstvECDSACerts.GridLines = true;
             this.lstvECDSACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstvECDSACerts.HideSelection = false;
-            listViewItem103.StateImageIndex = 0;
-            listViewItem104.StateImageIndex = 0;
-            listViewItem105.StateImageIndex = 0;
+            listViewItem13.StateImageIndex = 0;
+            listViewItem14.StateImageIndex = 0;
+            listViewItem15.StateImageIndex = 0;
             this.lstvECDSACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem103,
-            listViewItem104,
-            listViewItem105});
+            listViewItem13,
+            listViewItem14,
+            listViewItem15});
             this.lstvECDSACerts.Location = new System.Drawing.Point(12, 20);
             this.lstvECDSACerts.MultiSelect = false;
             this.lstvECDSACerts.Name = "lstvECDSACerts";
@@ -2390,13 +2399,13 @@
             this.lstvRSACerts.GridLines = true;
             this.lstvRSACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstvRSACerts.HideSelection = false;
-            listViewItem106.StateImageIndex = 0;
-            listViewItem107.StateImageIndex = 0;
-            listViewItem108.StateImageIndex = 0;
+            listViewItem16.StateImageIndex = 0;
+            listViewItem17.StateImageIndex = 0;
+            listViewItem18.StateImageIndex = 0;
             this.lstvRSACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem106,
-            listViewItem107,
-            listViewItem108});
+            listViewItem16,
+            listViewItem17,
+            listViewItem18});
             this.lstvRSACerts.LabelWrap = false;
             this.lstvRSACerts.Location = new System.Drawing.Point(11, 20);
             this.lstvRSACerts.MultiSelect = false;
@@ -2575,8 +2584,8 @@
             // 
             this.gbSignature.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gbSignature.Controls.Add(this.lbECDSASignatureAttention);
             this.gbSignature.Controls.Add(this.pbSigning);
+            this.gbSignature.Controls.Add(this.lbECDSASignatureAttention);
             this.gbSignature.Controls.Add(this.btnSignature);
             this.gbSignature.Controls.Add(this.btnSignatureStoreToBin);
             this.gbSignature.Controls.Add(this.rbSignatureBase64);
@@ -2591,6 +2600,17 @@
             this.gbSignature.TabStop = false;
             this.gbSignature.Text = "Signature:";
             // 
+            // pbSigning
+            // 
+            this.pbSigning.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pbSigning.Location = new System.Drawing.Point(69, 118);
+            this.pbSigning.Name = "pbSigning";
+            this.pbSigning.Size = new System.Drawing.Size(1033, 10);
+            this.pbSigning.Step = 1;
+            this.pbSigning.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pbSigning.TabIndex = 34;
+            // 
             // lbECDSASignatureAttention
             // 
             this.lbECDSASignatureAttention.AutoSize = true;
@@ -2603,17 +2623,6 @@
             this.lbECDSASignatureAttention.Text = "Attention: in the case of ECDSA the signature is encoded using ASN.1 standard usi" +
     "ng Distinguished Encoding Rules (DER)";
             this.lbECDSASignatureAttention.Visible = false;
-            // 
-            // pbSigning
-            // 
-            this.pbSigning.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbSigning.Location = new System.Drawing.Point(69, 118);
-            this.pbSigning.Name = "pbSigning";
-            this.pbSigning.Size = new System.Drawing.Size(1033, 10);
-            this.pbSigning.Step = 1;
-            this.pbSigning.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.pbSigning.TabIndex = 6;
             // 
             // btnSignature
             // 
@@ -2796,6 +2805,7 @@
             // 
             this.gbSignatureParameters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbSignatureParameters.Controls.Add(this.chkDigestOffCard);
             this.gbSignatureParameters.Controls.Add(this.cbCipher);
             this.gbSignatureParameters.Controls.Add(this.lbCipher);
             this.gbSignatureParameters.Controls.Add(this.cbDigest);
@@ -2808,6 +2818,19 @@
             this.gbSignatureParameters.Size = new System.Drawing.Size(1116, 74);
             this.gbSignatureParameters.TabIndex = 0;
             this.gbSignatureParameters.TabStop = false;
+            // 
+            // chkDigestOffCard
+            // 
+            this.chkDigestOffCard.AutoSize = true;
+            this.chkDigestOffCard.Checked = true;
+            this.chkDigestOffCard.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDigestOffCard.Location = new System.Drawing.Point(251, 45);
+            this.chkDigestOffCard.Name = "chkDigestOffCard";
+            this.chkDigestOffCard.Size = new System.Drawing.Size(199, 17);
+            this.chkDigestOffCard.TabIndex = 6;
+            this.chkDigestOffCard.Text = "off-card message digest computation";
+            this.chkDigestOffCard.UseVisualStyleBackColor = true;
+            this.chkDigestOffCard.Visible = false;
             // 
             // cbCipher
             // 
@@ -2846,6 +2869,7 @@
             this.cbDigest.Name = "cbDigest";
             this.cbDigest.Size = new System.Drawing.Size(80, 21);
             this.cbDigest.TabIndex = 1;
+            this.cbDigest.SelectedIndexChanged += new System.EventHandler(this.cbDigest_SelectedIndexChanged);
             // 
             // lbDigest
             // 
@@ -2889,28 +2913,6 @@
             this.llbDLogicURL.Text = "http://www.d-logic.net/nfc-rfid-reader-sdk/";
             this.llbDLogicURL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.llbDLogicURL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llbDLogicURL_LinkClicked);
-            // 
-            // btnUserLogout
-            // 
-            this.btnUserLogout.Enabled = false;
-            this.btnUserLogout.Location = new System.Drawing.Point(388, 92);
-            this.btnUserLogout.Name = "btnUserLogout";
-            this.btnUserLogout.Size = new System.Drawing.Size(138, 24);
-            this.btnUserLogout.TabIndex = 9;
-            this.btnUserLogout.Text = "User Logout";
-            this.btnUserLogout.UseVisualStyleBackColor = true;
-            this.btnUserLogout.Click += new System.EventHandler(this.btnUserLogout_Click);
-            // 
-            // btnSOLogout
-            // 
-            this.btnSOLogout.Enabled = false;
-            this.btnSOLogout.Location = new System.Drawing.Point(390, 91);
-            this.btnSOLogout.Name = "btnSOLogout";
-            this.btnSOLogout.Size = new System.Drawing.Size(138, 24);
-            this.btnSOLogout.TabIndex = 9;
-            this.btnSOLogout.Text = "SO Logout";
-            this.btnSOLogout.UseVisualStyleBackColor = true;
-            this.btnSOLogout.Click += new System.EventHandler(this.btnSOLogout_Click);
             // 
             // frmMain
             // 
@@ -2956,7 +2958,6 @@
             this.gbECCommands.ResumeLayout(false);
             this.gbECCommands.PerformLayout();
             this.tabPinCodes.ResumeLayout(false);
-            this.tabPinCodes.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -3084,7 +3085,6 @@
         private System.Windows.Forms.Button btnSignatureStoreToBin;
         private System.Windows.Forms.Button btnHashStoreToBin;
         private System.Windows.Forms.Button btnSaveMessageToBin;
-        private System.Windows.Forms.ProgressBar pbSigning;
         private System.Windows.Forms.TabPage tabCardObjects;
         private System.Windows.Forms.GroupBox gbOperations;
         private System.Windows.Forms.ComboBox cbObjType;
@@ -3152,7 +3152,6 @@
         private System.Windows.Forms.Label lbPin;
         private System.Windows.Forms.TextBox tbPin;
         private System.Windows.Forms.Button btnRefreshTriesRemaining;
-        private System.Windows.Forms.Label lbAttention;
         private System.Windows.Forms.Label lbNewPukAgain;
         private System.Windows.Forms.TextBox tbNewPukAgain;
         private System.Windows.Forms.Label lbNewSOPukAgain;
@@ -3188,6 +3187,8 @@
         private System.Windows.Forms.Label lbECDSASignatureAttention;
         private System.Windows.Forms.Button btnUserLogout;
         private System.Windows.Forms.Button btnSOLogout;
+        private System.Windows.Forms.CheckBox chkDigestOffCard;
+        private System.Windows.Forms.ProgressBar pbSigning;
     }
 }
 
