@@ -392,13 +392,14 @@ namespace uFRSigner
                         if (((int)status & 0xFFFFC0) == 0x0A63C0)
                         {
                             mUserPinLoggedIn = false;
-                            open_pin_dialog = true;
                             MessageBox.Show("Wrong user PIN code. Tries remaining: " + ((int)status & 0x3F),
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         else
                             throw new Exception(string.Format("Card error code: 0x{0:X}", status));
                     }
+                    else
+                        open_pin_dialog = false;
                 }
                 if (open_pin_dialog)
                 {
@@ -449,24 +450,8 @@ namespace uFRSigner
                 }
                 else // ECDSA
                 {
-                    switch (cbDigest.Text)
-                    {
-                        case "SHA-1":
-                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA;
-                            break;
-                        case "SHA-224":
-                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_224;
-                            break;
-                        case "SHA-256":
-                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_256;
-                            break;
-                        case "SHA-384":
-                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_384;
-                            break;
-                        case "SHA-512":
-                            jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_SHA_512;
-                            break;
-                    }
+                    jc_signer_digest = (byte)uFR.JCDL_SIGNER_DIGESTS.ALG_NULL;
+                    jc_signer_padding = (byte)JCDL_SIGNER_PADDINGS.PAD_NULL;
 
                     // For ECDSA, first we need key length in bits:
                     UInt16 key_designator;
