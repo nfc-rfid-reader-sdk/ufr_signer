@@ -56,7 +56,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cbKeyIndex = new System.Windows.Forms.ComboBox();
             this.lbKeyIndex = new System.Windows.Forms.Label();
-            this.lbEcdsaCurve = new System.Windows.Forms.Label();
+            this.lbKeyDesc = new System.Windows.Forms.Label();
             this.gbDn.SuspendLayout();
             this.gbExt.SuspendLayout();
             this.SuspendLayout();
@@ -404,18 +404,20 @@
             // 
             // lbEcdsaCurve
             // 
-            this.lbEcdsaCurve.Location = new System.Drawing.Point(666, 116);
-            this.lbEcdsaCurve.Name = "lbEcdsaCurve";
-            this.lbEcdsaCurve.Size = new System.Drawing.Size(114, 20);
-            this.lbEcdsaCurve.TabIndex = 14;
-            this.lbEcdsaCurve.Text = "-";
+            this.lbKeyDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lbKeyDesc.ForeColor = System.Drawing.Color.Blue;
+            this.lbKeyDesc.Location = new System.Drawing.Point(666, 116);
+            this.lbKeyDesc.Name = "lbEcdsaCurve";
+            this.lbKeyDesc.Size = new System.Drawing.Size(114, 20);
+            this.lbKeyDesc.TabIndex = 14;
+            this.lbKeyDesc.Text = "-";
             // 
             // frmCSR
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(792, 471);
-            this.Controls.Add(this.lbEcdsaCurve);
+            this.Controls.Add(this.lbKeyDesc);
             this.Controls.Add(this.cbKeyIndex);
             this.Controls.Add(this.lbKeyIndex);
             this.Controls.Add(this.cbCipher);
@@ -474,6 +476,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbKeyIndex;
         private System.Windows.Forms.Label lbKeyIndex;
-        private System.Windows.Forms.Label lbEcdsaCurve;
+        private System.Windows.Forms.Label lbKeyDesc;
     }
 }

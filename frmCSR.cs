@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Linq;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
@@ -16,7 +17,6 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Utilities.Encoders;
 using Org.BouncyCastle.Security;
 using uFR;
-using System.Linq;
 
 namespace uFRSigner
 {
@@ -72,13 +72,23 @@ namespace uFRSigner
             mCipherName = cipher_name;
             mParametersAreSet = true;
 
-            if (mCipherName.Equals("ECDSA") && !mPublicKey.GetType().ToString().Equals("Org.BouncyCastle.Crypto.Parameters.RsaKeyParameters"))
+            if (mPublicKey != null)
             {
-                lbEcdsaCurve.Text = "using " + Org.BouncyCastle.Asn1.Sec.SecNamedCurves.GetName(((ECPublicKeyParameters)mPublicKey).PublicKeyParamSet);
+                if (mCipherName.Equals("ECDSA") && !mPublicKey.GetType().ToString().Equals("Org.BouncyCastle.Crypto.Parameters.RsaKeyParameters"))
+                {
+                    lbKeyDesc.Text = "using " + Org.BouncyCastle.Asn1.Sec.SecNamedCurves.GetName(((ECPublicKeyParameters)mPublicKey).PublicKeyParamSet);
+                }
+                else
+                {
+                    if (((RsaKeyParameters)mPublicKey).Modulus.BitLength != 1) // 1 is the length of the fictive key with mod=1, exp=1
+                        lbKeyDesc.Text = "Key length: " + ((RsaKeyParameters)mPublicKey).Modulus.BitLength;
+                    else
+                        lbKeyDesc.Text = "Public key not set";
+                }
             }
             else
             {
-                lbEcdsaCurve.Text = "";
+                lbKeyDesc.Text = "Public key not set";
             }
         }
 
@@ -128,91 +138,6 @@ namespace uFRSigner
         {
             saveAs(true);
             return;
-            /*
-            Pkcs10CertificationRequest csr;
-
-            DerSequence av = new DerSequence();
-            av.AddObject(new QCStatement(EtsiQCObjectIdentifiers.IdEtsiQcsQcCompliance));
-            av.AddObject(new QCStatement(EtsiQCObjectIdentifiers.IdEtsiQcsQcSscd));
-
-            var extensions = new Dictionary<DerObjectIdentifier, X509Extension>()
-            {
-                {X509Extensions.BasicConstraints, new X509Extension(true, new DerOctetString(new BasicConstraints(false)))},
-                {X509Extensions.KeyUsage, new X509Extension(true, new DerOctetString(new KeyUsage(0x807F)))},
-                {X509Extensions.ExtendedKeyUsage, new X509Extension(false, new DerOctetString(new ExtendedKeyUsage(KeyPurposeID.IdKPServerAuth, KeyPurposeID.IdKPClientAuth)))},
-                {X509Extensions.QCStatements, new X509Extension(false, new DerOctetString(av))},
-            };
-
-            var values = new Dictionary<DerObjectIdentifier, string> {
-                {X509Name.CN, "Employee"}, //domain name inside the quotes
-                {X509Name.OU, "Team"},
-                {X509Name.O, "Company"}, //Organisation's Legal name inside the quotes
-                {X509Name.L, "City"},
-                {X509Name.ST, "State"},
-                {X509Name.C, "RS"},
-            };
-
-            /*
-            var subjectAlternateNames = new GeneralName[] { };
-            if (values[X509Name.CN].StartsWith("www."))
-                values[X509Name.CN] = values[X509Name.CN].Substring(4);
-            if (!values[X509Name.CN].StartsWith("*.") && subjectAlternateNames.Length == 0)
-                subjectAlternateNames = new GeneralName[] { new GeneralName(GeneralName.DnsName, $"www.{values[X509Name.CN]}") };
-
-            if (subjectAlternateNames.Length > 0)
-                extensions.Add(X509Extensions.SubjectAlternativeName, new X509Extension(false, new DerOctetString(new GeneralNames(subjectAlternateNames))));
-            */
-
-            /*
-            GeneralNames subjectAltName = new GeneralNames(new GeneralName(GeneralName.Rfc822Name, "example@example.org"));
-            extensions.Add(X509Extensions.SubjectAlternativeName, new X509Extension(false, new DerOctetString(subjectAltName)));
-            */
-
-            //var subject = new X509Name(values.Keys.Reverse().ToList(), values);
-
-            //if (ecMode)
-            //{
-            //signatureFactory = new Asn1SignatureFactory("SHA256withECDSA", pair.Private);
-
-            //extensions.Add(X509Extensions.SubjectKeyIdentifier, new X509Extension(false, new DerOctetString(new SubjectKeyIdentifierStructure(pair.Public))));
-            //csr = new Pkcs10CertificationRequest(signatureFactory, subject, pair.Public, new DerSet(new AttributePkcs(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(new X509Extensions(extensions)))), pair.Private);
-            //}
-            //else
-            //{
-            //signatureFactory = new Asn1SignatureFactory("SHA256withRSA", pair.Private);
-
-            /*
-            extensions.Add(X509Extensions.SubjectKeyIdentifier, new X509Extension(false, new DerOctetString(new SubjectKeyIdentifierStructure(pair.Public))));
-            csr = new Pkcs10CertificationRequest(signatureFactory, subject, pair.Public, new DerSet(new AttributePkcs(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(new X509Extensions(extensions)))), pair.Private);
-            */
-
-            //}
-
-            /*
-            mCangedNotSaved = true;
-
-            string signatureAlgorithm = cbDigest.Text.Replace("-", "") + "with" + mCipherName;
-
-            X509Name subject = new X509Name(mSubjectItemsOIDs, mSubjectItems);
-            */
-
-            /*
-            Attribute attribute = ;
-            DerSet attributes = new DerSet(new Attribute(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(extensions)));
-            */
-
-            /*
-            Pkcs10CertificationRequestDelaySigned csr_ds =
-                new Pkcs10CertificationRequestDelaySigned(signatureAlgorithm, subject, mPublicKey,
-                    new DerSet(new AttributePkcs(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(new X509Extensions(extensions)))));
-            byte[] dataToSign = csr_ds.GetDataToSign();
-            using (var fs = new FileStream("TbsCsr.bin", FileMode.Create, FileAccess.Write))
-            {
-                fs.Write(dataToSign, 0, dataToSign.Length);
-            }
-
-            getX509ExtensionsFromCsr(csr_ds);
-            //csr_ds.SignRequest//*/
         }
 
         private string der2pem(byte[] DerByteArray, string HeaderFooter)
@@ -300,14 +225,6 @@ namespace uFRSigner
 
                     if (Signed)
                     {
-                        /*/
-                        ISigner Signer;
-                        Signer = SignerUtilities.GetSigner(signatureAlgorithm);
-                        Signer.Init(true, mPrivateKey);
-                        Signer.BlockUpdate(dataToSign, 0, dataToSign.Length);
-
-                        byte[] SignedData = Signer.GenerateSignature();
-                        //*/
 
                         byte[] SignedData = uFRSigner(dataToSign); // Rest of the input parameters needed (here accessible directly from UI):
                                                                    //      - digest_alg, signature_cipher, card_key_index
@@ -1182,48 +1099,6 @@ namespace uFRSigner
                         fileStream.Close();
                 }
             }
-
-            /* Pach to reverse TBS CSR byte array to a Pkcs10CertificationRequestDelaySigned instance:
-            DerSequence seq = (DerSequence)decoder.ReadObject();
-            DerSequence top = new DerSequence(seq);
-            DerSequence sgnAlg = new DerSequence(PkcsObjectIdentifiers.Sha1WithRsaEncryption);
-            sgnAlg.AddObject(new DerNull());
-            top.AddObject(sgnAlg);
-            top.AddObject(new DerBitString(0xFF));
-            Pkcs10CertificationRequestDelaySigned csr_ds = new Pkcs10CertificationRequestDelaySigned(top);
-
-
-            byte[] x = csr_ds.GetDataToSign();
-
-            byte[] b = new byte[] {1,2,3,4,5,6,7,8,9,10};
-            csr_ds.SignRequest(b);
-            DerBitString sig = csr_ds.Signature;
-            */
-
-            /* Schema:
-            SEQUENCE(4 elem)
-
-                INTEGER 0                   // CSR version
-
-                SEQUENCE(1 elem)            // Destinguished name
-                    SET(x elem)
-                        SEQUENCE(2 elem)
-                            OBJECT IDENTIFIER 2.5.4.3 commonName(X.520 DN component)
-                            UTF8Stringtest
-                        SEQUENCE(2 elem)
-                        …
-
-                SEQUENCE(2 elem)            // key … RSA key folows:
-                    SEQUENCE(2 elem)
-                        OBJECT IDENTIFIER 1.2.840.113549.1.1.1 rsaEncryption(PKCS #1)
-                        NULL
-                    BIT STRING(1 elem)
-                        SEQUENCE(2 elem)
-                            INTEGER(key_bit_size bits) 84441253225619649293598940536…
-                            INTEGER 65537
-
-                [0] (0 elem)                // Attributes + extensions
-            */
         }
 
         private bool parseDestinguishedName(Asn1Sequence DestinguishedName)
