@@ -22,6 +22,7 @@ using Org.BouncyCastle.Utilities.Encoders;
 using Org.BouncyCastle.Asn1.Oiw;
 using Org.BouncyCastle.Asn1.Nist;
 using uFR;
+using System.Threading;
 
 namespace uFRSigner
 {
@@ -2444,6 +2445,8 @@ namespace uFRSigner
                         break;
                     case RADIX.Exception_FromFile:
                         mData = new byte[uFCoder.SIG_MAX_PLAIN_DATA_LEN];
+                        if (localDigestMechanism == null)
+                            throw new Exception("Can't sign a file without using digest algorithm.");
                         break;
                     default:
                         throw new Exception("Unknown input data radix");
@@ -3126,12 +3129,26 @@ namespace uFRSigner
 
                         status = uFCoder.JCAppGetObjId(obj_type, obj_index, out raw_id, out cert_size);
                         if (status != DL_STATUS.UFR_OK)
-                            continue;
+                        {
+                            // Retry:
+                            Thread.Sleep(30);
+                            status = uFCoder.JCAppGetObjId(obj_type, obj_index, out raw_id, out cert_size);
+                            if (status != DL_STATUS.UFR_OK)
+                                continue;
+                        }
+
+                        Thread.Sleep(30);
 
                         raw_cert = new byte[cert_size];
                         status = uFCoder.JCAppGetObj(obj_type, obj_index, raw_cert);
                         if (status != DL_STATUS.UFR_OK)
-                            continue;
+                        {
+                            // Retry:
+                            Thread.Sleep(30);
+                            status = uFCoder.JCAppGetObj(obj_type, obj_index, raw_cert);
+                            if (status != DL_STATUS.UFR_OK)
+                                continue;
+                        }
 
                         try
                         {
@@ -3319,6 +3336,12 @@ namespace uFRSigner
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+#if USING_PIN
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#endif
 
                 status = uFCoder.JCAppInvalidateCert(obj_type, obj_index);
                 if (status != DL_STATUS.UFR_OK)
