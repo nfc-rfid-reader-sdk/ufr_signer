@@ -23,6 +23,7 @@ using Org.BouncyCastle.Asn1.Oiw;
 using Org.BouncyCastle.Asn1.Nist;
 using uFR;
 using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace uFRSigner
 {
@@ -47,10 +48,13 @@ namespace uFRSigner
             InitializeComponent();
         }
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool SetDllDirectory(string lpPathName);
+
         private void uFrOpen()
         {
             DL_STATUS status;
-            bool tryDefaultDllPath = false;
             UInt32 version = 0;
             byte version_major;
             byte version_minor;
@@ -58,39 +62,30 @@ namespace uFRSigner
             byte fw_build;
 
 #if WIN64
-            string DllPath = @"..\..\..\lib\windows\x86_64"; // for x64 target
+            string DllPath = @"lib\windows\x86_64"; // for x64 target
 #else
-            string DllPath = @"..\..\..\lib\windows\x86"; // for x86 target
+            string DllPath = @"lib\windows\x86"; // for x86 target
 #endif
-            string path = Directory.GetCurrentDirectory();
-            string assemblyProbeDirectory = DllPath;
-            Directory.SetCurrentDirectory(assemblyProbeDirectory);
-            try
+            int repeat_cnt = 0;
+            bool repeat = true;
+            do
             {
-                version = uFCoder.GetDllVersion();
-            }
-            catch (System.DllNotFoundException)
-            {
-                tryDefaultDllPath = true;
-            }
-            catch (System.BadImageFormatException)
-            {
-                tryDefaultDllPath = true;
-            }
-            Directory.SetCurrentDirectory(path);
-            if (tryDefaultDllPath)
-            {
+                DllPath = @"..\" + DllPath;
+                SetDllDirectory(DllPath);
                 try
                 {
                     version = uFCoder.GetDllVersion();
+                    repeat = false;
                 }
-                catch (Exception)
+                catch (System.Exception)
                 {
-                    throw new Exception("Can't find "
-                        + uFCoder.DLL_NAME
-                        + ".\r\nYou will not be able to work with DL Signer cards.");
+                    ++repeat_cnt;
                 }
-            }
+
+            } while (repeat && repeat_cnt < 3); // relative path upper folders level search
+
+            if (repeat)
+                throw new Exception("Can't find " + uFCoder.DLL_NAME + ".\r\nYou will not be able to work with DL Signer cards.");
 
             // Check lib version:
             version_major = (byte)version;
