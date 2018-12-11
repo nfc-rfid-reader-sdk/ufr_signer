@@ -32,7 +32,7 @@ namespace uFRSigner
         AsymmetricKeyParameter mPrivateKey = null;
         string mCipherName;
         string mUserPin;
-        bool mUserPinRenewed;
+        frmMain mFrmMainInstance;
         bool mUserPinLoggedIn = false;
         bool mCangedNotSaved = false;
         bool mParametersAreSet = false;
@@ -51,7 +51,7 @@ namespace uFRSigner
             InitializeComponent();
         }
 
-        public void setParameters(AsymmetricKeyParameter public_key, AsymmetricKeyParameter private_key, byte key_idx, string cipher_name,
+        public void setParameters(frmMain frmMainInstance, AsymmetricKeyParameter public_key, AsymmetricKeyParameter private_key, byte key_idx, string cipher_name,
                                   bool user_pin_loged_in, string user_pin)
         {
             if (public_key != null)
@@ -64,7 +64,6 @@ namespace uFRSigner
             else
                 mPrivateKey = null;
 
-            mUserPinRenewed = false;
             mUserPinLoggedIn = user_pin_loged_in;
             mUserPin = user_pin;
 
@@ -278,7 +277,7 @@ namespace uFRSigner
             byte jc_signer_padding = 0;
             byte[] signature = null;
             byte[] dataToSign = null;
-            DL_STATUS status;
+            DL_STATUS status = DL_STATUS.UFR_OK;
             bool uFR_Selected = false;
             UInt16 key_size_bits;
 
@@ -323,13 +322,11 @@ namespace uFRSigner
                     frmUserPin dlg = new frmUserPin();
                     if (dlg.ShowDialog() == DialogResult.OK)
                     {
-                        mUserPinRenewed = true;
                         mUserPinLoggedIn = true;
                         mUserPin = dlg.getUserPin();
                     }
                     else
                     {
-                        mUserPinRenewed = false;
                         mUserPinLoggedIn = false;
                         throw new Exception("CSR not signed and saved because you haven't successfully logged in using PIN code.");
                     }
@@ -459,6 +456,9 @@ namespace uFRSigner
             finally
             {
                 Cursor.Current = Cursors.Default;
+
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    mFrmMainInstance.clearPins();
 
                 if (uFR_Selected)
                 {

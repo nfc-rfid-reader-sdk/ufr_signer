@@ -28,58 +28,58 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem37 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem(new string[] {
             "0",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem38 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem39 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem21 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem40 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem22 = new System.Windows.Forms.ListViewItem(new string[] {
             "3",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem41 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem23 = new System.Windows.Forms.ListViewItem(new string[] {
             "4",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem42 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem24 = new System.Windows.Forms.ListViewItem(new string[] {
             "5",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem43 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem25 = new System.Windows.Forms.ListViewItem(new string[] {
             "6",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem44 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem26 = new System.Windows.Forms.ListViewItem(new string[] {
             "7",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem45 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem27 = new System.Windows.Forms.ListViewItem(new string[] {
             "8",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem46 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem28 = new System.Windows.Forms.ListViewItem(new string[] {
             "9",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem47 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem29 = new System.Windows.Forms.ListViewItem(new string[] {
             "10",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem48 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem30 = new System.Windows.Forms.ListViewItem(new string[] {
             "11",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem49 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem31 = new System.Windows.Forms.ListViewItem(new string[] {
             "0",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem50 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem32 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem51 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem33 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem52 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem34 = new System.Windows.Forms.ListViewItem(new string[] {
             "0",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem53 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem35 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem54 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem36 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -1629,9 +1629,9 @@
             this.lbPukTriesRemaining.AutoSize = true;
             this.lbPukTriesRemaining.Location = new System.Drawing.Point(20, 171);
             this.lbPukTriesRemaining.Name = "lbPukTriesRemaining";
-            this.lbPukTriesRemaining.Size = new System.Drawing.Size(10, 13);
+            this.lbPukTriesRemaining.Size = new System.Drawing.Size(90, 13);
             this.lbPukTriesRemaining.TabIndex = 8;
-            this.lbPukTriesRemaining.Text = "-";
+            this.lbPukTriesRemaining.Text = "Tries remaining: ?";
             // 
             // groupBox4
             // 
@@ -1754,9 +1754,9 @@
             this.lbPukSOTriesRemaining.AutoSize = true;
             this.lbPukSOTriesRemaining.Location = new System.Drawing.Point(20, 171);
             this.lbPukSOTriesRemaining.Name = "lbPukSOTriesRemaining";
-            this.lbPukSOTriesRemaining.Size = new System.Drawing.Size(10, 13);
+            this.lbPukSOTriesRemaining.Size = new System.Drawing.Size(90, 13);
             this.lbPukSOTriesRemaining.TabIndex = 8;
-            this.lbPukSOTriesRemaining.Text = "-";
+            this.lbPukSOTriesRemaining.Text = "Tries remaining: ?";
             // 
             // groupBox3
             // 
@@ -1891,9 +1891,9 @@
             this.lbPinTriesRemaining.AutoSize = true;
             this.lbPinTriesRemaining.Location = new System.Drawing.Point(20, 171);
             this.lbPinTriesRemaining.Name = "lbPinTriesRemaining";
-            this.lbPinTriesRemaining.Size = new System.Drawing.Size(10, 13);
+            this.lbPinTriesRemaining.Size = new System.Drawing.Size(90, 13);
             this.lbPinTriesRemaining.TabIndex = 8;
-            this.lbPinTriesRemaining.Text = "-";
+            this.lbPinTriesRemaining.Text = "Tries remaining: ?";
             // 
             // groupBox2
             // 
@@ -1981,9 +1981,9 @@
             this.lbPinSOTriesRemaining.AutoSize = true;
             this.lbPinSOTriesRemaining.Location = new System.Drawing.Point(20, 171);
             this.lbPinSOTriesRemaining.Name = "lbPinSOTriesRemaining";
-            this.lbPinSOTriesRemaining.Size = new System.Drawing.Size(10, 13);
+            this.lbPinSOTriesRemaining.Size = new System.Drawing.Size(90, 13);
             this.lbPinSOTriesRemaining.TabIndex = 8;
-            this.lbPinSOTriesRemaining.Text = "-";
+            this.lbPinSOTriesRemaining.Text = "Tries remaining: ?";
             // 
             // btnChangeSOPin
             // 
@@ -2262,18 +2262,18 @@
             this.lstvCACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstvCACerts.HideSelection = false;
             this.lstvCACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem37,
-            listViewItem38,
-            listViewItem39,
-            listViewItem40,
-            listViewItem41,
-            listViewItem42,
-            listViewItem43,
-            listViewItem44,
-            listViewItem45,
-            listViewItem46,
-            listViewItem47,
-            listViewItem48});
+            listViewItem19,
+            listViewItem20,
+            listViewItem21,
+            listViewItem22,
+            listViewItem23,
+            listViewItem24,
+            listViewItem25,
+            listViewItem26,
+            listViewItem27,
+            listViewItem28,
+            listViewItem29,
+            listViewItem30});
             this.lstvCACerts.Location = new System.Drawing.Point(12, 19);
             this.lstvCACerts.MultiSelect = false;
             this.lstvCACerts.Name = "lstvCACerts";
@@ -2339,13 +2339,13 @@
             this.lstvECDSACerts.GridLines = true;
             this.lstvECDSACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstvECDSACerts.HideSelection = false;
-            listViewItem49.StateImageIndex = 0;
-            listViewItem50.StateImageIndex = 0;
-            listViewItem51.StateImageIndex = 0;
+            listViewItem31.StateImageIndex = 0;
+            listViewItem32.StateImageIndex = 0;
+            listViewItem33.StateImageIndex = 0;
             this.lstvECDSACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem49,
-            listViewItem50,
-            listViewItem51});
+            listViewItem31,
+            listViewItem32,
+            listViewItem33});
             this.lstvECDSACerts.Location = new System.Drawing.Point(12, 20);
             this.lstvECDSACerts.MultiSelect = false;
             this.lstvECDSACerts.Name = "lstvECDSACerts";
@@ -2389,13 +2389,13 @@
             this.lstvRSACerts.GridLines = true;
             this.lstvRSACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstvRSACerts.HideSelection = false;
-            listViewItem52.StateImageIndex = 0;
-            listViewItem53.StateImageIndex = 0;
-            listViewItem54.StateImageIndex = 0;
+            listViewItem34.StateImageIndex = 0;
+            listViewItem35.StateImageIndex = 0;
+            listViewItem36.StateImageIndex = 0;
             this.lstvRSACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem52,
-            listViewItem53,
-            listViewItem54});
+            listViewItem34,
+            listViewItem35,
+            listViewItem36});
             this.lstvRSACerts.LabelWrap = false;
             this.lstvRSACerts.Location = new System.Drawing.Point(11, 20);
             this.lstvRSACerts.MultiSelect = false;

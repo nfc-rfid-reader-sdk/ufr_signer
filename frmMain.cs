@@ -243,7 +243,7 @@ namespace uFRSigner
                     try
                     {
                         // Load your certificate from p12 file
-                        X509Certificate2 cert = new X509Certificate2(dialog.FileName, dlgPasswd.password, 
+                        X509Certificate2 cert = new X509Certificate2(dialog.FileName, dlgPasswd.password,
                             X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
                         var priv_key = cert.PrivateKey as RSACryptoServiceProvider;
                         RSAParameters rsa_params = priv_key.ExportParameters(true);
@@ -539,7 +539,7 @@ namespace uFRSigner
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    var key = new RsaKeyParameters(false, new BigInteger(1, Hex.Decode(tbRSAModulus.Text)), 
+                    var key = new RsaKeyParameters(false, new BigInteger(1, Hex.Decode(tbRSAModulus.Text)),
                         new BigInteger(1, Hex.Decode(tbRSAPubExp.Text)));
 
                     var textWriter = new StreamWriter(dialog.FileName);
@@ -615,7 +615,11 @@ namespace uFRSigner
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
+                {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (status == DL_STATUS.UFR_NO_CARD)
+                        clearPins();
+                }
             }
             finally
             {
@@ -678,6 +682,8 @@ namespace uFRSigner
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -793,7 +799,11 @@ namespace uFRSigner
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
+                {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (status == DL_STATUS.UFR_NO_CARD)
+                        clearPins();
+                }
             }
             finally
             {
@@ -1219,7 +1229,7 @@ namespace uFRSigner
                             throw new Exception("Unknown ECC Parameters in pem file.");
 
                         cbECName.SelectedIndex = idx;
-                       
+
                         int key_bytes_len = (key.Parameters.Curve.FieldSize + 7) / 8;
                         barr = key.D.ToByteArray();
                         while (barr[0] == 0 && barr.Length > key_bytes_len)
@@ -1232,32 +1242,32 @@ namespace uFRSigner
 
                         tbECPubKey.Text = "";
                     }
-/*
-                    else if (PemObj.GetType() == typeof(Org.BouncyCastle.X509.X509Certificate))
-                    {
-                        var parser = new X509CertificateParser();
-                        // Load your certificate
-                        X509Certificate2 certificate = new X509Certificate2(dialog.FileName);
-                        var bouncyCertificate = parser.ReadCertificate(certificate.RawData);
-                        //certificate.Dispose(); ToDo: See if needed
+                    /*
+                                        else if (PemObj.GetType() == typeof(Org.BouncyCastle.X509.X509Certificate))
+                                        {
+                                            var parser = new X509CertificateParser();
+                                            // Load your certificate
+                                            X509Certificate2 certificate = new X509Certificate2(dialog.FileName);
+                                            var bouncyCertificate = parser.ReadCertificate(certificate.RawData);
+                                            //certificate.Dispose(); ToDo: See if needed
 
-                        string curve_name = SecNamedCurves.GetName(
-                            (DerObjectIdentifier)DerObjectIdentifier.FromByteArray(
-                                bouncyCertificate.CertificateStructure.SubjectPublicKeyInfo.AlgorithmID.Parameters.GetDerEncoded()
-                                )
-                            );
+                                            string curve_name = SecNamedCurves.GetName(
+                                                (DerObjectIdentifier)DerObjectIdentifier.FromByteArray(
+                                                    bouncyCertificate.CertificateStructure.SubjectPublicKeyInfo.AlgorithmID.Parameters.GetDerEncoded()
+                                                    )
+                                                );
 
-                        if (cbECName.Items.Contains(curve_name))
-                        {
-                            int index = cbECName.FindString(curve_name);
-                            cbECName.SelectedIndex = index;
-                        }
-                        else
-                            throw new Exception("Unknown ECC Parameters in certificate.");
+                                            if (cbECName.Items.Contains(curve_name))
+                                            {
+                                                int index = cbECName.FindString(curve_name);
+                                                cbECName.SelectedIndex = index;
+                                            }
+                                            else
+                                                throw new Exception("Unknown ECC Parameters in certificate.");
 
-                        tbECPrivKey.Text = ???;
-                    }
-*/
+                                            tbECPrivKey.Text = ???;
+                                        }
+                    */
                     else
                         throw new Exception("File doesn't contain EC public key.");
                 }
@@ -1316,7 +1326,7 @@ namespace uFRSigner
             byte key_index = Convert.ToByte(cbECKeyIndex.Text);
             byte key_type;
             UInt16 key_size_bits = Convert.ToUInt16(cbECKeyLength.Text);
-            UInt16 component_size_bytes = (UInt16) ((key_size_bits + 7) / 8);
+            UInt16 component_size_bytes = (UInt16)((key_size_bits + 7) / 8);
             bool isCurveTrinomial;
             byte[] param = null;
             UInt16 param_size = 1; // for r_oversized indicator or (byte)!isCurveTrinomial at index 0
@@ -1468,11 +1478,15 @@ namespace uFRSigner
                     btnSOLogout.Enabled = false;
                     mSOPinLoggedIn = false;
                     tbSOPin.Text = "";
-                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F), 
+                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
+                {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (status == DL_STATUS.UFR_NO_CARD)
+                        clearPins();
+                }
             }
             finally
             {
@@ -1520,7 +1534,7 @@ namespace uFRSigner
                 {
                     key_type = (byte)JCDL_KEY_TYPES.TYPE_EC_FP_PRIVATE;
                     key_size_bytes = component_size_bytes * 7 + 3;
-                    
+
                     // Code is logically deliberately dislocated here:
                     if (tbECParamR.Text.Length / 2 != component_size_bytes)
                     {
@@ -1663,7 +1677,11 @@ namespace uFRSigner
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
+                {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (status == DL_STATUS.UFR_NO_CARD)
+                        clearPins();
+                }
             }
             finally
             {
@@ -1882,7 +1900,7 @@ namespace uFRSigner
                     break;
             }
         }
-        
+
         //======================================================================================================================
         // Signature page:
         //======================================================================================================================
@@ -2058,7 +2076,7 @@ namespace uFRSigner
         private byte[] Hash(string filename, HashAlgorithm hash)
         {
             byte[] hashBytes;
-            
+
             using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read,
               FileShare.Delete | FileShare.ReadWrite))
             {
@@ -2293,14 +2311,14 @@ namespace uFRSigner
                     if (dialog.FilterIndex == 1)
                     {
                         // hash text file format:
-                        File.WriteAllText(dialog.FileName, file_comment + "\r\n" 
-                            + BitConverter.ToString(byteArray).Replace("-", "") 
+                        File.WriteAllText(dialog.FileName, file_comment + "\r\n"
+                            + BitConverter.ToString(byteArray).Replace("-", "")
                             + " *\r\n"); // ToDo: + mSignatureFileName between * and \r\n
                     }
                     else using (var fs = new FileStream(dialog.FileName, FileMode.Create, FileAccess.Write))
-                    {
-                        fs.Write(byteArray, 0, byteArray.Length);
-                    }
+                        {
+                            fs.Write(byteArray, 0, byteArray.Length);
+                        }
                 }
             }
             catch (Exception ex)
@@ -2587,15 +2605,15 @@ namespace uFRSigner
                         to_be_signed = dInfo.GetDerEncoded();
                     }
 
-// Examples (debug):
-//                        hash = DigestUtilities.CalculateDigest(/*localDigestMechanism*/"SHA-256", chunk);
-//                        byte[] temp = DigestUtilities.CalculateDigest(/*localDigestMechanism*/"SHA-256", chunk);
+                    // Examples (debug):
+                    //                        hash = DigestUtilities.CalculateDigest(/*localDigestMechanism*/"SHA-256", chunk);
+                    //                        byte[] temp = DigestUtilities.CalculateDigest(/*localDigestMechanism*/"SHA-256", chunk);
 
                     status = uFCoder.JCAppGenerateSignature(jc_signer_cipher, jc_signer_digest, jc_signer_padding,
                                                             key_index,
                                                             //chunk, (UInt16)mChunkSize, 
                                                             to_be_signed, (UInt16)to_be_signed.Length,
-                                                            out sig, 
+                                                            out sig,
                                                             null, 0);
                     if (status != DL_STATUS.UFR_OK)
                         throw new Exception(string.Format("Card error code: 0x{0:X}", status));
@@ -2668,14 +2686,18 @@ namespace uFRSigner
                 else if (((int)status == 0x0A6984)                                   // SW_DATA_INVALID
                         && (jc_signer_digest == (byte)JCDL_SIGNER_DIGESTS.ALG_NULL))
                 {
-                        MessageBox.Show(ex.Message
-                            + "\r\n\r\nATTENTION:"
-                            + "\r\nWhen \"None\" digest algorithm is in use with RSA, this algorithm is only suitable for messages of limited length."
-                            + "\r\nThe total number of input bytes processed may not be more than RSA key's modulus size in bytes substracted by 11.", 
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message
+                        + "\r\n\r\nATTENTION:"
+                        + "\r\nWhen \"None\" digest algorithm is in use with RSA, this algorithm is only suitable for messages of limited length."
+                        + "\r\nThe total number of input bytes processed may not be more than RSA key's modulus size in bytes substracted by 11.",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
+                {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (status == DL_STATUS.UFR_NO_CARD)
+                        clearPins();
+                }
             }
             finally
             {
@@ -2755,7 +2777,7 @@ namespace uFRSigner
 
         void bgw_WorkCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            DL_STATUS status;
+            DL_STATUS status = DL_STATUS.UFR_OK;
 
             try
             {
@@ -2844,6 +2866,8 @@ namespace uFRSigner
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -2959,7 +2983,7 @@ namespace uFRSigner
         private void btnPutCertFromFile_Click(object sender, EventArgs e)
         {
             DL_STATUS status = DL_STATUS.UFR_OK;
-            byte obj_type = (byte) cbObjType.SelectedIndex;
+            byte obj_type = (byte)cbObjType.SelectedIndex;
             byte obj_index = Convert.ToByte(cbObjIndex.Text);
             X509Certificate2 cert = null;
 
@@ -3026,7 +3050,7 @@ namespace uFRSigner
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 #endif
 
-                status = uFCoder.JCAppPutObj(obj_type,  obj_index, raw_cert, (UInt16) raw_cert.Length, raw_id, (byte) raw_id.Length);
+                status = uFCoder.JCAppPutObj(obj_type, obj_index, raw_cert, (UInt16)raw_cert.Length, raw_id, (byte)raw_id.Length);
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
@@ -3055,7 +3079,11 @@ namespace uFRSigner
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
+                {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (status == DL_STATUS.UFR_NO_CARD)
+                        clearPins();
+                }
             }
             finally
             {
@@ -3070,7 +3098,7 @@ namespace uFRSigner
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            DL_STATUS status;
+            DL_STATUS status = DL_STATUS.UFR_OK;
             byte obj_type, obj_index, max_index;
             ListView lstv;
 
@@ -3169,6 +3197,8 @@ namespace uFRSigner
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -3200,7 +3230,7 @@ namespace uFRSigner
 
         private void btnShowCert_Click(object sender, EventArgs e)
         {
-            DL_STATUS status;
+            DL_STATUS status = DL_STATUS.UFR_OK;
             byte obj_type;
             byte obj_index;
             ListView lstv;
@@ -3269,6 +3299,8 @@ namespace uFRSigner
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -3283,7 +3315,7 @@ namespace uFRSigner
 
         private void btnInvalidateCert_Click(object sender, EventArgs e)
         {
-            DL_STATUS status;
+            DL_STATUS status = DL_STATUS.UFR_OK;
             byte obj_type;
             byte obj_index;
             ListView lstv;
@@ -3353,6 +3385,8 @@ namespace uFRSigner
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -3427,6 +3461,8 @@ namespace uFRSigner
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -3483,6 +3519,8 @@ namespace uFRSigner
                 if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     lbPinSOTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -3539,6 +3577,8 @@ namespace uFRSigner
                 if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     lbPinTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -3595,6 +3635,8 @@ namespace uFRSigner
                 if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     lbPukTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -3649,6 +3691,8 @@ namespace uFRSigner
                 if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     lbPukSOTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -3774,6 +3818,8 @@ namespace uFRSigner
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -3901,7 +3947,7 @@ namespace uFRSigner
                     priv_key = new RsaKeyParameters(true, new BigInteger(1, Hex.Decode(tbRSAModulus.Text)),
                             new BigInteger(1, Hex.Decode(tbRSAPrivExp.Text)));
 
-                frmCsr.setParameters(pub_key, priv_key, key_idx, "RSA", mUserPinLoggedIn, tbPin.Text);
+                frmCsr.setParameters(this, pub_key, priv_key, key_idx, "RSA", mUserPinLoggedIn, tbPin.Text);
                 frmCsr.ShowDialog();
             }
             catch (Exception ex)
@@ -3921,13 +3967,13 @@ namespace uFRSigner
                 AsymmetricKeyParameter pub_key = null;
                 if (!tbECPubKey.Text.Equals(""))
                     pub_key = new ECPublicKeyParameters("ECDSA", curve.Curve.DecodePoint(Hex.Decode(tbECPubKey.Text)), SecNamedCurves.GetOid(cbECName.Text));
-                //X9ObjectIdentifiers.Prime256v1 same as SecObjectIdentifiers.SecP256r1
+                // X9ObjectIdentifiers.Prime256v1 same as SecObjectIdentifiers.SecP256r1
 
                 AsymmetricKeyParameter priv_key = null;
                 if (!tbECPrivKey.Text.Equals(""))
                     priv_key = new ECPrivateKeyParameters("ECDSA", new BigInteger(1, Hex.Decode(tbECPrivKey.Text)), SecNamedCurves.GetOid(cbECName.Text));
 
-                frmCsr.setParameters(pub_key, priv_key, key_idx, "ECDSA", mUserPinLoggedIn, tbPin.Text);
+                frmCsr.setParameters(this, pub_key, priv_key, key_idx, "ECDSA", mUserPinLoggedIn, tbPin.Text);
                 frmCsr.ShowDialog();
             }
             catch (Exception ex)
@@ -3993,7 +4039,7 @@ namespace uFRSigner
                     tbNewPinSourceAgain = tbNewPinAgain;
                     lbTriesRemaining = lbPinTriesRemaining;
                     pin_name = "user PIN";
-                    break; 
+                    break;
                 case "btnChangePuk":
                     code_to_change = DL_SECURE_CODE.USER_PUK;
                     tbNewPinSource = tbNewPuk;
@@ -4039,6 +4085,8 @@ namespace uFRSigner
                 if (((int)status & 0xFFFFC0) == 0x0A63C0)
                     lbPinSOTriesRemaining.Text = "Tries remaining: " + ((int)status & 0x3F);
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (status == DL_STATUS.UFR_NO_CARD)
+                    clearPins();
             }
             finally
             {
@@ -4052,6 +4100,31 @@ namespace uFRSigner
                 Cursor.Current = Cursors.Default;
             }
 #endif
+        }
+
+        public void clearPins()
+        {
+            tbSOPin.Text = "";
+            tbSOPuk.Text = "";
+            tbPin.Text = "";
+            tbPuk.Text = "";
+            tbNewSOPin.Text = "";
+            tbNewSOPinAgain.Text = "";
+            tbNewSOPin.Text = "";
+            tbNewSOPinAgain.Text = "";
+            tbNewSOPuk.Text = "";
+            tbNewSOPukAgain.Text = "";
+            tbNewPin.Text = "";
+            tbNewPinAgain.Text = "";
+            tbNewPuk.Text = "";
+            tbNewPukAgain.Text = "";
+            lbPinSOTriesRemaining.Text = "Tries remaining: ?";
+            lbPukSOTriesRemaining.Text = "Tries remaining: ?";
+            lbPinTriesRemaining.Text = "Tries remaining: ?";
+            lbPukTriesRemaining.Text = "Tries remaining: ?";
+
+            mSOPinLoggedIn = false;
+            mUserPinLoggedIn = false;
         }
 
 #if MY_DEBUG
