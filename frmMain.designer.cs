@@ -28,58 +28,58 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem37 = new System.Windows.Forms.ListViewItem(new string[] {
             "0",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem38 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem21 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem39 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem22 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem40 = new System.Windows.Forms.ListViewItem(new string[] {
             "3",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem23 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem41 = new System.Windows.Forms.ListViewItem(new string[] {
             "4",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem24 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem42 = new System.Windows.Forms.ListViewItem(new string[] {
             "5",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem25 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem43 = new System.Windows.Forms.ListViewItem(new string[] {
             "6",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem26 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem44 = new System.Windows.Forms.ListViewItem(new string[] {
             "7",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem27 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem45 = new System.Windows.Forms.ListViewItem(new string[] {
             "8",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem28 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem46 = new System.Windows.Forms.ListViewItem(new string[] {
             "9",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem29 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem47 = new System.Windows.Forms.ListViewItem(new string[] {
             "10",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem30 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem48 = new System.Windows.Forms.ListViewItem(new string[] {
             "11",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem31 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem49 = new System.Windows.Forms.ListViewItem(new string[] {
             "0",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem32 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem50 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem33 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem51 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem34 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem52 = new System.Windows.Forms.ListViewItem(new string[] {
             "0",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem35 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem53 = new System.Windows.Forms.ListViewItem(new string[] {
             "1",
             "Empty"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem36 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem54 = new System.Windows.Forms.ListViewItem(new string[] {
             "2",
             "Empty"}, -1);
             this.tabControl = new System.Windows.Forms.TabControl();
@@ -285,6 +285,8 @@
             this.cbSignatureKeyIndex = new System.Windows.Forms.ComboBox();
             this.lbSignatureKeyIndex = new System.Windows.Forms.Label();
             this.llbDLogicURL = new System.Windows.Forms.LinkLabel();
+            this.btnDeleteRsaKey = new System.Windows.Forms.Button();
+            this.btnDeleteEccKey = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabRSAKeys.SuspendLayout();
             this.gpPrivateKeyMode.SuspendLayout();
@@ -618,6 +620,7 @@
             // 
             this.gbRSACommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbRSACommands.Controls.Add(this.btnDeleteRsaKey);
             this.gbRSACommands.Controls.Add(this.btnGetRSAPublic);
             this.gbRSACommands.Controls.Add(this.btnRsaCsr);
             this.gbRSACommands.Controls.Add(this.btnMkRSAKeyOnCard);
@@ -646,11 +649,11 @@
             // 
             // btnRsaCsr
             // 
-            this.btnRsaCsr.Location = new System.Drawing.Point(699, 16);
+            this.btnRsaCsr.Location = new System.Drawing.Point(818, 16);
             this.btnRsaCsr.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
             this.btnRsaCsr.Name = "btnRsaCsr";
             this.btnRsaCsr.Size = new System.Drawing.Size(116, 47);
-            this.btnRsaCsr.TabIndex = 5;
+            this.btnRsaCsr.TabIndex = 6;
             this.btnRsaCsr.Text = "Create CSR for RSA key";
             this.btnRsaCsr.UseVisualStyleBackColor = true;
             this.btnRsaCsr.Click += new System.EventHandler(this.btnRsaCsr_Click);
@@ -668,11 +671,11 @@
             // 
             // btnSaveRSAPub
             // 
-            this.btnSaveRSAPub.Location = new System.Drawing.Point(531, 16);
+            this.btnSaveRSAPub.Location = new System.Drawing.Point(650, 16);
             this.btnSaveRSAPub.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
             this.btnSaveRSAPub.Name = "btnSaveRSAPub";
             this.btnSaveRSAPub.Size = new System.Drawing.Size(160, 47);
-            this.btnSaveRSAPub.TabIndex = 4;
+            this.btnSaveRSAPub.TabIndex = 5;
             this.btnSaveRSAPub.Text = "Save RSA public key to pem";
             this.btnSaveRSAPub.UseVisualStyleBackColor = true;
             this.btnSaveRSAPub.Click += new System.EventHandler(this.btnSaveRSAPub_Click);
@@ -708,7 +711,7 @@
             this.cbRSAKeyIndex.Location = new System.Drawing.Point(1053, 16);
             this.cbRSAKeyIndex.Name = "cbRSAKeyIndex";
             this.cbRSAKeyIndex.Size = new System.Drawing.Size(50, 21);
-            this.cbRSAKeyIndex.TabIndex = 7;
+            this.cbRSAKeyIndex.TabIndex = 8;
             // 
             // lbRSAKeyLength
             // 
@@ -726,7 +729,7 @@
             this.lbRSAKeyIndex.Location = new System.Drawing.Point(950, 19);
             this.lbRSAKeyIndex.Name = "lbRSAKeyIndex";
             this.lbRSAKeyIndex.Size = new System.Drawing.Size(97, 13);
-            this.lbRSAKeyIndex.TabIndex = 6;
+            this.lbRSAKeyIndex.TabIndex = 7;
             this.lbRSAKeyIndex.Text = "Key index (in card):";
             // 
             // tabHidden
@@ -1302,6 +1305,7 @@
             // 
             this.gbECCommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbECCommands.Controls.Add(this.btnDeleteEccKey);
             this.gbECCommands.Controls.Add(this.btnGetECPublicKey);
             this.gbECCommands.Controls.Add(this.btnEcdsaCsr);
             this.gbECCommands.Controls.Add(this.btnMkECKeyOnCard);
@@ -1332,7 +1336,7 @@
             // 
             // btnEcdsaCsr
             // 
-            this.btnEcdsaCsr.Location = new System.Drawing.Point(699, 16);
+            this.btnEcdsaCsr.Location = new System.Drawing.Point(818, 16);
             this.btnEcdsaCsr.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
             this.btnEcdsaCsr.Name = "btnEcdsaCsr";
             this.btnEcdsaCsr.Size = new System.Drawing.Size(116, 47);
@@ -1411,7 +1415,7 @@
             // 
             // btnSaveECPub
             // 
-            this.btnSaveECPub.Location = new System.Drawing.Point(531, 16);
+            this.btnSaveECPub.Location = new System.Drawing.Point(650, 16);
             this.btnSaveECPub.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
             this.btnSaveECPub.Name = "btnSaveECPub";
             this.btnSaveECPub.Size = new System.Drawing.Size(160, 47);
@@ -2262,18 +2266,18 @@
             this.lstvCACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstvCACerts.HideSelection = false;
             this.lstvCACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem19,
-            listViewItem20,
-            listViewItem21,
-            listViewItem22,
-            listViewItem23,
-            listViewItem24,
-            listViewItem25,
-            listViewItem26,
-            listViewItem27,
-            listViewItem28,
-            listViewItem29,
-            listViewItem30});
+            listViewItem37,
+            listViewItem38,
+            listViewItem39,
+            listViewItem40,
+            listViewItem41,
+            listViewItem42,
+            listViewItem43,
+            listViewItem44,
+            listViewItem45,
+            listViewItem46,
+            listViewItem47,
+            listViewItem48});
             this.lstvCACerts.Location = new System.Drawing.Point(12, 19);
             this.lstvCACerts.MultiSelect = false;
             this.lstvCACerts.Name = "lstvCACerts";
@@ -2339,13 +2343,13 @@
             this.lstvECDSACerts.GridLines = true;
             this.lstvECDSACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstvECDSACerts.HideSelection = false;
-            listViewItem31.StateImageIndex = 0;
-            listViewItem32.StateImageIndex = 0;
-            listViewItem33.StateImageIndex = 0;
+            listViewItem49.StateImageIndex = 0;
+            listViewItem50.StateImageIndex = 0;
+            listViewItem51.StateImageIndex = 0;
             this.lstvECDSACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem31,
-            listViewItem32,
-            listViewItem33});
+            listViewItem49,
+            listViewItem50,
+            listViewItem51});
             this.lstvECDSACerts.Location = new System.Drawing.Point(12, 20);
             this.lstvECDSACerts.MultiSelect = false;
             this.lstvECDSACerts.Name = "lstvECDSACerts";
@@ -2389,13 +2393,13 @@
             this.lstvRSACerts.GridLines = true;
             this.lstvRSACerts.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstvRSACerts.HideSelection = false;
-            listViewItem34.StateImageIndex = 0;
-            listViewItem35.StateImageIndex = 0;
-            listViewItem36.StateImageIndex = 0;
+            listViewItem52.StateImageIndex = 0;
+            listViewItem53.StateImageIndex = 0;
+            listViewItem54.StateImageIndex = 0;
             this.lstvRSACerts.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem34,
-            listViewItem35,
-            listViewItem36});
+            listViewItem52,
+            listViewItem53,
+            listViewItem54});
             this.lstvRSACerts.LabelWrap = false;
             this.lstvRSACerts.Location = new System.Drawing.Point(11, 20);
             this.lstvRSACerts.MultiSelect = false;
@@ -2904,6 +2908,28 @@
             this.llbDLogicURL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.llbDLogicURL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llbDLogicURL_LinkClicked);
             // 
+            // btnDeleteRsaKey
+            // 
+            this.btnDeleteRsaKey.Location = new System.Drawing.Point(531, 16);
+            this.btnDeleteRsaKey.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
+            this.btnDeleteRsaKey.Name = "btnDeleteRsaKey";
+            this.btnDeleteRsaKey.Size = new System.Drawing.Size(111, 47);
+            this.btnDeleteRsaKey.TabIndex = 4;
+            this.btnDeleteRsaKey.Text = "Delete RSA Key Pair From Card";
+            this.btnDeleteRsaKey.UseVisualStyleBackColor = true;
+            this.btnDeleteRsaKey.Click += new System.EventHandler(this.btnDeleteRsaKey_Click);
+            // 
+            // btnDeleteEccKey
+            // 
+            this.btnDeleteEccKey.Location = new System.Drawing.Point(531, 16);
+            this.btnDeleteEccKey.Margin = new System.Windows.Forms.Padding(8, 8, 0, 0);
+            this.btnDeleteEccKey.Name = "btnDeleteEccKey";
+            this.btnDeleteEccKey.Size = new System.Drawing.Size(111, 47);
+            this.btnDeleteEccKey.TabIndex = 10;
+            this.btnDeleteEccKey.Text = "Delete ECC Key Pair From Card";
+            this.btnDeleteEccKey.UseVisualStyleBackColor = true;
+            this.btnDeleteEccKey.Click += new System.EventHandler(this.btnDeleteEccKey_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3179,6 +3205,8 @@
         private System.Windows.Forms.Button btnSOLogout;
         private System.Windows.Forms.CheckBox chkDigestOffCard;
         private System.Windows.Forms.ProgressBar pbSigning;
+        private System.Windows.Forms.Button btnDeleteRsaKey;
+        private System.Windows.Forms.Button btnDeleteEccKey;
     }
 }
 

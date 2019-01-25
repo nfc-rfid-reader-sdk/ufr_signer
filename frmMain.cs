@@ -2486,6 +2486,8 @@ namespace uFRSigner
                 if (status != DL_STATUS.UFR_OK)
                     throw new Exception(string.Format("Card error code: 0x{0:X}", status));
 
+                JCDL_SIGNER_CARDS jcdl_card_type = (JCDL_SIGNER_CARDS)selection_respone[0];
+
 #if USING_PIN
                 status = uFCoder.JCAppLogin(false, tbPin.Text);
                 if (status != DL_STATUS.UFR_OK)
@@ -2574,20 +2576,69 @@ namespace uFRSigner
                     if (isECDSACipher)
                     {
                         // ECDSA hash/plain_txt alignment before signing:
+                        Int32 eff_to_be_signed_length = (key_size_bits + 7) / 8;
 
-                        to_be_signed = Enumerable.Repeat((byte)0, (key_size_bits + 7) / 8).ToArray();
-                        if (to_be_signed.Length > hash.Length)
-                            //Array.Copy(hash, 0, to_be_signed, to_be_signed.Length - hash.Length, hash.Length);
-                            to_be_signed = hash; // Can be done on J3H145 because supporting Cipher.PAD_NULL with Signature.SIG_CIPHER_ECDSA 
+                        if (jcdl_card_type == JCDL_SIGNER_CARDS.DLSigner145)
+                        {
+                            to_be_signed = Enumerable.Repeat((byte)0, eff_to_be_signed_length).ToArray();
+                        }
+                        else
+                        {
+                            Int32 to_be_signed_length = 0;
+                            switch (key_size_bits)
+                            {
+                                case 112:
+                                case 113:
+                                case 128:
+                                case 131:
+                                case 160:
+                                    to_be_signed_length = 20;
+                                    break;
+                                case 163:
+                                case 192:
+                                case 193:
+                                case 224:
+                                    to_be_signed_length = 28;
+                                    break;
+                                case 233:
+                                case 239:
+                                case 256:
+                                    to_be_signed_length = 32;
+                                    break;
+                                case 283:
+                                case 384:
+                                    to_be_signed_length = 48;
+                                    break;
+                                case 409:
+                                case 521:
+                                    to_be_signed_length = 64;
+                                    break;
+                                default:
+                                    throw new Exception("Key size doesn't match with digest length.");
+                            }
+                            to_be_signed = Enumerable.Repeat((byte)0, to_be_signed_length).ToArray();
+                        }
+
+                        if (eff_to_be_signed_length > hash.Length)
+                        {
+                            if (jcdl_card_type == JCDL_SIGNER_CARDS.DLSigner145)
+                            {
+                                to_be_signed = hash;
+                            }
+                            else
+                            {
+                                Array.Copy(hash, 0, to_be_signed, to_be_signed.Length - hash.Length, hash.Length);
+                            }
+                        }
                         else // in case of (to_be_signed.Length <= hash.Length)
                         {
-                            Array.Copy(hash, 0, to_be_signed, 0, to_be_signed.Length);
+                            Array.Copy(hash, 0, to_be_signed, to_be_signed.Length - eff_to_be_signed_length, eff_to_be_signed_length);
                             if ((key_size_bits % 8) != 0)
                             {
                                 byte prev_byte = 0;
                                 byte shift_by = (byte)(key_size_bits % 8);
 
-                                for (int i = 0; i < to_be_signed.Length; i++)
+                                for (int i = to_be_signed.Length - eff_to_be_signed_length; i < to_be_signed.Length; i++)
                                 {
                                     byte temp = to_be_signed[i];
                                     to_be_signed[i] >>= 8 - shift_by;
@@ -4125,6 +4176,138 @@ namespace uFRSigner
 
             mSOPinLoggedIn = false;
             mUserPinLoggedIn = false;
+        }
+
+        private void btnDeleteRsaKey_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status = DL_STATUS.UFR_OK;
+            byte key_index = Convert.ToByte(cbRSAKeyIndex.Text);
+            
+            try
+            {
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+#if USING_PIN
+                if (!mSOPinLoggedIn)
+                    throw new Exception("To delete key pairs, login as SO (enter SO PIN and click \"SO Login\" on \"PIN Codes\" tab)");
+#endif
+                Cursor.Current = Cursors.WaitCursor;
+
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#if USING_PIN
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#endif
+                status = uFCoder.JCAppDeleteRsaKeyPair(key_index);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                MessageBox.Show("The key has been successfully deleted.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
+                {
+                    btnSOLogout.Enabled = false;
+                    mSOPinLoggedIn = false;
+                    tbSOPin.Text = "";
+                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (status == DL_STATUS.UFR_NO_CARD)
+                        clearPins();
+                }
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void btnDeleteEccKey_Click(object sender, EventArgs e)
+        {
+            DL_STATUS status = DL_STATUS.UFR_OK;
+            byte key_index = Convert.ToByte(cbECKeyIndex.Text);
+
+            try
+            {
+                if (!uFR_Opened)
+                    throw new Exception(uFR_NotOpenedMessage);
+#if USING_PIN
+                if (!mSOPinLoggedIn)
+                    throw new Exception("To delete key pairs, login as SO (enter SO PIN and click \"SO Login\" on \"PIN Codes\" tab)");
+#endif
+                Cursor.Current = Cursors.WaitCursor;
+
+                byte[] aid = Hex.Decode(uFCoder.JCDL_AID);
+                byte[] selection_respone = new byte[16];
+
+                status = uFCoder.SetISO14443_4_Mode();
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                else
+                    uFR_Selected = true;
+
+                status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#if USING_PIN
+                status = uFCoder.JCAppLogin(true, tbSOPin.Text);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+#endif
+                status = uFCoder.JCAppDeleteEcKeyPair(key_index);
+                if (status != DL_STATUS.UFR_OK)
+                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+
+                MessageBox.Show("The key has been successfully deleted.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
+                {
+                    btnSOLogout.Enabled = false;
+                    mSOPinLoggedIn = false;
+                    tbSOPin.Text = "";
+                    MessageBox.Show("Wrong SO PIN code. Tries remaining: " + ((int)status & 0x3F),
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (status == DL_STATUS.UFR_NO_CARD)
+                        clearPins();
+                }
+            }
+            finally
+            {
+                if (uFR_Selected)
+                {
+                    uFCoder.s_block_deselect(100);
+                    uFR_Selected = false;
+                }
+                Cursor.Current = Cursors.Default;
+            }
         }
 
 #if MY_DEBUG

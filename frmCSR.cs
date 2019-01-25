@@ -17,6 +17,8 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Utilities.Encoders;
 using Org.BouncyCastle.Security;
 using uFR;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace uFRSigner
 {
@@ -1501,6 +1503,186 @@ namespace uFRSigner
                         fileStream.Close();
                 }
             }
+        }
+
+        string url = "https://certificates.d-logic.com/issuer.php";
+        
+        public static string generateRandomString(int length)
+        {
+            Random random = new Random();
+            string characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            StringBuilder result = new StringBuilder(length);
+            for (int i = 0; i < length; i++)
+            {
+                result.Append(characters[random.Next(characters.Length)]);
+            }
+            return result.ToString();
+        }
+
+        private void btgGetCertificateOnline_Click(object sender, EventArgs e)
+        {
+            byte[] buffer = new byte[1024 * 8];
+            int bytesRead = 0;
+            int bytesTotal = 0;
+
+            WebResponse response = null;
+            Stream remoteStream = null;
+            Stream localStream = null;
+            FileStream fileStream = null;
+            string randomFileName = null;
+
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "PEM files (*.pem;*.crt;*.cer)|*.pem;*.crt;*.cer|All files (*.*)|*.*";
+            //dialog.InitialDirectory = @"C:\";
+            dialog.Title = "Please select PEM file containg the CSR";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    // Create a http request to the server endpoint that will pick up the file and file description:
+                    HttpWebRequest requestToServerEndpoint = (HttpWebRequest) WebRequest.Create(url);
+
+                    string boundaryString = generateRandomString(20);
+
+                    // Set the http request header:
+                    requestToServerEndpoint.Method = WebRequestMethods.Http.Post;
+                    requestToServerEndpoint.ContentType = "multipart/form-data; boundary=" + boundaryString;
+                    requestToServerEndpoint.KeepAlive = true;
+                    requestToServerEndpoint.Credentials = System.Net.CredentialCache.DefaultCredentials;
+
+                    // Use a MemoryStream to form the post data request, so that we can get the content-length attribute.
+                    MemoryStream postDataStream = new MemoryStream();
+                    StreamWriter postDataWriter = new StreamWriter(postDataStream);
+
+                    // Include the file in the post data:
+                    postDataWriter.Write("\r\n--" + boundaryString + "\r\n");
+                    postDataWriter.Write("Content-Disposition: form-data; name=\"file\"; filename=\"{0}\"\r\n", Path.GetFileName(dialog.FileName));
+                    postDataWriter.Write("Content-Type: application/octet-stream\r\n\r\n");
+                    postDataWriter.Flush();
+
+                    // Write file binary in the post data:
+                    fileStream = new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read);
+                    while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+                    {
+                        postDataStream.Write(buffer, 0, bytesRead);
+                    }
+                    fileStream.Close();
+                    fileStream = null;
+
+                    // Include JSON params in the post data:
+                    postDataWriter.Write("\r\n--" + boundaryString + "\r\n");
+                    postDataWriter.Write("Content-Disposition: form-data; name=\"query\"\r\n\r\n");
+                    postDataWriter.Write("{\"operation\":\"verify\",\"user_id\":0,\"security_token\":\"\"}");
+                    postDataWriter.Write("\r\n--" + boundaryString + "--\r\n");
+                    postDataWriter.Flush();
+
+                    // Set the http request body content length
+                    requestToServerEndpoint.ContentLength = postDataStream.Length;
+
+                    // Dump the post data from the memory stream to the request stream:
+                    using (Stream s = requestToServerEndpoint.GetRequestStream())
+                    {
+                        postDataStream.WriteTo(s);
+                    }
+                    postDataStream.Close();
+
+                    // Grab the response from the server. WebException will be thrown when a HTTP OK status is not returned.
+                    response = requestToServerEndpoint.GetResponse();
+
+                    // response.Headers.Get("x123")
+
+                    if (response.ContentType == "application/json")
+                    {
+                        // Resolve Error:
+                        StreamReader responseReader = new StreamReader(response.GetResponseStream());
+                        string replyFromServer = responseReader.ReadToEnd();
+                        throw new Exception(replyFromServer);
+                    }
+                    else if (response.ContentType == "application/octet-stream")
+                    {
+                        // Save certificate file:
+                        do
+                        {
+                            randomFileName = Path.GetTempPath() + generateRandomString(8) + ".pem";
+                        } while (File.Exists(randomFileName));
+
+                        // Create the temporary local file
+                        localStream = File.Create(randomFileName);
+
+                        // Simple do-while loop to read from stream until no bytes are returned:
+                        do
+                        {
+                            // Read data from the stream:
+                            remoteStream = response.GetResponseStream();
+                            bytesRead = remoteStream.Read(buffer, 0, buffer.Length);
+
+                            // Write the data to the temporary local file
+                            localStream.Write(buffer, 0, bytesRead);
+
+                            // Increment total bytes processed
+                            bytesTotal += bytesRead;
+                        } while (bytesRead > 0);
+
+                        if (bytesTotal != response.ContentLength)
+                            throw new Exception("Wrong certificate file length");
+
+                        localStream.Close();
+                        localStream = null;
+
+                        // Save dialog to finally move temporary local file content:
+                        SaveFileDialog saveDialog = new SaveFileDialog();
+                        saveDialog.Title = "New X.509 certificate is successfully issued. Please select PEM file to save the certificate.";
+                        saveDialog.Filter = "X.509 Certificate files (*.pem)|*.pem|All files (*.*)|*.*";
+                        saveDialog.RestoreDirectory = true;
+                        saveDialog.FileName = "certificate.pem";
+
+                        if (saveDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            if (File.Exists(saveDialog.FileName))
+                            {
+                                File.Delete(saveDialog.FileName);
+                            }
+                            File.Copy(randomFileName, saveDialog.FileName);
+
+                            MessageBox.Show("New X.509 certificate is successfully issued and saved", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("New X.509 certificate is successfully issued but you have chosen not to save the certificate file." +
+                                "If in any case you want to keep a certificate file, you can still find it in the temporary files:\r\n" +
+                                randomFileName
+                                , "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            randomFileName = null;
+                        }
+                    }
+
+                    else
+                        throw new Exception("Wrong response from server");
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    if (response != null) response.Close();
+                    if (remoteStream != null) remoteStream.Close();
+                    if (localStream != null) localStream.Close();
+                    if (fileStream != null) fileStream.Close();
+                    if (randomFileName != null && File.Exists(randomFileName))
+                    {
+                        File.Delete(randomFileName);
+                        randomFileName = null;
+                    }
+                }
+            }
+        }
+
+        private void llbDLogicURL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://certificates.d-logic.com");
         }
     }
 }

@@ -57,6 +57,15 @@ namespace uFR
         MIFARE_AUTHENT1A = 0x60,
         MIFARE_AUTHENT1B = 0x61
     }
+    // DLJavaCardSignerCardTypes:
+    enum JCDL_SIGNER_CARDS
+    {
+        DLSigner81 = 0xA0,
+        DLSigner22 = 0xA1,
+        DLSigner30 = 0xA2,
+        DLSigner10 = 0xA3,
+        DLSigner145 = 0xAA
+    }
     // DLJavaCardSignerAlgorithmTypes:
     enum JCDL_SIGNER_CIPHERS
     {
@@ -913,6 +922,12 @@ namespace uFR
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGenerateKeyPair")]
         public static extern DL_STATUS JCAppGenerateKeyPair(byte key_type, byte key_index, byte key_designator, 
                                                             UInt16 key_bit_len, [In] byte[] param, UInt16 param_size);
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppDeleteRsaKeyPair")]
+        public static extern DL_STATUS JCAppDeleteRsaKeyPair(byte key_index);
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppDeleteEcKeyPair")]
+        public static extern DL_STATUS JCAppDeleteEcKeyPair(byte key_index);
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppSignatureBegin")]
         public static extern DL_STATUS JCAppSignatureBegin(byte cipher, byte digest, byte padding, byte key_index,

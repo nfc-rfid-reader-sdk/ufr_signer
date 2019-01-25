@@ -57,6 +57,9 @@
             this.cbKeyIndex = new System.Windows.Forms.ComboBox();
             this.lbKeyIndex = new System.Windows.Forms.Label();
             this.lbKeyDesc = new System.Windows.Forms.Label();
+            this.btgGetCertificateOnline = new System.Windows.Forms.Button();
+            this.lbOnlineRequest = new System.Windows.Forms.Label();
+            this.llbDLogicURL = new System.Windows.Forms.LinkLabel();
             this.gbDn.SuspendLayout();
             this.gbExt.SuspendLayout();
             this.SuspendLayout();
@@ -279,7 +282,7 @@
             // 
             // btnLoadCsr
             // 
-            this.btnLoadCsr.Location = new System.Drawing.Point(672, 302);
+            this.btnLoadCsr.Location = new System.Drawing.Point(672, 261);
             this.btnLoadCsr.Name = "btnLoadCsr";
             this.btnLoadCsr.Size = new System.Drawing.Size(108, 35);
             this.btnLoadCsr.TabIndex = 9;
@@ -290,7 +293,7 @@
             // btnSaveCsr
             // 
             this.btnSaveCsr.BackColor = System.Drawing.Color.Azure;
-            this.btnSaveCsr.Location = new System.Drawing.Point(672, 384);
+            this.btnSaveCsr.Location = new System.Drawing.Point(672, 343);
             this.btnSaveCsr.Name = "btnSaveCsr";
             this.btnSaveCsr.Size = new System.Drawing.Size(108, 35);
             this.btnSaveCsr.TabIndex = 12;
@@ -301,7 +304,7 @@
             // btnSaveTbsCsr
             // 
             this.btnSaveTbsCsr.BackColor = System.Drawing.Color.Ivory;
-            this.btnSaveTbsCsr.Location = new System.Drawing.Point(672, 343);
+            this.btnSaveTbsCsr.Location = new System.Drawing.Point(672, 302);
             this.btnSaveTbsCsr.Name = "btnSaveTbsCsr";
             this.btnSaveTbsCsr.Size = new System.Drawing.Size(108, 35);
             this.btnSaveTbsCsr.TabIndex = 10;
@@ -311,7 +314,7 @@
             // 
             // btnLoadTbsCsr
             // 
-            this.btnLoadTbsCsr.Location = new System.Drawing.Point(672, 261);
+            this.btnLoadTbsCsr.Location = new System.Drawing.Point(672, 220);
             this.btnLoadTbsCsr.Name = "btnLoadTbsCsr";
             this.btnLoadTbsCsr.Size = new System.Drawing.Size(108, 35);
             this.btnLoadTbsCsr.TabIndex = 8;
@@ -402,21 +405,57 @@
             this.lbKeyIndex.Text = "signer key index (card):";
             this.lbKeyIndex.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // lbEcdsaCurve
+            // lbKeyDesc
             // 
             this.lbKeyDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.lbKeyDesc.ForeColor = System.Drawing.Color.Blue;
             this.lbKeyDesc.Location = new System.Drawing.Point(666, 116);
-            this.lbKeyDesc.Name = "lbEcdsaCurve";
+            this.lbKeyDesc.Name = "lbKeyDesc";
             this.lbKeyDesc.Size = new System.Drawing.Size(114, 20);
             this.lbKeyDesc.TabIndex = 14;
             this.lbKeyDesc.Text = "-";
+            // 
+            // btgGetCertificateOnline
+            // 
+            this.btgGetCertificateOnline.BackColor = System.Drawing.Color.Honeydew;
+            this.btgGetCertificateOnline.Location = new System.Drawing.Point(672, 384);
+            this.btgGetCertificateOnline.Name = "btgGetCertificateOnline";
+            this.btgGetCertificateOnline.Size = new System.Drawing.Size(108, 35);
+            this.btgGetCertificateOnline.TabIndex = 15;
+            this.btgGetCertificateOnline.Text = "Get Certificate Online";
+            this.btgGetCertificateOnline.UseVisualStyleBackColor = false;
+            this.btgGetCertificateOnline.Click += new System.EventHandler(this.btgGetCertificateOnline_Click);
+            // 
+            // lbOnlineRequest
+            // 
+            this.lbOnlineRequest.AutoSize = true;
+            this.lbOnlineRequest.Location = new System.Drawing.Point(16, 468);
+            this.lbOnlineRequest.Name = "lbOnlineRequest";
+            this.lbOnlineRequest.Size = new System.Drawing.Size(258, 13);
+            this.lbOnlineRequest.TabIndex = 16;
+            this.lbOnlineRequest.Text = "Online demo certificate issuing request will be sent to ";
+            // 
+            // llbDLogicURL
+            // 
+            this.llbDLogicURL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.llbDLogicURL.AutoSize = true;
+            this.llbDLogicURL.Location = new System.Drawing.Point(280, 468);
+            this.llbDLogicURL.Name = "llbDLogicURL";
+            this.llbDLogicURL.Size = new System.Drawing.Size(151, 13);
+            this.llbDLogicURL.TabIndex = 17;
+            this.llbDLogicURL.TabStop = true;
+            this.llbDLogicURL.Text = "https://certificates.d-logic.com";
+            this.llbDLogicURL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.llbDLogicURL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llbDLogicURL_LinkClicked);
             // 
             // frmCSR
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(792, 471);
+            this.ClientSize = new System.Drawing.Size(792, 489);
+            this.Controls.Add(this.llbDLogicURL);
+            this.Controls.Add(this.lbOnlineRequest);
+            this.Controls.Add(this.btgGetCertificateOnline);
             this.Controls.Add(this.lbKeyDesc);
             this.Controls.Add(this.cbKeyIndex);
             this.Controls.Add(this.lbKeyIndex);
@@ -477,5 +516,8 @@
         private System.Windows.Forms.ComboBox cbKeyIndex;
         private System.Windows.Forms.Label lbKeyIndex;
         private System.Windows.Forms.Label lbKeyDesc;
+        private System.Windows.Forms.Button btgGetCertificateOnline;
+        private System.Windows.Forms.Label lbOnlineRequest;
+        private System.Windows.Forms.LinkLabel llbDLogicURL;
     }
 }
