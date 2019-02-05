@@ -292,13 +292,13 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
 #if USING_PIN
                 bool open_pin_dialog = true;
@@ -314,7 +314,7 @@ namespace uFRSigner
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         else
-                            throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                            throw new Exception(uFCoder.GetErrorDescription(status));
                     }
                     else
                         open_pin_dialog = false;
@@ -373,7 +373,7 @@ namespace uFRSigner
                     UInt16 key_designator;
                     status = uFCoder.JCAppGetEcKeySizeBits(key_index, out key_size_bits, out key_designator);
                     if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                        throw new Exception(uFCoder.GetErrorDescription(status));
 
                     // ECDSA hash alignment before signing:
                     dataToSign = Enumerable.Repeat((byte)0, (key_size_bits + 7) / 8).ToArray();
@@ -413,7 +413,7 @@ namespace uFRSigner
                                                         key_index, chunk, (UInt16)chunk_len,
                                                         null, 0);
                     if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                        throw new Exception(uFCoder.GetErrorDescription(status));
 
                     while (rest_of_data > 0)
                     {
@@ -422,7 +422,7 @@ namespace uFRSigner
 
                         status = uFCoder.JCAppSignatureUpdate(chunk, (UInt16)chunk_len);
                         if (status != DL_STATUS.UFR_OK)
-                            throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                            throw new Exception(uFCoder.GetErrorDescription(status));
 
                         src_pos += chunk_len;
                         rest_of_data -= chunk_len;
@@ -430,7 +430,7 @@ namespace uFRSigner
 
                     status = uFCoder.JCAppSignatureEnd(out signature);
                     if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                        throw new Exception(uFCoder.GetErrorDescription(status));
                 }
                 else
                 {
@@ -440,7 +440,7 @@ namespace uFRSigner
                                                             out signature,
                                                             null, 0);
                     if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                        throw new Exception(uFCoder.GetErrorDescription(status));
                 }
 
                 if (cbCipher.Text == "ECDSA")

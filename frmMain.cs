@@ -30,7 +30,7 @@ namespace uFRSigner
     public partial class frmMain : Form
     {
         frmCSR frmCsr;
-        const UInt32 MIN_UFR_LIB_VERSION = 0x04040005; // bytes from left to right: MSB=MajorVer, MidSB_H=MinorVer, MidSB_L=0, LSB=BuildNum
+        const UInt32 MIN_UFR_LIB_VERSION = 0x05000003; // bytes from left to right: MSB=MajorVer, MidSB_H=MinorVer, MidSB_L=0, LSB=BuildNum
         const UInt32 MIN_UFR_FW_VERSION = 0x05000007; // bytes from left to right: MSB=MajorVer, MidSB_H=MinorVer, MidSB_L=0, LSB=BuildNum
         string uFR_NotOpenedMessage = "uFR reader not opened.\r\nYou can't work with DL Signer cards.";
         string mCertPassword = "";
@@ -586,21 +586,21 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #if USING_PIN
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #endif
                 status = uFCoder.JCAppGenerateKeyPair(key_type, key_index, 0, key_size_bits, null, 0);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 MessageBox.Show("The key has been successfully stored.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -649,17 +649,17 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetRsaPublicKey(key_index, out modulus, out exponent);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 tbRSAModulus.Text = "";
                 tbRSAPrivExp.Text = "";
@@ -769,22 +769,22 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
 #if USING_PIN
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #endif
                 status = uFCoder.JCAppPutPrivateKey(key_type, key_index, key, key_size_bits, null, 0);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 MessageBox.Show("The key has been successfully stored.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1451,23 +1451,23 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
 #if USING_PIN
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #endif
 
                 status = uFCoder.JCAppGenerateKeyPair(key_type, key_index, GetECKeyDesignator(cbECName.Text), key_size_bits, param, param_size);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 MessageBox.Show("The key has been successfully stored.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1646,23 +1646,23 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
 #if USING_PIN
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #endif
 
                 status = uFCoder.JCAppPutPrivateKey(key_type, key_index, key, key_size_bits, key_param, key_param_len);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 MessageBox.Show("The key has been successfully stored.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -2478,20 +2478,20 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 JCDL_SIGNER_CARDS jcdl_card_type = (JCDL_SIGNER_CARDS)selection_respone[0];
 
 #if USING_PIN
                 status = uFCoder.JCAppLogin(false, tbPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #endif
                 int max_len;
                 if (mLocalDigestInUse)
@@ -2525,7 +2525,7 @@ namespace uFRSigner
                     UInt16 key_designator;
                     status = uFCoder.JCAppGetEcKeySizeBits(key_index, out key_size_bits, out key_designator);
                     if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                        throw new Exception(uFCoder.GetErrorDescription(status));
                 }
 
                 if (chunked)
@@ -2543,7 +2543,7 @@ namespace uFRSigner
                                                          key_index, chunk, (UInt16)mChunkSize,
                                                          null, 0);
                         if (status != DL_STATUS.UFR_OK)
-                            throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                            throw new Exception(uFCoder.GetErrorDescription(status));
                     }
 
                     bgw = new BackgroundWorker();
@@ -2667,7 +2667,7 @@ namespace uFRSigner
                                                             out sig,
                                                             null, 0);
                     if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                        throw new Exception(uFCoder.GetErrorDescription(status));
                 }
 
                 pbSigning.Value = pbSigning.Maximum;
@@ -2801,7 +2801,7 @@ namespace uFRSigner
                     {
                         status = uFCoder.JCAppSignatureUpdate(chunk, (UInt16)chunk_len);
                         if (status != DL_STATUS.UFR_OK)
-                            throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                            throw new Exception(uFCoder.GetErrorDescription(status));
                     }
 
                     // when using PerformStep() the percentProgress arg is redundant
@@ -2883,13 +2883,13 @@ namespace uFRSigner
                                                             out sig,
                                                             null, 0);
                     if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                        throw new Exception(uFCoder.GetErrorDescription(status));
                 }
                 else
                 {
                     status = uFCoder.JCAppSignatureEnd(out sig);
                     if (status != DL_STATUS.UFR_OK)
-                        throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                        throw new Exception(uFCoder.GetErrorDescription(status));
                 }
 
                 tbSignature.Text = "";
@@ -3087,27 +3087,27 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
 #if USING_PIN
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #endif
 
                 status = uFCoder.JCAppPutObj(obj_type, obj_index, raw_cert, (UInt16)raw_cert.Length, raw_id, (byte)raw_id.Length);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppPutObjSubject(obj_type, obj_index, raw_subject, (byte)raw_subject.Length);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 if (uFR_Selected)
                 {
@@ -3172,13 +3172,13 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 max_index = 3;
                 for (obj_type = 0; obj_type < 3; obj_type++) {
@@ -3327,22 +3327,22 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetObjId(obj_type, obj_index, out raw_id, out cert_size);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 raw_cert = new byte[cert_size];
                 status = uFCoder.JCAppGetObj(obj_type, obj_index, raw_cert);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 cert = new X509Certificate2(raw_cert);
                 X509Certificate2UI.DisplayCertificate(cert, this.Handle);
@@ -3407,23 +3407,23 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
 #if USING_PIN
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #endif
 
                 status = uFCoder.JCAppInvalidateCert(obj_type, obj_index);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 if (uFR_Selected)
                 {
@@ -3480,29 +3480,29 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PUK, out PukSOTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PUK, out PukTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PIN, out PinSOTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PIN, out PinTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 lbPukSOTriesRemaining.Text = "Tries remaining: " + PukSOTriesRemaining;
                 lbPukTriesRemaining.Text = "Tries remaining: " + PukTriesRemaining;
@@ -3540,23 +3540,23 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 mSOPinLoggedIn = true;
 
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PIN, out PinTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 lbPinSOTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
 
                 btnSOLogout.Enabled = true;
@@ -3599,22 +3599,22 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppLogin(false, tbPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 mUserPinLoggedIn = true;
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PIN, out PinTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 lbPinTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
 
                 btnUserLogout.Enabled = true;
@@ -3656,26 +3656,26 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppPinUnblock(false, tbPuk.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PUK, out PinTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 lbPukTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
 
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.USER_PIN, out PinTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 lbPinTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
 
                 MessageBox.Show("The user PIN has been successfully unblocked", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -3713,26 +3713,26 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppPinUnblock(true, tbSOPuk.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PUK, out PinTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 lbPukSOTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
 
                 status = uFCoder.JCAppGetPinTriesRemaining(DL_SECURE_CODE.SO_PIN, out PinTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 lbPinSOTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
 
                 MessageBox.Show("The SO PIN has been successfully unblocked", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -3832,17 +3832,17 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetEcPublicKey(key_index, out keyW, out field, out a, out b, out g, out r, out k, out key_size_bits, out key_designator);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 tbECPubKey.Text = Hex.ToHexString(keyW);
                 tbECParamPrime.Text = Hex.ToHexString(field);
@@ -4108,25 +4108,25 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppPinChange(code_to_change, tbNewPinSource.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 status = uFCoder.JCAppGetPinTriesRemaining(code_to_change, out PinTriesRemaining);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 lbTriesRemaining.Text = "Tries remaining: " + PinTriesRemaining;
 
                 MessageBox.Show("The " + pin_name + " has been successfully changed", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -4198,21 +4198,21 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #if USING_PIN
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #endif
                 status = uFCoder.JCAppDeleteRsaKeyPair(key_index);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 MessageBox.Show("The key has been successfully deleted.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -4264,21 +4264,21 @@ namespace uFRSigner
 
                 status = uFCoder.SetISO14443_4_Mode();
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
                 else
                     uFR_Selected = true;
 
                 status = uFCoder.JCAppSelectByAid(aid, (byte)aid.Length, selection_respone);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #if USING_PIN
                 status = uFCoder.JCAppLogin(true, tbSOPin.Text);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 #endif
                 status = uFCoder.JCAppDeleteEcKeyPair(key_index);
                 if (status != DL_STATUS.UFR_OK)
-                    throw new Exception(string.Format("Card error code: 0x{0:X}", status));
+                    throw new Exception(uFCoder.GetErrorDescription(status));
 
                 MessageBox.Show("The key has been successfully deleted.", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

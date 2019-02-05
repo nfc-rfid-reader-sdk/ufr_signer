@@ -1033,10 +1033,10 @@ namespace uFR
         }
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Auto, EntryPoint = "JCAppGetErrorDescription")]
-        private static extern IntPtr GetErrorDescription(UInt32 apdu_error_status);
+        private static extern IntPtr libJCAppGetErrorDescription(UInt32 apdu_error_status);
         public static string JCAppGetErrorDescription(UInt32 apdu_error_status)
         {
-            IntPtr str_ret = GetErrorDescription(apdu_error_status);
+            IntPtr str_ret = libJCAppGetErrorDescription(apdu_error_status);
             return Marshal.PtrToStringAnsi(str_ret);
         }
 
@@ -1192,5 +1192,34 @@ namespace uFR
                                                     ref byte key);
 
         //----------------------------------------------------------------------
+
+        public static string GetErrorDescription(DL_STATUS status)
+        {
+            string ErrorDescription = "No Error";
+            string JCErrorDescription = "";
+
+            JCErrorDescription = JCAppGetErrorDescription((UInt32)status);
+
+            if (JCErrorDescription != "")
+            {
+                ErrorDescription = "Error: " + JCErrorDescription;
+            }
+            else
+            {
+                if (((int)status & 0xFFFFC0) == 0x0A63C0)
+                {
+                    ErrorDescription = "Error: Wrong identification number entered";
+                }
+                else
+                {
+                    ErrorDescription = "Error: " + status.ToString();
+                }
+            }
+
+            if (status != DL_STATUS.UFR_OK)
+                ErrorDescription += string.Format("\r\n(Error Code: 0x{0:X})", status);
+
+            return ErrorDescription;
+        }
     }
 }
