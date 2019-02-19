@@ -2651,9 +2651,16 @@ namespace uFRSigner
                     else
                     {
                         // RSA signer preparation:
-                        Org.BouncyCastle.Asn1.X509.DigestInfo dInfo =
+                        if (localDigestMechanism == null)
+                        {
+                            to_be_signed = hash;
+                        }
+                        else
+                        {
+                            Org.BouncyCastle.Asn1.X509.DigestInfo dInfo =
                                 new Org.BouncyCastle.Asn1.X509.DigestInfo(new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(mOid, DerNull.Instance), hash);
-                        to_be_signed = dInfo.GetDerEncoded();
+                            to_be_signed = dInfo.GetDerEncoded();
+                        }
                     }
 
                     // Examples (debug):
